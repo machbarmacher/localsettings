@@ -8,7 +8,7 @@ namespace clever_systems\mmm2\ServerType;
 
 use clever_systems\mmm2\ServerInterface;
 
-class Freistilbox extends ServerInterface {
+class Freistilbox implements ServerInterface {
   /** @var string */
   protected $cluster;
   /** @var string */
