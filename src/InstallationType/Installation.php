@@ -3,13 +3,13 @@
  * @file Installation.php
  */
 
-namespace clever_systems\mmm2\InstallationType;
+namespace clever_systems\mmm-builder\InstallationType;
 
 
-use clever_systems\mmm2\InstallationBase;
-use clever_systems\mmm2\InstallationInterface;
-use clever_systems\mmm2\ServerInterface;
-use clever_systems\mmm2\Tools\DbCredentialTools;
+use clever_systems\mmm-builder\InstallationBase;
+use clever_systems\mmm-builder\InstallationInterface;
+use clever_systems\mmm-builder\ServerInterface;
+use clever_systems\mmm-builder\Tools\DbCredentialTools;
 
 class Installation extends InstallationBase implements InstallationInterface {
   /** @var string */
@@ -26,7 +26,7 @@ class Installation extends InstallationBase implements InstallationInterface {
   /**
    * Installation constructor.
    * @param string $name
-   * @param \clever_systems\mmm2\ServerInterface $server
+   * @param \clever_systems\mmm-builder\ServerInterface $server
    * @param string[string]|string $site_uris
    */
   public function __construct($name, $server, $site_uris) {

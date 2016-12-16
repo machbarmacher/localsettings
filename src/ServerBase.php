@@ -3,7 +3,7 @@
  * @file ServerBase.php
  */
 
-namespace clever_systems\mmm2;
+namespace clever_systems\mmm-builder;
 
 
 abstract class ServerBase implements ServerInterface {

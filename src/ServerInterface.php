@@ -3,7 +3,7 @@
  * @file ServerInterface.php
  */
 
-namespace clever_systems\mmm2;
+namespace clever_systems\mmm-builder;
 
 
 interface ServerInterface {

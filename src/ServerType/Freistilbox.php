@@ -3,15 +3,15 @@
  * @file Freistilbox.php
  */
 
-namespace clever_systems\mmm2\ServerType;
+namespace clever_systems\mmm-builder\ServerType;
 
 
-use clever_systems\mmm2\ServerBase;
-use clever_systems\mmm2\ServerInterface;
+use clever_systems\mmm-builder\ServerBase;
+use clever_systems\mmm-builder\ServerInterface;
 
 /**
  * Class Freistilbox
- * @package clever_systems\mmm2\ServerType
+ * @package clever_systems\mmm-builder\ServerType
  *
  * @todo Implement repository branch & url & environment
  * repository url = ssh://{{site-handle}}@repo.freistilbox.net/~/site
