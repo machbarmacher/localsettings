@@ -8,9 +8,8 @@ namespace clever_systems\mmm2\InstallationType;
 
 use clever_systems\mmm2\InstallationBase;
 use clever_systems\mmm2\InstallationInterface;
-use clever_systems\mmm2\ServerInterface;
 
-class SingleSiteInstallation extends InstallationBase implements InstallationInterface {
+class Installation extends InstallationBase implements InstallationInterface {
   /** @var string */
   protected $docroot;
   
@@ -35,6 +34,11 @@ class SingleSiteInstallation extends InstallationBase implements InstallationInt
         'remote-user' => $this->server->getUser(),
       ]
     ];
+  }
+
+  public function getUriToSiteMap() {
+    // @todo Care for port when needed.
+    return [parse_url($this->uri, PHP_URL_HOST) => 'default'];
   }
 
 }

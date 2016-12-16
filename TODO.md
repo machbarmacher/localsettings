@@ -8,13 +8,15 @@ Compiler
 
 Runtime
 
+Tools
 
+* this-alias
+* alter local aliases
 
 Ops
 
 * msync
 * scaffold (compiler plugin)
-* alter local aliases
 * create user accounts
 * revert shell-alias/command
 * @site-or-sites

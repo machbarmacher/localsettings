@@ -6,7 +6,7 @@
 namespace clever_systems\mmm2;
 
 
-use clever_systems\mmm2\InstallationType\SingleSiteInstallation;
+use clever_systems\mmm2\InstallationType\Installation;
 
 class Project {
   /** @var InstallationInterface[] */
@@ -15,15 +15,24 @@ class Project {
   /**
    * @param \clever_systems\mmm2\InstallationInterface $installation
    */
-  public function addInstallation(SingleSiteInstallation $installation) {
+  public function addInstallation(Installation $installation) {
     $this->installations[] = $installation;
   }
 
   public function getAliases() {
-    $aliases = [];
+    $result = [];
     foreach ($this->installations as $installation) {
-      $aliases += $installation->getAliases();
+      $result += $installation->getAliases();
     }
-    return $aliases;
+    return $result;
   }
+
+  public function getUriToSiteMap() {
+    $result = [];
+    foreach ($this->installations as $installation) {
+      $result += $installation->getUriToSiteMap();
+    }
+    return $result;
+  }
+  
 }
