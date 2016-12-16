@@ -12,12 +12,14 @@ use clever_systems\mmm2\InstallationInterface;
 class Installation extends InstallationBase implements InstallationInterface {
   /** @var string */
   protected $docroot;
-  
+
   /**
    * @return array
    */
   protected function getDefaultOptions() {
-    $default_options = ['docroot' => $this->server->getDefaultDocroot()];
+    $default_options = [
+      'docroot' => $this->server->getDefaultDocroot(),
+    ];
     return $default_options;
   }
 
@@ -26,19 +28,33 @@ class Installation extends InstallationBase implements InstallationInterface {
   }
 
   public function getAliases() {
-    return [
-      $this->name => [
-        'uri' => $this->uri,
+    $aliases = [];
+    $site_list= [];
+    // Add single site aliases.
+    foreach ($this->site_uris as $site => $site_uri) {
+      $alias_name = $this->name . '.' . $site;
+      $aliases[$alias_name] = [
+        'uri' => $site_uri,
         'root' => $this->docroot,
         'remote-host' => $this->server->getHost(),
         'remote-user' => $this->server->getUser(),
-      ]
+      ];
+      $site_list[] = "@$alias_name";
+
+    }
+    // Add installation alias.
+    $aliases[$this->name] = [
+      'site-list' => $site_list,
     ];
   }
 
   public function getUriToSiteMap() {
     // @todo Care for port when needed.
-    return [parse_url($this->uri, PHP_URL_HOST) => 'default'];
+    $sites_by_uri = [];
+    foreach ($this->site_uris as $site => $uri) {
+      $sites_by_uri[parse_url($this->uri, PHP_URL_HOST)] = $site;
+    }
+    return $sites_by_uri;
   }
 
 }

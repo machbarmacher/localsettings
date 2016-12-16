@@ -11,19 +11,22 @@ abstract class InstallationBase implements InstallationInterface {
   protected $name;
   /** @var ServerInterface */
   protected $server;
-  /** @var string */
-  protected $uri;
+  /** @var string[] */
+  protected $site_uris;
 
   /**
    * Installation constructor.
    * @param string $name
    * @param \clever_systems\mmm2\ServerInterface $server
-   * @param string $uri
+   * @param string[string]|string $site_uris
    */
-  public function __construct($name, $server, $uri, array $options = []) {
+  public function __construct($name, $server, $site_uris, array $options = []) {
     $this->name = $name;
     $this->server = $server;
-    $this->uri = $uri;
+    if (!is_array($site_uris)) {
+      $site_uris = ['default' => $site_uris];
+    }
+    $this->site_uris = $site_uris;
     $this->checkOptions($options);
     $this->setOptions($options);
   }
