@@ -8,23 +8,51 @@ namespace clever_systems\mmm2\InstallationType;
 
 use clever_systems\mmm2\InstallationBase;
 use clever_systems\mmm2\InstallationInterface;
+use clever_systems\mmm2\ServerInterface;
 
 class Installation extends InstallationBase implements InstallationInterface {
+  /** @var string */
+  protected $name;
+  /** @var ServerInterface */
+  protected $server;
+  /** @var string[] */
+  protected $site_uris;
   /** @var string */
   protected $docroot;
 
   /**
-   * @return array
+   * Installation constructor.
+   * @param string $name
+   * @param \clever_systems\mmm2\ServerInterface $server
+   * @param string[string]|string $site_uris
    */
-  protected function getDefaultOptions() {
-    $default_options = [
-      'docroot' => $this->server->getDefaultDocroot(),
-    ];
-    return $default_options;
+  public function __construct($name, $server, $site_uris) {
+    $this->name = $name;
+    $this->server = $server;
+    $this->setSiteUris($site_uris);
+    $this->docroot = $this->server->getDefaultDocroot();
   }
 
-  protected function setOptions(array $options) {
-    $this->docroot = $this->server->normalizeDocroot($options['docroot']);
+  /**
+   * @param $site_uris
+   */
+  protected function setSiteUris($site_uris) {
+    if (!is_array($site_uris)) {
+      $site_uris = ['default' => $site_uris];
+    }
+    $this->site_uris = $site_uris;
+    foreach ($this->site_uris as $site_uri) {
+      if (preg_match('#/$#', $site_uri)) {
+        throw new \UnexpectedValueException(sprintf('Site Uri must not contain trailing slash: %s', $site_uri));
+      }
+      if (!parse_url($site_uri)) {
+        throw new \UnexpectedValueException(sprintf('Site Uri invalid: %s', $site_uri));
+      }
+    }
+  }
+
+  public function setDocroot($docroot) {
+    $this->docroot = $this->server->normalizeDocroot($docroot);
   }
 
   public function getAliases() {
