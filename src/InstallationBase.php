@@ -27,6 +27,14 @@ abstract class InstallationBase implements InstallationInterface {
       $site_uris = ['default' => $site_uris];
     }
     $this->site_uris = $site_uris;
+    foreach ($this->site_uris as $site_uri) {
+      if (preg_match('#/$#', $site_uri)) {
+        throw new \UnexpectedValueException(sprintf('Site Uri must not contain trailing slash: %s', $site_uri));
+      }
+      if (!parse_url($site_uri)) {
+        throw new \UnexpectedValueException(sprintf('Site Uri invalid: %s', $site_uri));
+      }
+    }
     $this->checkOptions($options);
     $this->setOptions($options);
   }

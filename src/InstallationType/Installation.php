@@ -57,4 +57,18 @@ class Installation extends InstallationBase implements InstallationInterface {
     return $sites_by_uri;
   }
 
+  public function getSiteId($site = 'default') {
+    $user = $this->server->getUser();
+    $host = $this->server->getHost();
+    $path = $this->docroot;
+    return "$user@$host/$path#$site";
+  }
+
+  public function getBaseUrls() {
+    $base_urls = [];
+    foreach ($this->site_uris as $site => $site_uri) {
+      $base_urls[$this->getSiteId($site)] = $site_uri;
+    }
+  }
+
 }
