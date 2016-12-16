@@ -6,9 +6,10 @@
 namespace clever_systems\mmm2\ServerType;
 
 
+use clever_systems\mmm2\ServerBase;
 use clever_systems\mmm2\ServerInterface;
 
-class Uberspace implements ServerInterface {
+class Uberspace extends ServerBase implements ServerInterface {
   /** @var string */
   protected $host;
   /** @var string */
@@ -24,5 +25,22 @@ class Uberspace implements ServerInterface {
     $this->user = $user;
   }
 
+  public function getDefaultDocroot() {
+    return $this->normalizeDocroot('html/docroot');
+  }
+
+  /**
+   * @return string
+   */
+  public function getHost() {
+    return $this->host;
+  }
+
+  /**
+   * @return string
+   */
+  public function getUser() {
+    return $this->user;
+  }
 
 }

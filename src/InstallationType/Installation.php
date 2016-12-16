@@ -74,6 +74,13 @@ class Installation extends InstallationBase implements InstallationInterface {
     }
   }
 
+  /**
+   * @return \array[]
+   */
+  public function getDbCredentials() {
+    return $this->db_credentials;
+  }
+
   public function getAliases() {
     $aliases = [];
     $site_list= [];
