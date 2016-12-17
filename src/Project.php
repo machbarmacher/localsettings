@@ -3,13 +3,13 @@
  * @file Project.php
  */
 
-namespace clever_systems\mmm-builder;
+namespace clever_systems\mmm_builder;
 
-use clever_systems\mmm-builder\InstallationType\Installation;
+use clever_systems\mmm_builder\InstallationType\Installation;
 
 /**
  * Class Project
- * @package clever_systems\mmm-builder
+ * @package clever_systems\mmm_builder
  *
  * @todo Add docroot relative to gitroot setting.
  */
@@ -18,7 +18,7 @@ class Project {
   protected $installations;
 
   /**
-   * @param \clever_systems\mmm-builder\InstallationInterface $installation
+   * @param \clever_systems\mmm_builder\InstallationInterface $installation
    */
   public function addInstallation(InstallationInterface $installation) {
     $this->installations[] = $installation;

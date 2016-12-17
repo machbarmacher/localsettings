@@ -1,6 +1,6 @@
 <?php
 
-namespace clever_systems\mmm-builder\Tools;
+namespace clever_systems\mmm_builder\Tools;
 
 /**
  * @file DbCredentialTools.php

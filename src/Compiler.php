@@ -3,7 +3,7 @@
  * @file Compiler.php
  */
 
-namespace clever_systems\mmm-builder;
+namespace clever_systems\mmm_builder;
 
 
 class Compiler {
@@ -19,11 +19,13 @@ class Compiler {
   }
 
   public function compile() {
-    file_put_contents('sites/sites.php', $this->compileSitesPhp());
-    file_put_contents('sites/all/drush/aliases.drushrc.php', $this->compileAliases());
-    file_put_contents('../settings.baseurl.php', $this->compileBaseurls());
-    file_put_contents('../settings.databases.php', $this->compileDbcredentials());
-    file_put_contents('../settings.php', $this->scaffoldSettings());
+    $files = [];
+    $files['sites/sites.php'] = $this->compileSitesPhp();
+    $files['sites/all/drush/aliases.drushrc.php'] = $this->compileAliases();
+    $files['../settings.baseurl.php'] = $this->compileBaseurls();
+    $files['../settings.databases.php'] = $this->compileDbcredentials();
+    $files['../settings.php'] = $this->scaffoldSettings();
+    return $files;
   }
 
   public function compileAliases() {

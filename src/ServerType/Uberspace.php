@@ -3,11 +3,11 @@
  * @file Uberspace.php
  */
 
-namespace clever_systems\mmm-builder\ServerType;
+namespace clever_systems\mmm_builder\ServerType;
 
 
-use clever_systems\mmm-builder\ServerBase;
-use clever_systems\mmm-builder\ServerInterface;
+use clever_systems\mmm_builder\ServerBase;
+use clever_systems\mmm_builder\ServerInterface;
 
 class Uberspace extends ServerBase implements ServerInterface {
   /** @var string */
@@ -21,7 +21,7 @@ class Uberspace extends ServerBase implements ServerInterface {
    * @param string $user
    */
   public function __construct($host, $user) {
-    $this->host = $host;
+    $this->host = $host . '.uberspace.de';
     $this->user = $user;
   }
 

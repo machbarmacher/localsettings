@@ -3,7 +3,7 @@
  * @file GlobalProject.php
  */
 
-namespace clever_systems\mmm-builder;
+namespace clever_systems\mmm_builder;
 
 
 class GlobalProject {
@@ -11,14 +11,14 @@ class GlobalProject {
   protected static $project;
 
   /**
-   * @return \clever_systems\mmm-builder\Project
+   * @return \clever_systems\mmm_builder\Project
    */
   public static function get() {
     return self::$project;
   }
 
   /**
-   * @param \clever_systems\mmm-builder\Project $project
+   * @param \clever_systems\mmm_builder\Project $project
    */
   public static function set($project) {
     self::$project = $project;

@@ -3,13 +3,13 @@
  * @file Installation.php
  */
 
-namespace clever_systems\mmm-builder\InstallationType;
+namespace clever_systems\mmm_builder\InstallationType;
 
 
-use clever_systems\mmm-builder\InstallationBase;
-use clever_systems\mmm-builder\InstallationInterface;
-use clever_systems\mmm-builder\ServerInterface;
-use clever_systems\mmm-builder\Tools\DbCredentialTools;
+use clever_systems\mmm_builder\InstallationBase;
+use clever_systems\mmm_builder\InstallationInterface;
+use clever_systems\mmm_builder\ServerInterface;
+use clever_systems\mmm_builder\Tools\DbCredentialTools;
 
 class Installation extends InstallationBase implements InstallationInterface {
   /** @var string */
@@ -26,7 +26,7 @@ class Installation extends InstallationBase implements InstallationInterface {
   /**
    * Installation constructor.
    * @param string $name
-   * @param \clever_systems\mmm-builder\ServerInterface $server
+   * @param \clever_systems\mmm_builder\ServerInterface $server
    * @param string[string]|string $site_uris
    */
   public function __construct($name, $server, $site_uris) {
@@ -81,12 +81,16 @@ class Installation extends InstallationBase implements InstallationInterface {
     return $this->db_credentials;
   }
 
+  /**
+   * @return \array[]
+   */
   public function getAliases() {
+    $multisite = count($this->site_uris) !== 1;
     $aliases = [];
     $site_list= [];
     // Add single site aliases.
     foreach ($this->site_uris as $site => $site_uri) {
-      $alias_name = $this->name . '.' . $site;
+      $alias_name = $multisite ? $this->name . '.' . $site : $this->name;
       $aliases[$alias_name] = [
         'uri' => $site_uri,
         'root' => $this->docroot,
@@ -96,12 +100,18 @@ class Installation extends InstallationBase implements InstallationInterface {
       $site_list[] = "@$alias_name";
 
     }
-    // Add installation alias.
-    $aliases[$this->name] = [
-      'site-list' => $site_list,
-    ];
+    if ($multisite) {
+      // Add site-list installation alias.
+      $aliases[$this->name] = [
+        'site-list' => $site_list,
+      ];
+    }
+    return $aliases;
   }
 
+  /**
+   * @return \array[]
+   */
   public function getUriToSiteMap() {
     // @todo Care for port when needed.
     $sites_by_uri = [];
@@ -111,18 +121,26 @@ class Installation extends InstallationBase implements InstallationInterface {
     return $sites_by_uri;
   }
 
+  /**
+   * @return \array[]
+   */
   public function getSiteId($site = 'default') {
     $user = $this->server->getUser();
     $host = $this->server->getHost();
     $path = $this->docroot;
-    return "$user@$host/$path#$site";
+    // $path is absolute and already has a leading slash.
+    return "$user@$host$path#$site";
   }
 
+  /**
+   * @return \array[]
+   */
   public function getBaseUrls() {
     $base_urls = [];
     foreach ($this->site_uris as $site => $site_uri) {
       $base_urls[$this->getSiteId($site)] = $site_uri;
     }
+    return $base_urls;
   }
 
 }

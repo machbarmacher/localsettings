@@ -3,15 +3,15 @@
  * @file Freistilbox.php
  */
 
-namespace clever_systems\mmm-builder\ServerType;
+namespace clever_systems\mmm_builder\ServerType;
 
 
-use clever_systems\mmm-builder\ServerBase;
-use clever_systems\mmm-builder\ServerInterface;
+use clever_systems\mmm_builder\ServerBase;
+use clever_systems\mmm_builder\ServerInterface;
 
 /**
  * Class Freistilbox
- * @package clever_systems\mmm-builder\ServerType
+ * @package clever_systems\mmm_builder\ServerType
  *
  * @todo Implement repository branch & url & environment
  * repository url = ssh://{{site-handle}}@repo.freistilbox.net/~/site
@@ -33,7 +33,7 @@ class Freistilbox extends ServerBase implements ServerInterface {
   }
 
   public function getDefaultDocroot() {
-    $this->normalizeDocroot('current/docroot');
+    return $this->normalizeDocroot('current/docroot');
   }
 
   public function getHost() {

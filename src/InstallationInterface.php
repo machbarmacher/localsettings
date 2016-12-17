@@ -3,7 +3,7 @@
  * @file InstallationInterface.php
  */
 
-namespace clever_systems\mmm-builder;
+namespace clever_systems\mmm_builder;
 
 
 interface InstallationInterface {
