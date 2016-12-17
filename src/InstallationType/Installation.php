@@ -110,7 +110,7 @@ class Installation extends InstallationBase implements InstallationInterface {
   }
 
   /**
-   * @return \array[]
+   * @return \string[]
    */
   public function getUriToSiteMap() {
     // @todo Care for port when needed.
@@ -122,11 +122,11 @@ class Installation extends InstallationBase implements InstallationInterface {
   }
 
   /**
-   * @return \array[]
+   * @return string
    */
   public function getSiteId($site = 'default') {
     $user = $this->server->getUser();
-    $host = $this->server->getHost();
+    $host = $this->server->getHostForSiteId();
     $path = $this->docroot;
     // $path is absolute and already has a leading slash.
     return "$user@$host$path#$site";

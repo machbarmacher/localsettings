@@ -48,4 +48,9 @@ class Freistilbox extends ServerBase implements ServerInterface {
     return '/srv/www/freistilbox/home/' . $this->site_handle;
   }
 
+  public function getHostForSiteId() {
+    // User is unique and we can't access host on runtime.
+    return 'freistilbox';
+  }
+
 }
