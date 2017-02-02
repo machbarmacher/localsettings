@@ -3,15 +3,12 @@ mmm-builder Todo
 
 Compiler
 
-* Objectify
-* support dev multisite
 
 Runtime
 
 Tools
 
 * this-alias
-* alter local aliases
 
 Ops
 
