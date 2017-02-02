@@ -26,7 +26,7 @@ class Uberspace extends ServerBase implements ServerInterface {
   }
 
   public function getDefaultDocroot() {
-    return $this->normalizeDocroot('html/docroot');
+    return $this->normalizeDocroot('/var/www/virtual/' . $this->user . '/installation/docroot');
   }
 
   /**
