@@ -1,5 +1,5 @@
 {
-    "name": "clever-systems/mmm_builder",
+    "name": "clever-systems/mmm-builder",
     "description": "MachbarMacher Site Management: Builder",
     "type": "drupal-drush",
     "authors": [
