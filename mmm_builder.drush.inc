@@ -34,7 +34,6 @@ function mmm_builder_drush_command() {
  * Implementation of drush_hook_COMMAND().
  */
 function drush_mmm_builder($include = '../mmm-project.php') {
-  require __DIR__ . '/vendor/autoload.php';
   /** @var Project $project */
   $project = include $include;
   $compiler = new Compiler($project);
@@ -56,13 +55,27 @@ function drush_mmm_builder($include = '../mmm-project.php') {
  * Implementation of drush_hook_COMMAND_validate().
  */
 function drush_mmm_builder_validate($include = '../mmm-project.php') {
+  // Always try to bootstrap to prepare autoloader.
+  $has_drupal_root = drush_bootstrap(DRUSH_BOOTSTRAP_DRUPAL_ROOT);
   if (!drush_get_context('DRUSH_SIMULATE')
-    && !drush_bootstrap(DRUSH_BOOTSTRAP_DRUPAL_ROOT)
+    && !$has_drupal_root
   ) {
     return drush_set_error('DRUSH_mmm_builder_ERROR', dt('MMM builder needs to run in a valid drupal root if not called with --simulate.'));
   }
   if (!is_file($include)) {
     return drush_set_error('DRUSH_mmm_builder_ERROR', dt('File not found: @file', ['@file' => $include]));
   }
+
+  // Hackily guess some autoloader paths.
+  $paths = [
+    __DIR__ . '/vendor/autoload.php',
+    DRUPAL_ROOT . '/../vendor/autoload.php'
+  ];
+  foreach ($paths as $path) {
+    if (is_file($path)) {
+      include $path;
+    }
+  }
+
   return TRUE;
 }
