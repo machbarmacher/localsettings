@@ -5,7 +5,7 @@
 
 namespace clever_systems\mmm_builder;
 
-use clever_systems\mmm_builder\InstallationType\Installation;
+use clever_systems\mmm_builder\Installation;
 
 /**
  * Class Project

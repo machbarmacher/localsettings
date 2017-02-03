@@ -3,12 +3,9 @@
  * @file Installation.php
  */
 
-namespace clever_systems\mmm_builder\InstallationType;
+namespace clever_systems\mmm_builder;
 
 
-use clever_systems\mmm_builder\InstallationBase;
-use clever_systems\mmm_builder\InstallationInterface;
-use clever_systems\mmm_builder\ServerInterface;
 use clever_systems\mmm_builder\Tools\DbCredentialTools;
 
 class Installation extends InstallationBase implements InstallationInterface {
