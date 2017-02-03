@@ -72,7 +72,7 @@ class Installation {
     if (in_array($uri, $this->site_uris[$site])) {
       throw new \UnexpectedValueException(sprintf('Additional uri %s duplicates already defined one in installation %s.', $uri, $this->getName()));
     }
-    $this->sites_by_additional_uri[$uri] = $site;
+    $this->site_uris[$site][] = $uri;
     return $this;
   }
 
