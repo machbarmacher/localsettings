@@ -6,7 +6,7 @@ namespace clever_systems\mmm_builder\RenderPhp;
 
 class PhpComposite implements PhpCodeInterface {
   /** @var PhpCodeInterface[] */
-  var $parts;
+  protected $parts;
 
   /**
    * PhpComposite constructor.
@@ -14,10 +14,18 @@ class PhpComposite implements PhpCodeInterface {
   public function __construct() {
   }
 
+  /**
+   * @param PhpCodeInterface $part
+   * @return $this
+   */
   public function addPart(PhpCodeInterface $part) {
     $this->parts[] = $part;
+    return $this;
   }
 
+  /**
+   * @return string
+   */
   public function __toString() {
     return implode('', $this->parts);
   }

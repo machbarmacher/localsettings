@@ -6,12 +6,13 @@ namespace clever_systems\mmm_builder\RenderPhp;
 
 class PhpKeyValue implements PhpCodeInterface {
   /** @var PhpCodeInterface */
-  var $key;
+  protected $key;
   /** @var PhpCodeInterface */
-  var $value;
+  protected $value;
 
   /**
    * PhpKeyValue constructor.
+   *
    * @param PhpCodeInterface $key
    * @param PhpCodeInterface $value
    */
@@ -20,6 +21,9 @@ class PhpKeyValue implements PhpCodeInterface {
     $this->value = $value;
   }
 
+  /**
+   * @return string
+   */
   public function __toString() {
     // Cast NULL to empty string.
     return "$this->key => $this->value,";

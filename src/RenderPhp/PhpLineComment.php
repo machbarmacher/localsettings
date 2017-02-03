@@ -6,9 +6,9 @@ namespace clever_systems\mmm_builder\RenderPhp;
 
 class PhpLineComment implements PhpCodeInterface {
   /** @var string */
-  var $value;
+  protected $value;
   /** @var int */
-  var $indent;
+  protected $indent;
 
   /**
    * PhpValue constructor.
@@ -21,6 +21,9 @@ class PhpLineComment implements PhpCodeInterface {
     $this->indent = $indent;
   }
 
+  /**
+   * @return string
+   */
   public function __toString() {
     $return = '';
     foreach(preg_split("/((\r?\n)|(\r\n?))/u", $this->value) as $line){

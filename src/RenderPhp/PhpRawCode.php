@@ -6,7 +6,7 @@ namespace clever_systems\mmm_builder\RenderPhp;
 
 class PhpRawCode implements PhpCodeInterface {
   /** @var string */
-  var $value;
+  protected $value;
 
   /**
    * PhpValue constructor.
@@ -17,6 +17,9 @@ class PhpRawCode implements PhpCodeInterface {
     $this->value = $value;
   }
 
+  /**
+   * @return string
+   */
   public function __toString() {
     return $this->value;
   }

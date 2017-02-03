@@ -6,9 +6,9 @@ namespace clever_systems\mmm_builder\RenderPhp;
 
 class PhpArray implements PhpCodeInterface {
   /** @var mixed[] */
-  var $values;
+  protected $values;
   /** @var int */
-  var $indent;
+  protected $indent;
 
   /**
    * PhpArray constructor.
@@ -20,11 +20,16 @@ class PhpArray implements PhpCodeInterface {
 
   /**
    * @param PhpKeyValue|PhpLineComment $line
+   * @return $this
    */
   public function addLine($line) {
     $values[] = $line;
+    return $this;
   }
 
+  /**
+   * @return string
+   */
   public function __toString() {
     $lines = ['['];
     foreach ($this->values as $value) {
