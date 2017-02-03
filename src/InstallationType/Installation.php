@@ -25,6 +25,7 @@ class Installation extends InstallationBase implements InstallationInterface {
 
   /**
    * Installation constructor.
+   *
    * @param string $name
    * @param ServerInterface $server
    */

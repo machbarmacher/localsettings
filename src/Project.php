@@ -18,14 +18,17 @@ class Project {
   protected $installations;
 
   /**
-   * @param \clever_systems\mmm_builder\InstallationInterface $installation
+   * @param string $name
+   * @param ServerInterface $server
+   * @return Installation
    */
-  public function addInstallation(InstallationInterface $installation) {
-    $name = $installation->getName();
+  public function addInstallation($name, ServerInterface $server) {
     if (isset($this->installations[$name])) {
       throw new \UnexpectedValueException(sprintf('Duplicate installation: %s', $name));
     }
+    $installation = new Installation($name, $server);
     $this->installations[$name] = $installation;
+    return $installation;
   }
 
   public function getAliases() {
