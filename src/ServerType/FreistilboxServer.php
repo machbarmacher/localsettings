@@ -16,7 +16,7 @@ use clever_systems\mmm_builder\ServerInterface;
  * @todo Implement repository branch & url & environment
  * repository url = ssh://{{site-handle}}@repo.freistilbox.net/~/site
  */
-class Freistilbox extends ServerBase implements ServerInterface {
+class FreistilboxServer extends ServerBase implements ServerInterface {
   /** @var string */
   protected $cluster;
   /** @var string */

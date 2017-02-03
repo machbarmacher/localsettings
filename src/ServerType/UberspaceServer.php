@@ -9,7 +9,7 @@ namespace clever_systems\mmm_builder\ServerType;
 use clever_systems\mmm_builder\ServerBase;
 use clever_systems\mmm_builder\ServerInterface;
 
-class Uberspace extends ServerBase implements ServerInterface {
+class UberspaceServer extends ServerBase implements ServerInterface {
   /** @var string */
   protected $host;
   /** @var string */

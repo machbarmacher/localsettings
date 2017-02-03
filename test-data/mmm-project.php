@@ -5,12 +5,12 @@
 
 namespace clever_systems\mmm_builder;
 
-use clever_systems\mmm_builder\ServerType\Freistilbox;
-use clever_systems\mmm_builder\ServerType\Uberspace;
+use clever_systems\mmm_builder\ServerType\FreistilboxServer;
+use clever_systems\mmm_builder\ServerType\UberspaceServer;
 
 $project = new Project();
 
-$project->addInstallation('dev', new Uberspace('norma', 'jenn'))
+$project->addInstallation('dev', new UberspaceServer('norma', 'jenn'))
   ->addSite('default', 'http://shop.swinginfreiburg.de')
   ->addSite('live', 'http://www.swinginfreiburg.de')
   ->addSite('dev', 'http://dev.swinginfreiburg.de')
@@ -19,13 +19,13 @@ $project->addInstallation('dev', new Uberspace('norma', 'jenn'))
   ->setDbCredentialPattern('jenn_{{site}}');
 
 // FSB: Default docroot, single database.
-$project->addInstallation('live', new Freistilbox('c145', 's1890'))
+$project->addInstallation('live', new FreistilboxServer('c145', 's1890'))
   ->addSite('live', 'http://live.boost.swinginfreiburg.de');
-$project->addInstallation('live-test', new Freistilbox('c145', 's1891'))
+$project->addInstallation('live-test', new FreistilboxServer('c145', 's1891'))
   ->addSite('live', 'http://live-test.boost.swinginfreiburg.de');
-$project->addInstallation('shop', new Freistilbox('c145', 's1892'))
+$project->addInstallation('shop', new FreistilboxServer('c145', 's1892'))
   ->addSite('default', 'http://shop.boost.swinginfreiburg.de');
-$project->addInstallation('shop-test', new Freistilbox('c145', 's1892'))
+$project->addInstallation('shop-test', new FreistilboxServer('c145', 's1892'))
   ->addSite('default', 'http://shop-test.boost.swinginfreiburg.de');
 
 // Do not forget!
