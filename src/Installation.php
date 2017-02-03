@@ -8,7 +8,7 @@ namespace clever_systems\mmm_builder;
 
 use clever_systems\mmm_builder\Tools\DbCredentialTools;
 
-class Installation extends InstallationBase implements InstallationInterface {
+class Installation {
   /** @var string */
   protected $name;
   /** @var ServerInterface */

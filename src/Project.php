@@ -14,7 +14,7 @@ use clever_systems\mmm_builder\Installation;
  * @todo Add docroot relative to gitroot setting.
  */
 class Project {
-  /** @var InstallationInterface[] */
+  /** @var Installation[] */
   protected $installations;
 
   /**
