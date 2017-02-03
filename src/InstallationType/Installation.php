@@ -18,10 +18,6 @@ class Installation extends InstallationBase implements InstallationInterface {
   protected $server;
   /** @var string[][] */
   protected $site_uris;
-  /** @var string[] */
-  protected $primary_uris_by_site;
-  /** @var string[] */
-  protected $sites_by_additional_uri;
   /** @var string */
   protected $docroot;
   /** @var array[] */
@@ -30,9 +26,9 @@ class Installation extends InstallationBase implements InstallationInterface {
   /**
    * Installation constructor.
    * @param string $name
-   * @param \clever_systems\mmm_builder\ServerInterface $server
+   * @param ServerInterface $server
    */
-  public function __construct($name, $server) {
+  public function __construct($name, ServerInterface $server) {
     $this->name = $name;
     $this->server = $server;
     $this->docroot = $this->server->getDefaultDocroot();
