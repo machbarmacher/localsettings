@@ -11,4 +11,5 @@ interface InstallationInterface {
   public function getUriToSiteMap();
   public function getDbCredentials();
   public function getBaseUrls();
+  public function getName();
 }

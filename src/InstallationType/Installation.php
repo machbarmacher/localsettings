@@ -143,4 +143,11 @@ class Installation extends InstallationBase implements InstallationInterface {
     return $base_urls;
   }
 
+  /**
+   * @return string
+   */
+  public function getName() {
+    return $this->name;
+  }
+
 }
