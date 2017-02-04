@@ -197,7 +197,8 @@ class Installation {
     foreach ($this->db_credentials as $site => $db_credential) {
       $site_id = $this->getSiteId($site);
       $php->addToBody("if (Runtime::getEnvironment()->match('$site_id')) {")
-        ->addToBody("  \$databases['default']['default'] = " 
+        ->addToBody("  \$databases['default']['default'] = "
+          // @todo Replace with better dumper.
           . var_export(array_filter($db_credential), TRUE) . '; return;')
         ->addToBody('}');
     }
