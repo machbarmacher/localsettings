@@ -60,6 +60,8 @@ class Compiler {
     foreach ($this->project->getInstallations() as $installation) {
       $installation->compileBaseUrls($php);
     }
+
+    $php->addToFooter("error_log('MMM Unknown host or site Id: ' . \$host . ' / ' . Runtime::getEnvironment()->getLocalSiteId());");
     return (string)$php;
   }
 
