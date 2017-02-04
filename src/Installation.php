@@ -132,6 +132,7 @@ class Installation {
   }
 
   public function compileAliases(PhpFile $php) {
+    $php->addToBody('');
     $php->addToBody("// Installation: $this->name");
     $multisite = count($this->site_uris) !== 1;
     $site_list= [];
@@ -162,6 +163,7 @@ class Installation {
   }
 
   public function compileSitesPhp(PhpFile $php) {
+    $php->addToBody('');
     $php->addToBody("// Installation: $this->name");
     foreach ($this->site_uris as $site => $uris) {
       foreach ($uris as $uri) {
@@ -174,6 +176,7 @@ class Installation {
 
 
   public function compileBaseUrls(PhpFile $php) {
+    $php->addToBody('');
     $php->addToBody("// Installation: $this->name");
     foreach ($this->site_uris as $site => $uris) {
       $site_id = $this->getSiteId($site);
@@ -189,6 +192,7 @@ class Installation {
   }
 
   public function compileDbCredentials(PhpFile $php) {
+    $php->addToBody('');
     $php->addToBody("// Installation: $this->name");
     foreach ($this->db_credentials as $site => $db_credential) {
       $site_id = $this->getSiteId($site);
