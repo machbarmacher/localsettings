@@ -25,7 +25,7 @@ class Compiler {
     $files = [];
     $files['sites/sites.php'] = $this->compileSitesPhp();
     $files['sites/all/drush/aliases.drushrc.php'] = $this->compileAliases();
-    $files['../settings.baseurl.php'] = $this->compileBaseurls();
+    $files['../settings.baseurl.php'] = $this->compileBaseUrls();
     $files['../settings.databases.php'] = $this->compileDbCredentials();
     $files['../settings.php'] = $this->scaffoldSettings();
     return $files;
