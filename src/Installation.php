@@ -183,7 +183,7 @@ class Installation {
       $php->addToBody("if (Runtime::getEnvironment()->match('$site_id')) {");
       foreach ($uris as $uri) {
         $host = parse_url($uri, PHP_URL_HOST);
-        $php->addToBody("  if (\$host == '$host') {");
+        $php->addToBody("  if (\$host === '$host') {");
         $php->addToBody("    \$base_url = '$uri'; return;");
         $php->addToBody('  }');
       }
