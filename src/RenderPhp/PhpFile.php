@@ -52,7 +52,9 @@ class PhpFile implements PhpCodeInterface {
    * @return string
    */
   public function __toString() {
-    return "<?php\n" . $this->header . $this->body . $this->footer;
+    return "<?php\n" . $this->header
+    . "\n" . $this->body
+    . "\n" . $this->footer;
   }
 
 }
