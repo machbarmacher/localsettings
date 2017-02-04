@@ -181,8 +181,11 @@ class Installation {
     foreach ($this->site_uris as $site => $uris) {
       $site_id = $this->getSiteId($site);
       $php->addToBody("if (Runtime::getEnvironment()->match('$site_id')) {");
-      foreach ($uris as $uri) {
-        $host = parse_url($uri, PHP_URL_HOST);
+      // Add drush "uri".
+      $uri_map = array_combine($uris, $uris);
+      $uri_map["http://$site"] = $uris[0];
+      foreach ($uris as $uri_in => $uri) {
+        $host = parse_url($uri_in, PHP_URL_HOST);
         $php->addToBody("  if (\$host === '$host') {");
         $php->addToBody("    \$base_url = '$uri'; return;");
         $php->addToBody('  }');
