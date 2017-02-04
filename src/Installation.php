@@ -132,6 +132,7 @@ class Installation {
   }
 
   public function compileAliases(PhpFile $php) {
+    $php->addToBody("// Installation: $this->name");
     $multisite = count($this->site_uris) !== 1;
     $site_list= [];
     // Add single site aliases.
@@ -143,22 +144,24 @@ class Installation {
       $host = $this->server->getHost();
       $user = $this->server->getUser();
       $php->addToBody("\$aliases['$alias_name'] = [")
-        ->addToBody("'uri' => $uri,")
-        ->addToBody("'root' => $root,")
-        ->addToBody("'remote-host' => $host,")
-        ->addToBody("'remote-user' => $user,")
+        ->addToBody("  'uri' => $uri,")
+        ->addToBody("  'root' => $root,")
+        ->addToBody("  'remote-host' => $host,")
+        ->addToBody("  'remote-user' => $user,")
         ->addToBody('];');
       $site_list[] = "@$alias_name";
     }
     if ($multisite) {
       // Add site-list installation alias.
+      $site_list_imploded = implode(', ', $site_list);
       $php->addToBody("\$aliases['$this->name'] = [")
-        ->addToBody("'site-list' => $site_list,")
+        ->addToBody("'site-list' => [$site_list_imploded],")
         ->addToBody('];');
     }
   }
 
   public function compileSitesPhp(PhpFile $php) {
+    $php->addToBody("// Installation: $this->name");
     foreach ($this->site_uris as $site => $uris) {
       foreach ($uris as $uri) {
         // @todo Care for port when needed.
@@ -170,6 +173,7 @@ class Installation {
 
 
   public function compileBaseUrls(PhpFile $php) {
+    $php->addToBody("// Installation: $this->name");
     foreach ($this->site_uris as $site => $uris) {
       $site_id = $this->getSiteId($site);
       $php->addToBody("if (Runtime::getEnvironment()->match('$site_id')) {");
@@ -186,11 +190,12 @@ class Installation {
   }
 
   public function compileDbCredentials(PhpFile $php) {
+    $php->addToBody("// Installation: $this->name");
     foreach ($this->db_credentials as $site => $db_credential) {
       $site_id = $this->getSiteId($site);
       $php->addToBody("if (Runtime::getEnvironment()->match('$site_id')) {")
         ->addToBody("  \$databases['default']['default'] = " 
-          . var_export($db_credential) . '; return;')
+          . var_export(array_filter($db_credential), TRUE) . '; return;')
         ->addToBody('}');
     }
   }

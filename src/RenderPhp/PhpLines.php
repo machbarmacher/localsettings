@@ -6,7 +6,7 @@ namespace clever_systems\mmm_builder\RenderPhp;
 
 class PhpLines {
   /** @var PhpCodeInterface[] */
-  protected $lines;
+  protected $lines = [];
 
   /**
    * PhpComposite constructor.
@@ -27,6 +27,6 @@ class PhpLines {
    * @return string
    */
   public function __toString() {
-    return implode('"\n"', $this->lines);
+    return implode("\n", $this->lines);
   }
 }
