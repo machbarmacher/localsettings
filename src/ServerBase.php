@@ -25,7 +25,7 @@ abstract class ServerBase implements ServerInterface {
     return $this->getUserHome();
   }
 
-  public function getHostForSiteId() {
+  public function getShortHostName() {
     return $this->getHost();
   }
 

@@ -45,7 +45,7 @@ class Installation {
    */
   public function getSiteId($site = 'default') {
     $user = $this->server->getUser();
-    $host = $this->server->getHostForSiteId();
+    $host = $this->server->getShortHostName();
     $path = $this->docroot;
     // $path is absolute and already has a leading slash.
     return "$user@$host$path#$site";

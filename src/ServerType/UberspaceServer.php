@@ -47,7 +47,7 @@ class UberspaceServer extends ServerBase implements ServerInterface {
     return $this->user;
   }
 
-  public function getHostForSiteId() {
+  public function getShortHostName() {
     // User is unique.
     return 'uberspace';
   }
