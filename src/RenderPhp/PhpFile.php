@@ -22,28 +22,28 @@ class PhpFile implements PhpCodeInterface {
   }
 
   /**
-   * @param PhpCodeInterface $line
+   * @param string|PhpCodeInterface $line
    * @return $this
    */
-  public function addToHeader(PhpCodeInterface $line) {
+  public function addToHeader($line) {
     $this->header->addLine($line);
     return $this;
   }
 
   /**
-   * @param PhpCodeInterface $line
+   * @param string|PhpCodeInterface $line
    * @return $this
    */
-  public function addToBody(PhpCodeInterface $line) {
+  public function addToBody($line) {
     $this->body->addLine($line);
     return $this;
   }
 
   /**
-   * @param PhpCodeInterface $line
+   * @param string|PhpCodeInterface $line
    * @return $this
    */
-  public function addToFooter(PhpCodeInterface $line) {
+  public function addToFooter($line) {
     $this->footer->addLine($line);
     return $this;
   }

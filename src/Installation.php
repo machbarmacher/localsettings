@@ -6,6 +6,7 @@
 namespace clever_systems\mmm_builder;
 
 
+use clever_systems\mmm_builder\RenderPhp\PhpFile;
 use clever_systems\mmm_builder\Tools\DbCredentialTools;
 
 class Installation {
@@ -30,6 +31,24 @@ class Installation {
     $this->name = $name;
     $this->server = $server;
     $this->docroot = $this->server->getDefaultDocroot();
+  }
+
+  /**
+   * @return string
+   */
+  public function getName() {
+    return $this->name;
+  }
+
+  /**
+   * @return string
+   */
+  public function getSiteId($site = 'default') {
+    $user = $this->server->getUser();
+    $host = $this->server->getHostForSiteId();
+    $path = $this->docroot;
+    // $path is absolute and already has a leading slash.
+    return "$user@$host$path#$site";
   }
 
   /**
@@ -112,86 +131,68 @@ class Installation {
     return $this;
   }
 
-  /**
-   * @return \array[]
-   */
-  public function getDbCredentials() {
-    return $this->db_credentials;
-  }
-
-  /**
-   * @return \array[]
-   */
-  public function getAliases() {
+  public function compileAliases(PhpFile $php) {
     $multisite = count($this->site_uris) !== 1;
-    $aliases = [];
     $site_list= [];
     // Add single site aliases.
     foreach ($this->site_uris as $site => $uris) {
       // Only use primary uri.
       $uri = $uris[0];
       $alias_name = $multisite ? $this->name . '.' . $site : $this->name;
-      $aliases[$alias_name] = [
-        'uri' => $uri,
-        'root' => $this->docroot,
-        'remote-host' => $this->server->getHost(),
-        'remote-user' => $this->server->getUser(),
-      ];
+      $root = $this->docroot;
+      $host = $this->server->getHost();
+      $user = $this->server->getUser();
+      $php->addToBody("\$aliases['$alias_name'] = [")
+        ->addToBody("'uri' => $uri,")
+        ->addToBody("'root' => $root,")
+        ->addToBody("'remote-host' => $host,")
+        ->addToBody("'remote-user' => $user,")
+        ->addToBody('];');
       $site_list[] = "@$alias_name";
-
     }
     if ($multisite) {
       // Add site-list installation alias.
-      $aliases[$this->name] = [
-        'site-list' => $site_list,
-      ];
+      $php->addToBody("\$aliases['$this->name'] = [")
+        ->addToBody("'site-list' => $site_list,")
+        ->addToBody('];');
     }
-    return $aliases;
   }
 
-  /**
-   * @return \string[]
-   */
-  public function getUriToSiteMap() {
-    // @todo Care for port when needed.
-    $sites_by_uri = [];
+  public function compileSitesPhp(PhpFile $php) {
     foreach ($this->site_uris as $site => $uris) {
       foreach ($uris as $uri) {
-        $sites_by_uri[parse_url($uri, PHP_URL_HOST)] = $site;
+        // @todo Care for port when needed.
+        $host = parse_url($uri, PHP_URL_HOST);
+        $php->addToBody("\$sites['$host'] = '$site';");
       }
     }
-    return $sites_by_uri;
   }
 
-  /**
-   * @return string
-   */
-  public function getSiteId($site = 'default') {
-    $user = $this->server->getUser();
-    $host = $this->server->getHostForSiteId();
-    $path = $this->docroot;
-    // $path is absolute and already has a leading slash.
-    return "$user@$host$path#$site";
-  }
 
-  /**
-   * @return \array[]
-   */
-  public function getBaseUrls() {
-    $base_urls = [];
+  public function compileBaseUrls(PhpFile $php) {
     foreach ($this->site_uris as $site => $uris) {
-      // @fixme Allow multiple uris
-      $uri = $uris[0];
-      $base_urls[$this->getSiteId($site)] = $uri;
+      $site_id = $this->getSiteId($site);
+      $php->addToBody("if (Runtime::getEnvironment()->match('$site_id')) {");
+      if (count($uris) > 1) {
+        foreach ($uris as $uri) {
+          $host = parse_url($uri, PHP_URL_HOST);
+          $php->addToBody("  if (\$host == '$host') {");
+          $php->addToBody("    \$base_url = '$uri'; return;");
+          $php->addToBody('  }');
+        }
+      }
+      $php->addToBody('}');
     }
-    return $base_urls;
   }
 
-  /**
-   * @return string
-   */
-  public function getName() {
-    return $this->name;
+  public function compileDbCredentials(PhpFile $php) {
+    foreach ($this->db_credentials as $site => $db_credential) {
+      $site_id = $this->getSiteId($site);
+      $php->addToBody("if (Runtime::getEnvironment()->match('$site_id')) {")
+        ->addToBody("  \$databases['default']['default'] = " 
+          . var_export($db_credential) . '; return;')
+        ->addToBody('}');
+    }
   }
 
 }

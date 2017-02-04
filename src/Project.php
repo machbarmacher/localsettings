@@ -5,8 +5,6 @@
 
 namespace clever_systems\mmm_builder;
 
-use clever_systems\mmm_builder\Installation;
-
 /**
  * Class Project
  * @package clever_systems\mmm_builder
@@ -31,36 +29,11 @@ class Project {
     return $installation;
   }
 
-  public function getAliases() {
-    $result = [];
-    foreach ($this->installations as $installation) {
-      $result += $installation->getAliases();
-    }
-    return $result;
-  }
-
-  public function getUriToSiteMap() {
-    $result = [];
-    foreach ($this->installations as $installation) {
-      $result += $installation->getUriToSiteMap();
-    }
-    return $result;
-  }
-
-  public function getDbCredentials() {
-    $result = [];
-    foreach ($this->installations as $installation) {
-      $result += $installation->getDbCredentials();
-    }
-    return $result;
-  }
-
-  public function getBaseUrls() {
-    $result = [];
-    foreach ($this->installations as $installation) {
-      $result += $installation->getBaseUrls();
-    }
-    return $result;
+  /**
+   * @return Installation[]
+   */
+  public function getInstallations() {
+    return $this->installations;
   }
 
 }

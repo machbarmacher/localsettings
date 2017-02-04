@@ -15,10 +15,10 @@ class PhpLines {
   }
 
   /**
-   * @param PhpCodeInterface $line
+   * @param string|PhpCodeInterface $line
    * @return $this
    */
-  public function addLine(PhpCodeInterface $line) {
+  public function addLine($line) {
     $this->lines[] = $line;
     return $this;
   }
