@@ -144,16 +144,17 @@ class Installation {
       $host = $this->server->getHost();
       $user = $this->server->getUser();
       $php->addToBody("\$aliases['$alias_name'] = [")
-        ->addToBody("  'uri' => $uri,")
-        ->addToBody("  'root' => $root,")
-        ->addToBody("  'remote-host' => $host,")
-        ->addToBody("  'remote-user' => $user,")
+        ->addToBody("  'uri' => '$uri',")
+        ->addToBody("  'root' => '$root',")
+        ->addToBody("  'remote-user' => '$user',")
+        ->addToBody("  'remote-host' => '$host',")
         ->addToBody('];');
       $site_list[] = "@$alias_name";
     }
     if ($multisite) {
       // Add site-list installation alias.
-      $site_list_imploded = implode(', ', $site_list);
+      $site_list_quoted = array_map(function($s) {return "'$s'";}, $site_list);
+      $site_list_imploded = implode(', ', $site_list_quoted);
       $php->addToBody("\$aliases['$this->name'] = [")
         ->addToBody("'site-list' => [$site_list_imploded],")
         ->addToBody('];');
@@ -177,13 +178,11 @@ class Installation {
     foreach ($this->site_uris as $site => $uris) {
       $site_id = $this->getSiteId($site);
       $php->addToBody("if (Runtime::getEnvironment()->match('$site_id')) {");
-      if (count($uris) > 1) {
-        foreach ($uris as $uri) {
-          $host = parse_url($uri, PHP_URL_HOST);
-          $php->addToBody("  if (\$host == '$host') {");
-          $php->addToBody("    \$base_url = '$uri'; return;");
-          $php->addToBody('  }');
-        }
+      foreach ($uris as $uri) {
+        $host = parse_url($uri, PHP_URL_HOST);
+        $php->addToBody("  if (\$host == '$host') {");
+        $php->addToBody("    \$base_url = '$uri'; return;");
+        $php->addToBody('  }');
       }
       $php->addToBody('}');
     }

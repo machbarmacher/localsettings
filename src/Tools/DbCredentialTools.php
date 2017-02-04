@@ -12,7 +12,7 @@ class DbCredentialTools {
    * @return array[array]
    */
   public static function getDbCredentialsFromDbUrl($credentials) {
-    // Taken fromdrush_convert_db_from_db_url()
+    // Taken from drush_convert_db_from_db_url()
     $parts = parse_url($credentials);
     if ($parts) {
       // Fill in defaults to prevent notices.
@@ -33,7 +33,6 @@ class DbCredentialTools {
         'port' => $parts->port,
         'database' => ltrim($parts->path, '/'),
       );
-      $credentials = ['default' => $credentials];
       return $credentials;
     }
     return $credentials;
