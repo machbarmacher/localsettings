@@ -33,11 +33,7 @@ class FreistilboxServer extends ServerBase implements ServerInterface {
   }
 
   public function getDefaultDocroot() {
-    return $this->normalizeDocroot('docroot');
-  }
-
-  public function getWebHome() {
-    return $this->normalizeDocroot('~/current');
+    return 'current/docroot';
   }
 
   public function getHost() {

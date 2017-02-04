@@ -13,5 +13,4 @@ interface ServerInterface {
   public function getDefaultDocroot();
   public function normalizeDocroot($docroot);
   public function getUserHome();
-  public function getWebHome();
 }
