@@ -8,12 +8,12 @@ namespace clever_systems\mmm_builder\Tools;
 class DbCredentialTools {
 
   /**
-   * @param string $credentials
-   * @return array[array]
+   * @param string $db_url
+   * @return array[]
    */
-  public static function getDbCredentialsFromDbUrl($credentials) {
+  public static function getDbCredentialsFromDbUrl($db_url) {
     // Taken from drush_convert_db_from_db_url()
-    $parts = parse_url($credentials);
+    $parts = parse_url($db_url);
     if ($parts) {
       // Fill in defaults to prevent notices.
       $parts += array(
@@ -35,22 +35,20 @@ class DbCredentialTools {
       );
       return $credentials;
     }
-    return $credentials;
+    return [];
   }
 
   /**
-   * @param array[array] $credentials
+   * @param array[] $credential
    * @param string[string] $replacements
-   * @return array[array]
+   * @return array[]
    */
-  public static function substituteInDbCredentials($credentials, $replacements) {
+  public static function substituteInDbCredentials($credential, $replacements) {
     $placeholders = array_keys($replacements);
-    foreach ($credentials as &$server_credential) {
-      foreach ($server_credential as &$value) {
-        $value = str_replace($placeholders, $replacements, $value);
-      }
+    foreach ($credential as &$value) {
+      $value = str_replace($placeholders, $replacements, $value);
     }
-    return $credentials;
+    return $credential;
   }
 
 }
