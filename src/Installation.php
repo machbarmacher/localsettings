@@ -144,11 +144,13 @@ class Installation {
       $root = $this->docroot;
       $host = $this->server->getHost();
       $user = $this->server->getUser();
+      $local_host_id = $this->server->getLocalHostId();
       $php->addToBody("\$aliases['$alias_name'] = [")
         ->addToBody("  'uri' => '$uri',")
         ->addToBody("  'root' => '$root',")
         ->addToBody("  'remote-user' => '$user',")
         ->addToBody("  'remote-host' => '$host',")
+        ->addToBody("  '#mmm-local-host-id' => '$local_host_id',")
         ->addToBody('];');
       $site_list[] = "@$alias_name";
     }
