@@ -13,6 +13,7 @@ $project = new Project();
 $project->addInstallation('dev', new UberspaceServer('norma', 'jenn'))
   ->addSite('default', 'http://shop.swinginfreiburg.de')
   ->addSite('live', 'http://www.swinginfreiburg.de')
+  ->addUri('live', 'http://fsds.dance')
   ->addSite('dev', 'http://dev.swinginfreiburg.de')
   ->addSite('test', 'http://test.swinginfreiburg.de')
   ->setDocroot('/var/www/virtual/jenn/installations/swif-live/docroot')
