@@ -65,11 +65,11 @@ class Installation {
   }
 
   /**
-   * @param string $site
    * @param string $uri
+   * @param string $site
    * @return $this
    */
-  public function addSite($site, $uri) {
+  public function addSite($uri, $site = 'default') {
     // @todo Validate uri.
     if (isset($this->site_uris[$site])) {
       throw new \UnexpectedValueException(sprintf('Site %s double-defined in installation %s.', $site, $this->getName()));
@@ -79,11 +79,11 @@ class Installation {
   }
 
   /**
-   * @param string $site
    * @param string $uri
+   * @param string $site
    * @return $this
    */
-  public function addUri($site, $uri) {
+  public function addUri($uri, $site = 'default') {
     // @todo Validate uri.
     if (empty($this->site_uris[$site])) {
       throw new \UnexpectedValueException(sprintf('Additional uri %s defined for missing site %s in installation %s.', $uri, $site, $this->getName()));

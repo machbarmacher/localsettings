@@ -11,23 +11,23 @@ use clever_systems\mmm_builder\ServerType\UberspaceServer;
 $project = new Project();
 
 $project->addInstallation('dev', new UberspaceServer('norma', 'jenn'))
-  ->addSite('default', 'http://shop.swinginfreiburg.de')
-  ->addSite('live', 'http://www.swinginfreiburg.de')
-  ->addUri('live', 'http://fsds.dance')
-  ->addSite('dev', 'http://dev.swinginfreiburg.de')
-  ->addSite('test', 'http://test.swinginfreiburg.de')
+  ->addSite('http://shop.swinginfreiburg.de', 'default')
+  ->addSite('http://www.swinginfreiburg.de', 'live')
+  ->addUri('http://fsds.dance', 'live')
+  ->addSite('http://dev.swinginfreiburg.de', 'dev')
+  ->addSite('http://test.swinginfreiburg.de', 'test')
   ->setDocroot('/var/www/virtual/jenn/installations/swif-live/docroot')
   ->setDbCredentialPattern('jenn_{{site}}');
 
 // FSB: Default docroot, single database.
 $project->addInstallation('live', new FreistilboxServer('c145', 's1890'))
-  ->addSite('live', 'http://live.boost.swinginfreiburg.de');
+  ->addSite('http://live.boost.swinginfreiburg.de', 'live');
 $project->addInstallation('live-test', new FreistilboxServer('c145', 's1891'))
-  ->addSite('live', 'http://live-test.boost.swinginfreiburg.de');
+  ->addSite('http://live-test.boost.swinginfreiburg.de', 'live');
 $project->addInstallation('shop', new FreistilboxServer('c145', 's1892'))
-  ->addSite('default', 'http://shop.boost.swinginfreiburg.de');
+  ->addSite('http://shop.boost.swinginfreiburg.de', 'default');
 $project->addInstallation('shop-test', new FreistilboxServer('c145', 's1892'))
-  ->addSite('default', 'http://shop-test.boost.swinginfreiburg.de');
+  ->addSite('http://shop-test.boost.swinginfreiburg.de', 'default');
 
 // Do not forget!
 return $project;
