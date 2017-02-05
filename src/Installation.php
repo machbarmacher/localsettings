@@ -30,7 +30,7 @@ class Installation {
   public function __construct($name, ServerInterface $server) {
     $this->name = $name;
     $this->server = $server;
-    $this->docroot = $this->server->getDefaultDocroot();
+    $this->docroot = $this->server->normalizeDocroot($this->server->getDefaultDocroot());
   }
 
   /**
