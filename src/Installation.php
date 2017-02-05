@@ -183,7 +183,7 @@ class Installation {
     foreach ($this->site_uris as $site => $uris) {
       $site_id = $this->getSiteId($site);
       $php->addToBody("if (Runtime::getEnvironment()->match('$site_id')) {");
-      $php->addToBody("  \$settings['mmm_installation_name'] = '$this->name';");
+      $php->addToBody("  \$conf['mmm_installation_name'] = '$this->name';");
       // Add drush "uri".
       $uri_map = array_combine($uris, $uris);
       $uri_map["http://$site"] = $uris[0];
