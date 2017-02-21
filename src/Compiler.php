@@ -22,9 +22,11 @@ class Compiler {
   }
 
   public function compile() {
+    $drush_dir = ($this->project->getDrupalMajorVersion() == 8) ?
+      'drush' : 'sites/all/drush/aliases.drushrc.php';
     $files = [];
     $files['sites/sites.php'] = $this->compileSitesPhp();
-    $files['sites/all/drush/aliases.drushrc.php'] = $this->compileAliases();
+    $files[$drush_dir] = $this->compileAliases();
     $files['../settings.baseurl.php'] = $this->compileBaseUrls();
     $files['../settings.databases.php'] = $this->compileDbCredentials();
     $files['../settings.php'] = $this->scaffoldSettings();
