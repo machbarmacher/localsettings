@@ -8,7 +8,7 @@ namespace clever_systems\mmm_builder;
 use clever_systems\mmm_builder\ServerType\FreistilboxServer;
 use clever_systems\mmm_builder\ServerType\UberspaceServer;
 
-$project = new Project();
+$project = new Project(7);
 
 $project->addInstallation('dev', new UberspaceServer('norma', 'jenn'))
   ->addSite('http://shop.swinginfreiburg.de', 'default')

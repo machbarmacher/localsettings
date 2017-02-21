@@ -14,6 +14,8 @@ class Installation {
   protected $name;
   /** @var ServerInterface */
   protected $server;
+  /** @var Project */
+  protected $project;
   /** @var string[][] */
   protected $site_uris;
   /** @var string */
@@ -26,10 +28,12 @@ class Installation {
    *
    * @param string $name
    * @param ServerInterface $server
+   * @param Project $project
    */
-  public function __construct($name, ServerInterface $server) {
+  public function __construct($name, ServerInterface $server, Project $project) {
     $this->name = $name;
     $this->server = $server;
+    $this->project = $project;
     $this->docroot = $this->server->normalizeDocroot($this->server->getDefaultDocroot());
   }
 
@@ -189,9 +193,15 @@ class Installation {
       $uri_map["http://$site"] = $uris[0];
       foreach ($uri_map as $uri_in => $uri) {
         $host = parse_url($uri_in, PHP_URL_HOST);
-        $php->addToBody("  if (\$host === '$host') {");
-        $php->addToBody("    \$base_url = '$uri'; return;");
-        $php->addToBody('  }');
+        if ($this->project->getDrupalMajorVersion() == 7) {
+          $php->addToBody("  if (\$host === '$host') {");
+          $php->addToBody("    \$base_url = '$uri'; return;");
+          $php->addToBody('  }');
+        }
+        else {
+          // D8 does not need base url anymore.
+          $php->addToBody("\$settings['trusted_host_patterns'][] = '$host';");
+        }
       }
       $php->addToBody('}');
     }
