@@ -40,6 +40,7 @@ function drush_mmm_builder($include = '../mmm-project.php') {
   $files = $compiler->compile();
   if (!drush_get_context('DRUSH_SIMULATE')) {
     foreach ($files as $name => $file) {
+      drush_mkdir(dirname($files));
       $bytes = file_put_contents($name, $file);
       if ($bytes === FALSE) {
         return drush_set_error('DRUSH_mmm_builder_ERROR', dt('MMM builder could not write file: @file', ['@file' => $name]));
