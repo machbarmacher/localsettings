@@ -1,10 +1,9 @@
 mmm-builder Todo
 ================
 
-Compiler
---------
+DynamicInstallations
+--------------------
 
-// Installations:
 // $project->addInstallation(new DynamicInstallations($dev, 'http://{{installation}}.clsysdev.menkar.uberspace.de'));
 // @todo Figure out how to do the dynamic part.
 
@@ -27,24 +26,20 @@ $base_url = Runtime::getEnvironment()->select([
   'uberspace' => "http://$installation.clsys.norma.uberspace.de"
 ]);
 
-TODO: Add value objects that cast to string when compiling.
 
 Runtime
--------
+=======
 
 Tools
------
+=====
 
-* this-alias
+* @sitesorself
 
 Ops
----
+===
 
-* msync
 * scaffold (compiler plugin)
 * create user accounts
-* revert shell-alias/command
-* @site-or-sites
 * policy-restrictions
 * pull-content
 * diagnose & correct
