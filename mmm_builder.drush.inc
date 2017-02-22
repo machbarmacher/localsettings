@@ -9,7 +9,7 @@ use clever_systems\mmm_builder\Project;
 function mmm_builder_drush_command() {
   $items = array();
 
-  $items['mmm-builder'] = array(
+  $items['mmm-builder-compile'] = array(
     'description' => "Drush command mmm-builder.",
     'arguments' => array(
       'include' => 'File to include. See example.mmm-project.php. Defaults to ../mmm-project.php',
@@ -23,7 +23,7 @@ function mmm_builder_drush_command() {
     'outputformat' => array(
       'default' => 'key-value',
     ),
-    'aliases' => array('mmmb'),
+    'aliases' => array('mbc'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
@@ -33,7 +33,7 @@ function mmm_builder_drush_command() {
 /**
  * Implementation of drush_hook_COMMAND().
  */
-function drush_mmm_builder($include = '../mmm-project.php') {
+function drush_mmm_builder_compile($include = '../mmm-project.php') {
   /** @var Project $project */
   $project = include $include;
   $compiler = new Compiler($project);
@@ -55,7 +55,7 @@ function drush_mmm_builder($include = '../mmm-project.php') {
 /**
  * Implementation of drush_hook_COMMAND_validate().
  */
-function drush_mmm_builder_validate($include = '../mmm-project.php') {
+function drush_mmm_builder_compile_validate($include = '../mmm-project.php') {
   // Always try to bootstrap to prepare autoloader.
   $has_drupal_root = drush_bootstrap(DRUSH_BOOTSTRAP_DRUPAL_ROOT);
   if (!drush_get_context('DRUSH_SIMULATE')
