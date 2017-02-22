@@ -34,7 +34,9 @@ function mmm_builder_drush_command() {
  * Implementation of drush_hook_COMMAND_validate().
  */
 function drush_mmm_builder_compile_validate($include = '../mmm-project.php') {
-  return _mmm_builder_validate($include);
+  return _mmm_builder_validate_root_or_simulate()
+    && _mmm_builder_validate_file($include)
+    && _mmm_builder_validate_autoload();
 }
 
 
@@ -50,10 +52,9 @@ function drush_mmm_builder_compile($include = '../mmm-project.php') {
 }
 
 /**
- * @param $include
  * @return bool
  */
-function _mmm_builder_validate($include) {
+function _mmm_builder_validate_root_or_simulate() {
 // Always try to bootstrap to prepare autoloader.
   $has_drupal_root = drush_bootstrap(DRUSH_BOOTSTRAP_DRUPAL_ROOT);
   if (!drush_get_context('DRUSH_SIMULATE')
@@ -61,21 +62,37 @@ function _mmm_builder_validate($include) {
   ) {
     return drush_set_error('DRUSH_mmm_builder_ERROR', dt('MMM builder needs to run in a valid drupal root if not called with --simulate.'));
   }
+  return TRUE;
+}
+
+/**
+ * @param $include
+ * @return bool
+ */
+function _mmm_builder_validate_file($include) {
   if (!is_file($include)) {
     return drush_set_error('DRUSH_mmm_builder_ERROR', dt('File not found: @file', ['@file' => $include]));
   }
+  return TRUE;
+}
 
+/**
+ * @return bool
+ */
+function _mmm_builder_validate_autoload() {
   // Hackily guess some autoloader paths.
   $paths = [
+    DRUPAL_ROOT . '/../vendor/autoload.php',
     __DIR__ . '/vendor/autoload.php',
-    DRUPAL_ROOT . '/../vendor/autoload.php'
   ];
   foreach ($paths as $path) {
     if (is_file($path)) {
       include $path;
     }
   }
-
+  if (!class_exists(Compiler::class)) {
+    return drush_set_error('DRUSH_mmm_builder_ERROR', dt('Autoloader not found.'));
+  }
   return TRUE;
 }
 
