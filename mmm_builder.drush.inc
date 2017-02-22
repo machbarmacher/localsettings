@@ -31,6 +31,14 @@ function mmm_builder_drush_command() {
 }
 
 /**
+ * Implementation of drush_hook_COMMAND_validate().
+ */
+function drush_mmm_builder_compile_validate($include = '../mmm-project.php') {
+  return _mmm_builder_validate($include);
+}
+
+
+/**
  * Implementation of drush_hook_COMMAND().
  */
 function drush_mmm_builder_compile($include = '../mmm-project.php') {
@@ -38,25 +46,15 @@ function drush_mmm_builder_compile($include = '../mmm-project.php') {
   $project = include $include;
   $compiler = new Compiler($project);
   $files = $compiler->compile();
-  if (!drush_get_context('DRUSH_SIMULATE')) {
-    foreach ($files as $name => $content) {
-      drush_mkdir(dirname($name));
-      $bytes = file_put_contents($name, $content);
-      if ($bytes === FALSE) {
-        return drush_set_error('DRUSH_mmm_builder_ERROR', dt('MMM builder could not write file: @file', ['@file' => $name]));
-      }
-    }
-  }
-  if (drush_get_context('DRUSH_SIMULATE') || drush_get_context('DRUSH_VERBOSE')) {
-    return $files;
-  }
+  return _mmm_builder_process($files);
 }
 
 /**
- * Implementation of drush_hook_COMMAND_validate().
+ * @param $include
+ * @return bool
  */
-function drush_mmm_builder_compile_validate($include = '../mmm-project.php') {
-  // Always try to bootstrap to prepare autoloader.
+function _mmm_builder_validate($include) {
+// Always try to bootstrap to prepare autoloader.
   $has_drupal_root = drush_bootstrap(DRUSH_BOOTSTRAP_DRUPAL_ROOT);
   if (!drush_get_context('DRUSH_SIMULATE')
     && !$has_drupal_root
@@ -80,3 +78,23 @@ function drush_mmm_builder_compile_validate($include = '../mmm-project.php') {
 
   return TRUE;
 }
+
+/**
+ * @param $files
+ * @return bool
+ */
+function _mmm_builder_process($files) {
+  if (!drush_get_context('DRUSH_SIMULATE')) {
+    foreach ($files as $name => $content) {
+      drush_mkdir(dirname($name));
+      $bytes = file_put_contents($name, $content);
+      if ($bytes === FALSE) {
+        return drush_set_error('DRUSH_mmm_builder_ERROR', dt('MMM builder could not write file: @file', ['@file' => $name]));
+      }
+    }
+  }
+  if (drush_get_context('DRUSH_SIMULATE') || drush_get_context('DRUSH_VERBOSE')) {
+    return $files;
+  }
+}
+
