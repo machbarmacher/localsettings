@@ -48,7 +48,7 @@ function drush_mmm_builder_compile($include = '../mmm-project.php') {
   $project = include $include;
   $compiler = new Compiler($project);
   $files = $compiler->compile();
-  return _mmm_builder_process($files);
+  return _mmm_builder_write_or_dump_files($files);
 }
 
 /**
@@ -100,7 +100,7 @@ function _mmm_builder_validate_autoload() {
  * @param $files
  * @return bool
  */
-function _mmm_builder_process($files) {
+function _mmm_builder_write_or_dump_files($files) {
   if (!drush_get_context('DRUSH_SIMULATE')) {
     foreach ($files as $name => $content) {
       drush_mkdir(dirname($name));
