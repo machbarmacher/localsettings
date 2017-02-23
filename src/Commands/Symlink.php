@@ -4,13 +4,17 @@
 namespace clever_systems\mmm_builder\Commands;
 
 
-use Drush\Log\LogLevel;
+class Symlink extends AbstractSymlink implements CommandInterface {
+  /** @var string */
+  protected $string;
 
-abstract class Symlink extends FileOp implements CommandInterface {
-  use FileExistsTrait;
-  protected function doExecute() {
-    if ($this->checkTargetDoesNotExist($this->filename)) {
-      symlink($this->getContent(), $this->filename);
-    }
+  public function __construct($filename, $string) {
+    parent::__construct($filename);
+    $this->string = $string;
   }
+
+  protected function getContent() {
+    return $this->string;
+  }
+
 }

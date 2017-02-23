@@ -7,7 +7,7 @@ namespace clever_systems\mmm_builder;
 
 
 use clever_systems\mmm_builder\Commands\Commands;
-use clever_systems\mmm_builder\Commands\WriteString;
+use clever_systems\mmm_builder\Commands\WriteFile;
 use clever_systems\mmm_builder\RenderPhp\PhpFile;
 
 class Compiler {
@@ -30,11 +30,11 @@ class Compiler {
       'drush' : 'sites/all/drush';
 
     $commands = new Commands();
-    $commands->add(new WriteString('sites/sites.php', $this->compileSitesPhp()));
-    $commands->add(new WriteString("$drush_dir/aliases.drushrc.php", $this->compileAliases()));
-    $commands->add(new WriteString('../settings.baseurl.php', $this->compileBaseUrls()));
-    $commands->add(new WriteString('../settings.databases.php', $this->compileDbCredentials()));
-    $commands->add(new WriteString('../settings.php', $this->scaffoldSettings()));
+    $commands->add(new WriteFile('sites/sites.php', $this->compileSitesPhp()));
+    $commands->add(new WriteFile("$drush_dir/aliases.drushrc.php", $this->compileAliases()));
+    $commands->add(new WriteFile('../settings.baseurl.php', $this->compileBaseUrls()));
+    $commands->add(new WriteFile('../settings.databases.php', $this->compileDbCredentials()));
+    $commands->add(new WriteFile('../settings.php', $this->scaffoldSettings()));
 
     // @fixme assemble docroot/.htaccess and settings.foo.php
     return $commands;

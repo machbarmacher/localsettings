@@ -4,11 +4,13 @@
 namespace clever_systems\mmm_builder\Commands;
 
 
-abstract class Write extends FileOp implements CommandInterface {
+use Drush\Log\LogLevel;
+
+abstract class AbstractSymlink extends AbstractFileOp implements CommandInterface {
   use FileExistsTrait;
   protected function doExecute() {
     if ($this->checkTargetDoesNotExist($this->filename)) {
-      file_put_contents($this->filename, $this->getContent());
+      symlink($this->getContent(), $this->filename);
     }
   }
 }

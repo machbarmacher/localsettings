@@ -4,7 +4,7 @@
 namespace clever_systems\mmm_builder\Commands;
 
 
-class Delete implements CommandInterface {
+class DeleteFile implements CommandInterface {
   /** @var string */
   protected $filename;
 

@@ -4,7 +4,7 @@
 namespace clever_systems\mmm_builder\Commands;
 
 
-class SymlinkString extends Symlink implements CommandInterface {
+class WriteFile extends AbstractWriteFile implements CommandInterface {
   /** @var string */
   protected $string;
 

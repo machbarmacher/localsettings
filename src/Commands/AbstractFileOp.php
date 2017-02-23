@@ -4,7 +4,7 @@
 namespace clever_systems\mmm_builder\Commands;
 
 
-abstract class FileOp implements CommandInterface {
+abstract class AbstractFileOp implements CommandInterface {
   /** @var string */
   protected $filename;
 

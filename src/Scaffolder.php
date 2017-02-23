@@ -5,8 +5,8 @@ namespace clever_systems\mmm_builder;
 
 
 use clever_systems\mmm_builder\Commands\Commands;
-use clever_systems\mmm_builder\Commands\SymlinkString;
-use clever_systems\mmm_builder\Commands\WriteString;
+use clever_systems\mmm_builder\Commands\Symlink;
+use clever_systems\mmm_builder\Commands\WriteFile;
 
 class Scaffolder {
   /**
@@ -22,13 +22,13 @@ class Scaffolder {
     $commands = new Commands();
 
     if (!file_exists('docroot') && is_dir('web')) {
-      $commands->add(new SymlinkString('docroot', 'web'));
+      $commands->add(new Symlink('docroot', 'web'));
     }
 
-    $commands->add(new WriteString("../settings.local.$installation_name.php",
+    $commands->add(new WriteFile("../settings.local.$installation_name.php",
       file_get_contents('docroot/sites/default/settings.php')));
 
-    $commands->add(new WriteString('../settings.php', <<<EOD
+    $commands->add(new WriteFile('../settings.php', <<<EOD
 <?php
 // MMM settings file.
 require '../vendor/autoload.php';
@@ -43,7 +43,7 @@ include '../settings.local.php';
 EOD
       ));
 
-    $commands->add(new WriteString('Boxfile', <<<EOD
+    $commands->add(new WriteFile('Boxfile', <<<EOD
 version: 2.0
 shared_folders:
   - docroot/sites/default/files
@@ -57,7 +57,7 @@ env_specific_files:
 EOD
       ));
 
-    $commands->add(new WriteString('.gitignore', <<<EOD
+    $commands->add(new WriteFile('.gitignore', <<<EOD
 # Ignore paths that are symlinked per environment.
 /settings.local.php
 /docroot/.htaccess
@@ -65,7 +65,7 @@ EOD
 EOD
     ));
 
-    $commands->add(new WriteString('docroot/.gitignore', <<<EOD
+    $commands->add(new WriteFile('docroot/.gitignore', <<<EOD
 # Ignore paths that contain user-generated content.
 /sites/*/files
 /sites/*/private
@@ -78,12 +78,25 @@ EOD
 
   function postClone() {
     $installation_name = $this->getInstallationName();
-    // @fixme Symlink settings.local.php & docroot/.htaccess
+    $commands = new Commands();
+    $link_targets = [
+      ['settings.local.php', $target = "settings.local.$installation_name.php"],
+      ['docroot/.htaccess', $target = "docroot/.htaccess.$installation_name"],
+    ];
+    foreach ($link_targets as list($link, $target)) {
+      if (!file_exists($link) && file_exists($target)) {
+        $commands->add(new Symlink($link, $target));
+      }
+    }
+    return $commands;
   }
 
   function postUpdate() {
     $installation_name = $this->getInstallationName();
+    $commands = new Commands();
+    
     // @fixme move docroot/.htaccess to docroot/.htaccess.all.d/50-core
-    $this->postClone();
+    
+    return $commands;
   }
 }

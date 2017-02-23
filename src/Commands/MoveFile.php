@@ -4,7 +4,7 @@
 namespace clever_systems\mmm_builder\Commands;
 
 
-class CopyFile implements CommandInterface {
+class MoveFile implements CommandInterface {
   /** @var string */
   protected $source;
   /** @var string */
@@ -24,7 +24,7 @@ class CopyFile implements CommandInterface {
 
   public function execute(array &$results, $simulate = FALSE) {
     (new CopyFile($this->source, $this->target))->execute($results, $simulate);
-    (new Delete($this->source))->execute($results, $simulate);
+    (new DeleteFile($this->source))->execute($results, $simulate);
   }
   
 }

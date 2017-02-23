@@ -4,7 +4,7 @@
 namespace clever_systems\mmm_builder\Commands;
 
 
-class WriteCallback extends Write implements CommandInterface {
+class WriteFileFromCallback extends AbstractWriteFile implements CommandInterface {
   /** @var callable */
   protected $callback;
 
