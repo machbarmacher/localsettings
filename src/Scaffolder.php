@@ -108,6 +108,7 @@ EOD
     $compiler = (new CompilerFactory())->get();
     $compiler->alterHtaccess($commands);
 
+    // Symlink installation-specific htaccess and settings.local
     $this->postClone($commands);
 
     return $commands;
@@ -126,9 +127,7 @@ EOD
       ['docroot/.htaccess', $target = ".htaccess.$installation_name"],
     ];
     foreach ($link_targets as list($link, $target)) {
-      if (!file_exists($link) && file_exists($target)) {
-        $commands->add(new Symlink($link, $target));
-      }
+      $commands->add(new Symlink($link, $target));
     }
     return $commands;
   }
