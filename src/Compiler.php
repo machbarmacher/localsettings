@@ -6,6 +6,7 @@
 namespace clever_systems\mmm_builder;
 
 
+use clever_systems\mmm_builder\Commands\AlterFile;
 use clever_systems\mmm_builder\Commands\Commands;
 use clever_systems\mmm_builder\Commands\WriteFile;
 use clever_systems\mmm_builder\RenderPhp\PhpFile;
@@ -79,6 +80,21 @@ class Compiler {
       $installation->compileDbCredentials($php);
     }
     return (string)$php;
+  }
+
+  public function alterHtaccess(Commands $commands) {
+    $original_file = !drush_get_option('simulate')
+      // Not simulated? Look at the correct location.
+      ? 'docroot/.htaccess.original'
+      // Simulated ? Look at the previous location.
+      : 'docroot/.htaccess';
+    foreach ($this->project->getInstallations() as $installation) {
+      $name = $installation->getName();
+      $commands->add(new AlterFile($original_file, "docroot/.htaccess.$name",
+        function ($content) use ($installation) {
+          return $installation->alterHtaccess($content);
+        }));
+    }
   }
 
 }

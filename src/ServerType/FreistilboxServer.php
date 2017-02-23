@@ -53,4 +53,15 @@ class FreistilboxServer extends ServerBase implements ServerInterface {
     return 'freistilbox';
   }
 
+  public function alterHtaccess($content) {
+    return <<<EOD
+# START Freistilbox
+RewriteBase /
+Options +FollowSymLinks
+# END Freistilbox
+
+EOD
+      . $content;
+  }
+
 }

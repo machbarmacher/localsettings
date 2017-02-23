@@ -220,4 +220,8 @@ class Installation {
     }
   }
 
+  public function alterHtaccess($content) {
+    return $this->server->alterHtaccess($content);
+  }
+
 }

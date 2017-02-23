@@ -105,6 +105,8 @@ EOD
     $this->postUpdate($commands);
 
     // @fixme Let installations alter their .htaccess.
+    $compiler = (new CompilerFactory())->get();
+    $compiler->alterHtaccess($commands);
 
     $this->postClone($commands);
 

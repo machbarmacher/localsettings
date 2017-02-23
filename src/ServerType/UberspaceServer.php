@@ -48,4 +48,16 @@ class UberspaceServer extends ServerBase implements ServerInterface {
     return 'uberspace';
   }
 
+  public function alterHtaccess($content) {
+    $content = preg_replace('#Options +FollowSymLinks\n#u', 'Options +SymLinksIfOwnerMatch\n', $content);
+    return <<<EOD
+# START Uberspace
+RewriteBase /
+Options +SymLinksIfOwnerMatch
+# END Uberspace
+
+EOD
+    . $content;
+  }
+
 }

@@ -14,8 +14,8 @@ class WriteFileFromCallback extends AbstractWriteFile implements CommandInterfac
   }
 
   protected function getContent() {
-    $callback = $this->callback;
-    return $callback();
+    $result = call_user_func($this->callback);
+    return $result;
   }
 
 }
