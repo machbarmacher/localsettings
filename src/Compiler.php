@@ -36,7 +36,10 @@ class Compiler {
     $commands->add(new WriteFile('../settings.databases.php', $this->compileDbCredentials()));
     $commands->add(new WriteFile('../settings.php', $this->scaffoldSettings()));
 
-    // @fixme assemble docroot/.htaccess and settings.foo.php
+    $patterns = ['docroot/.htaccess.*', 'settings.*.php'];
+    foreach ($patterns as $pattern) {
+      (new FileAssembler($pattern))->execute($commands);
+    }
     return $commands;
   }
 
