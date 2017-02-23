@@ -18,13 +18,12 @@ abstract class FileOp implements CommandInterface {
   }
 
 
-  public function execute(array &$results) {
-    drush_mkdir(dirname($this->filename));
-    $this->doExecute();
-  }
-
-  public function simulate(array &$results) {
+  public function execute(array &$results, $simulate = FALSE) {
     $results[$this->filename] = $this->getContent();
+    if (!$simulate) {
+      drush_mkdir(dirname($this->filename));
+      $this->doExecute();
+    }
   }
 
   abstract protected function getContent();

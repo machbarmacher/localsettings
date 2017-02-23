@@ -12,15 +12,9 @@ class Commands implements CommandInterface {
     $this->commands[] = $command;
   }
 
-  public function execute(array &$results) {
+  public function execute(array &$results, $simulate = FALSE) {
     foreach ($this->commands as $command) {
-      $command->execute($results);
-    }
-  }
-
-  public function simulate(array &$results) {
-    foreach ($this->commands as $command) {
-      $command->simulate($results);
+      $command->execute($results, $simulate);
     }
   }
 }
