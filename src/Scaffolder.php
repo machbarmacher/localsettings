@@ -19,15 +19,14 @@ class Scaffolder {
 
   function doPrepare() {
     $installation_name = $this->getInstallationName();
-
     $commands = new Commands();
+    $compiler = (new CompilerFactory())->get();
 
     if (!file_exists('../docroot') && is_dir('../web')) {
       $commands->add(new Symlink('docroot', 'web'));
     }
 
-    $commands->add(new WriteFile("../settings.local.$installation_name.php",
-      file_get_contents('sites/default/settings.php')));
+    $compiler->writeSettingsLocal($commands, $installation_name);
 
     $commands->add(new WriteFile('../settings.php', <<<EOD
 <?php
@@ -88,12 +87,16 @@ use clever_systems\mmm_builder\ServerType\UberspaceServer;
 $project = new Project(8);
 
 $project->addInstallation('dev', new UberspaceServer('HOST', 'USER'))
-  ->addSite('http://dev.USER.HOST.uberspace.de', 'default')
+  ->addSite('http://dev.USER.HOST.uberspace.de')
   ->setDocroot('/var/www/virtual/USER/installations/dev/docroot')
-  ->setDbCredentialPattern('USER_{{site}}');
+  ->setDbCredentialPattern('USER_{{installation}}_{{site}}');
 
 $project->addInstallation('live', new FreistilboxServer('c145', 's2222'))
-  ->addSite('http://example.com', 'default');
+  ->addSite('http://example.com');
+
+$project->addInstallation('test', new FreistilboxServer('c145', 's2323'))
+  ->addSite('http://test.example.com')
+  ->useEnvironment('live');
 
 // Do not forget!
 return $project;
@@ -104,8 +107,7 @@ EOD
     // Save htaccess to .original.
     $this->postUpdate($commands);
 
-    // @fixme Let installations alter their .htaccess.
-    $compiler = (new CompilerFactory())->get();
+    // Let installations alter their .htaccess.
     $compiler->alterHtaccess($commands);
 
     // Symlink installation-specific htaccess and settings.local

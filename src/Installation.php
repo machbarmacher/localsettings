@@ -22,6 +22,8 @@ class Installation {
   protected $docroot;
   /** @var array[] */
   protected $db_credentials = [];
+  /** @var string */
+  protected $use_environment_name;
 
   /**
    * Installation constructor.
@@ -34,7 +36,9 @@ class Installation {
     $this->name = $name;
     $this->server = $server;
     $this->project = $project;
+
     $this->docroot = $this->server->normalizeDocroot($this->server->getDefaultDocroot());
+    $this->use_environment_name = $name;
   }
 
   /**
@@ -223,6 +227,19 @@ class Installation {
 
   public function alterHtaccess($content) {
     return $this->server->alterHtaccess($content);
+  }
+
+  public function useEnvironment($name) {
+    $this->use_environment_name = $name;
+    return $this;
+  }
+
+  public function usesEnvironment() {
+    return $this->use_environment_name;
+  }
+
+  public function usesOtherEnvironment() {
+    return $this->use_environment_name !== $this->name;
   }
 
 }
