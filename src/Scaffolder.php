@@ -5,6 +5,7 @@ namespace clever_systems\mmm_builder;
 
 
 use clever_systems\mmm_builder\Commands\Commands;
+use clever_systems\mmm_builder\Commands\MoveFile;
 use clever_systems\mmm_builder\Commands\Symlink;
 use clever_systems\mmm_builder\Commands\WriteFile;
 
@@ -94,9 +95,9 @@ EOD
   function postUpdate() {
     $installation_name = $this->getInstallationName();
     $commands = new Commands();
-    
-    // @fixme move docroot/.htaccess to docroot/.htaccess.all.d/50-core
-    
+
+    $commands->add(new MoveFile('docroot/.htaccess', 'docroot/.htaccess.all.d/50-core'));
+
     return $commands;
   }
 }
