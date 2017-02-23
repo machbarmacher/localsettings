@@ -6,8 +6,8 @@
 namespace clever_systems\mmm_builder;
 
 
+use clever_systems\mmm_builder\Commands\Commands;
 use clever_systems\mmm_builder\RenderPhp\PhpFile;
-use clever_systems\mmm_builder\RenderPhp\PhpLineComment;
 
 class Compiler {
   /** @var Project */
