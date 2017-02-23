@@ -89,12 +89,26 @@ class Compiler {
       // Simulated ? Look at the previous location.
       : '.htaccess';
     foreach ($this->project->getInstallations() as $installation) {
-      $name = $installation->getName();
-      $commands->add(new AlterFile($original_file, ".htaccess.$name",
+      if ($installation->usesOtherEnvironment()) {
+        continue;
+      }
+      $installation_name = $installation->getName();
+      $commands->add(new AlterFile($original_file, ".htaccess.$installation_name",
         function ($content) use ($installation) {
           return $installation->alterHtaccess($content);
         }));
     }
   }
 
+  public function writeSettingsLocal(Commands $commands, $current_installation_name) {
+    foreach ($this->project->getInstallations() as $installation) {
+      if ($installation->usesOtherEnvironment()) {
+        continue;
+      }
+      $installation_name = $installation->getName();
+      $content = ($installation_name === $current_installation_name)
+        ? file_get_contents('sites/default/settings.php') : '';
+      $commands->add(new  WriteFile("../settings.local.$installation_name.php", $content));
+    }
+  }
 }
