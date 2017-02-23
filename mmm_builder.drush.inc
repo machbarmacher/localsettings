@@ -121,7 +121,7 @@ function drush_mmm_builder_post_clone($commands = NULL) {
 }
 
 function drush_mmm_builder_activate_validate($site = 'default') {
-  return is_file("docroot/sites/$site/settings.php")
+  return is_file("sites/$site/settings.php")
     && _mmm_builder_autoload();
 }
 

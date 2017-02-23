@@ -85,12 +85,12 @@ class Compiler {
   public function alterHtaccess(Commands $commands) {
     $original_file = !drush_get_option('simulate')
       // Not simulated? Look at the correct location.
-      ? 'docroot/.htaccess.original'
+      ? '.htaccess.original'
       // Simulated ? Look at the previous location.
-      : 'docroot/.htaccess';
+      : '.htaccess';
     foreach ($this->project->getInstallations() as $installation) {
       $name = $installation->getName();
-      $commands->add(new AlterFile($original_file, "docroot/.htaccess.$name",
+      $commands->add(new AlterFile($original_file, ".htaccess.$name",
         function ($content) use ($installation) {
           return $installation->alterHtaccess($content);
         }));

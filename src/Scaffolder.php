@@ -22,12 +22,12 @@ class Scaffolder {
 
     $commands = new Commands();
 
-    if (!file_exists('docroot') && is_dir('web')) {
+    if (!file_exists('../docroot') && is_dir('../web')) {
       $commands->add(new Symlink('docroot', 'web'));
     }
 
     $commands->add(new WriteFile("../settings.local.$installation_name.php",
-      file_get_contents('docroot/sites/default/settings.php')));
+      file_get_contents('sites/default/settings.php')));
 
     $commands->add(new WriteFile('../settings.php', <<<EOD
 <?php
@@ -44,7 +44,7 @@ include '../settings.local.php';
 EOD
       ));
 
-    $commands->add(new WriteFile('Boxfile', <<<EOD
+    $commands->add(new WriteFile('../Boxfile', <<<EOD
 version: 2.0
 shared_folders:
   - docroot/sites/default/files
@@ -58,7 +58,7 @@ env_specific_files:
 EOD
       ));
 
-    $commands->add(new WriteFile('.gitignore', <<<EOD
+    $commands->add(new WriteFile('../.gitignore', <<<EOD
 # Ignore paths that are symlinked per environment.
 /settings.local.php
 /docroot/.htaccess
@@ -66,7 +66,7 @@ EOD
 EOD
     ));
 
-    $commands->add(new WriteFile('docroot/.gitignore', <<<EOD
+    $commands->add(new WriteFile('.gitignore', <<<EOD
 # Ignore paths that contain user-generated content.
 /sites/*/files
 /sites/*/private
@@ -74,7 +74,7 @@ EOD
 EOD
     ));
 
-    $commands->add(new WriteFile('mmm-project.php', <<<'EOD'
+    $commands->add(new WriteFile('../mmm-project.php', <<<'EOD'
 <?php
 /**
  * @file mmm-project.php
@@ -123,8 +123,8 @@ EOD
     // Symlink environment specific files.
     // Note that target is relative to source directory.
     $link_targets = [
-      ['settings.local.php', $target = "settings.local.$installation_name.php"],
-      ['docroot/.htaccess', $target = ".htaccess.$installation_name"],
+      ['../settings.local.php', $target = "../settings.local.$installation_name.php"],
+      ['.htaccess', $target = ".htaccess.$installation_name"],
     ];
     foreach ($link_targets as list($link, $target)) {
       $commands->add(new Symlink($link, $target));
@@ -137,7 +137,7 @@ EOD
       $commands = new Commands();
     }
 
-    $commands->add(new MoveFile('docroot/.htaccess.original', 'docroot/.htaccess'));
+    $commands->add(new MoveFile('.htaccess.original', '.htaccess'));
 
     return $commands;
   }
@@ -147,7 +147,7 @@ EOD
       $commands = new Commands();
     }
 
-    $commands->add(new MoveFile('docroot/.htaccess', 'docroot/.htaccess.original'));
+    $commands->add(new MoveFile('.htaccess', '.htaccess.original'));
 
     return $commands;
   }
@@ -155,7 +155,7 @@ EOD
   function activateSite($site) {
     $commands = new Commands();
 
-    $commands->add(new WriteFile("docroot/sites/$site/", <<<EOD
+    $commands->add(new WriteFile("sites/$site/settings.php", <<<EOD
 <?php
 require DRUPAL_ROOT . '../settings.php';
 
