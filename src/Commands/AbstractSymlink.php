@@ -13,4 +13,11 @@ abstract class AbstractSymlink extends AbstractFileOp implements CommandInterfac
       symlink($this->getContent(), $this->filename);
     }
   }
+  protected function getContent() {
+    $target = $this->getLinkTarget();
+    return "SYMLINK<$target>";
+  }
+
+  abstract protected function getLinkTarget();
+
 }

@@ -13,7 +13,7 @@ class Symlink extends AbstractSymlink implements CommandInterface {
     $this->string = $string;
   }
 
-  protected function getContent() {
+  protected function getLinkTarget() {
     return $this->string;
   }
 
