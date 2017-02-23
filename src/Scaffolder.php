@@ -93,10 +93,22 @@ EOD
   }
 
   function postUpdate() {
-    $installation_name = $this->getInstallationName();
     $commands = new Commands();
 
     $commands->add(new MoveFile('docroot/.htaccess', 'docroot/.htaccess.all.d/50-core'));
+
+    return $commands;
+  }
+
+  function activateSite($site) {
+    $commands = new Commands();
+
+    $commands->add(new WriteFile("docroot/sites/$site/", <<<EOD
+<?php
+require DRUPAL_ROOT . '../settings.php';
+
+EOD
+      ));
 
     return $commands;
   }
