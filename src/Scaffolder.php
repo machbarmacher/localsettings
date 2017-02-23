@@ -105,16 +105,19 @@ EOD
   }
 
   function postClone($commands = NULL) {
+    $installation_name = $this->getInstallationName();
     if (!$commands) {
       $commands = new Commands();
     }
 
-    $installation_name = $this->getInstallationName();
+
+
+    // Symlink environment specific files.
+    // Note that target is relative to source directory.
     $link_targets = [
       ['settings.local.php', $target = "settings.local.$installation_name.php"],
-      ['docroot/.htaccess', $target = "docroot/.htaccess.$installation_name"],
+      ['docroot/.htaccess', $target = ".htaccess.$installation_name"],
     ];
-
     foreach ($link_targets as list($link, $target)) {
       if (!file_exists($link) && file_exists($target)) {
         $commands->add(new Symlink($link, $target));
