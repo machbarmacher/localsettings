@@ -130,7 +130,8 @@ class Installation {
       $credential_pattern = DbCredentialTools::getDbCredentialsFromDbUrl($credential_pattern);
     }
     foreach ($this->site_uris as $site => $_) {
-      $this->db_credentials[$site] = DbCredentialTools::substituteInDbCredentials($credential_pattern, ['{{site}}' => $site]);
+      $replacements = ['{{installation}}' => $this->name, '{{site}}' => $site];
+      $this->db_credentials[$site] = DbCredentialTools::substituteInDbCredentials($credential_pattern, $replacements);
     }
     return $this;
   }
