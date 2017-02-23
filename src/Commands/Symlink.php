@@ -9,7 +9,7 @@ use Drush\Log\LogLevel;
 abstract class Symlink extends FileOp implements CommandInterface {
   use FileExistsTrait;
   protected function doExecute() {
-    if ($this->checkFile($this->filename)) {
+    if ($this->checkTargetDoesNotExist($this->filename)) {
       symlink($this->getContent(), $this->filename);
     }
   }
