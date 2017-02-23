@@ -2,6 +2,7 @@
 
 use clever_systems\mmm_builder\Commands\CommandInterface;
 use clever_systems\mmm_builder\Compiler;
+use clever_systems\mmm_builder\CompilerFactory;
 use clever_systems\mmm_builder\Project;
 use clever_systems\mmm_builder\Scaffolder;
 
@@ -60,17 +61,20 @@ function mmm_builder_drush_command() {
   return $items;
 }
 
-function drush_mmm_builder_compile_validate($include = '../mmm-project.php') {
+function drush_mmm_builder_compile_validate($include = NULL) {
+  global $mmm_builder_compiler_factory;
+  /** @var CompilerFactory $mmm_builder_compiler_factory */
+  $mmm_builder_compiler_factory = new CompilerFactory($include);
   return _mmm_builder_validate_root_or_simulate()
-    && _mmm_builder_validate_file($include)
+    && $mmm_builder_compiler_factory->validate()
     && _mmm_builder_autoload();
 }
 
 
-function drush_mmm_builder_compile($include = '../mmm-project.php') {
-  /** @var Project $project */
-  $project = include $include;
-  $compiler = new Compiler($project);
+function drush_mmm_builder_compile($include = NULL) {
+  global $mmm_builder_compiler_factory;
+  /** @var CompilerFactory $mmm_builder_compiler_factory */
+  $compiler = $mmm_builder_compiler_factory->get();
   $commands = $compiler->compile();
   return _mmm_builder_process_commands($commands);
 }
@@ -137,17 +141,6 @@ function _mmm_builder_validate_root_or_simulate() {
     && !$has_drupal_root
   ) {
     return drush_set_error('DRUSH_mmm_builder_ERROR', dt('MMM builder needs to run in a valid drupal root if not called with --simulate.'));
-  }
-  return TRUE;
-}
-
-/**
- * @param $include
- * @return bool
- */
-function _mmm_builder_validate_file($include) {
-  if (!is_file($include)) {
-    return drush_set_error('DRUSH_mmm_builder_ERROR', dt('File not found: @file', ['@file' => $include]));
   }
   return TRUE;
 }
