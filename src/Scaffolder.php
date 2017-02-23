@@ -5,6 +5,7 @@ namespace clever_systems\mmm_builder;
 
 
 use clever_systems\mmm_builder\Commands\Commands;
+use clever_systems\mmm_builder\Commands\SymlinkString;
 use clever_systems\mmm_builder\Commands\WriteString;
 
 class Scaffolder {
@@ -16,10 +17,13 @@ class Scaffolder {
   }
 
   function doPrepare() {
-    // @fixme add symlinks for docroot->web
     $installation_name = $this->getInstallationName();
 
     $commands = new Commands();
+
+    if (!file_exists('docroot') && is_dir('web')) {
+      $commands->add(new SymlinkString('docroot', 'web'));
+    }
 
     $commands->add(new WriteString("../settings.local.$installation_name.php",
       file_get_contents('docroot/sites/default/settings.php')));
