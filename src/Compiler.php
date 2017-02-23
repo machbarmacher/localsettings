@@ -7,6 +7,7 @@ namespace clever_systems\mmm_builder;
 
 
 use clever_systems\mmm_builder\Commands\Commands;
+use clever_systems\mmm_builder\Commands\WriteString;
 use clever_systems\mmm_builder\RenderPhp\PhpFile;
 
 class Compiler {
@@ -21,17 +22,22 @@ class Compiler {
     $this->project = $project;
   }
 
+  /**
+   * @return Commands
+   */
   public function compile() {
     $drush_dir = ($this->project->getDrupalMajorVersion() == 8) ?
       'drush' : 'sites/all/drush';
-    $files = [];
-    $files['sites/sites.php'] = $this->compileSitesPhp();
-    $files["$drush_dir/aliases.drushrc.php"] = $this->compileAliases();
-    $files['../settings.baseurl.php'] = $this->compileBaseUrls();
-    $files['../settings.databases.php'] = $this->compileDbCredentials();
-    $files['../settings.php'] = $this->scaffoldSettings();
-    // @fixme assemble docroot/.htaccess and settings.foo.php 
-    return $files;
+
+    $commands = new Commands();
+    $commands->add(new WriteString('sites/sites.php', $this->compileSitesPhp()));
+    $commands->add(new WriteString("$drush_dir/aliases.drushrc.php", $this->compileAliases()));
+    $commands->add(new WriteString('../settings.baseurl.php', $this->compileBaseUrls()));
+    $commands->add(new WriteString('../settings.databases.php', $this->compileDbCredentials()));
+    $commands->add(new WriteString('../settings.php', $this->scaffoldSettings()));
+
+    // @fixme assemble docroot/.htaccess and settings.foo.php
+    return $commands;
   }
 
   public function compileAliases() {

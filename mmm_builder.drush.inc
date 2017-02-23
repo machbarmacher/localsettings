@@ -1,5 +1,6 @@
 <?php
 
+use clever_systems\mmm_builder\Commands\CommandInterface;
 use clever_systems\mmm_builder\Compiler;
 use clever_systems\mmm_builder\Project;
 
@@ -47,8 +48,8 @@ function drush_mmm_builder_compile($include = '../mmm-project.php') {
   /** @var Project $project */
   $project = include $include;
   $compiler = new Compiler($project);
-  $files = $compiler->compile();
-  return _mmm_builder_write_or_dump_files($files);
+  $commands = $compiler->compile();
+  return _mmm_builder_process_commands($commands);
 }
 
 /**
@@ -97,21 +98,14 @@ function _mmm_builder_validate_autoload() {
 }
 
 /**
- * @param $files
+ * @param CommandInterface $commands
  * @return bool
  */
-function _mmm_builder_write_or_dump_files($files) {
-  if (!drush_get_context('DRUSH_SIMULATE')) {
-    foreach ($files as $name => $content) {
-      drush_mkdir(dirname($name));
-      $bytes = file_put_contents($name, $content);
-      if ($bytes === FALSE) {
-        return drush_set_error('DRUSH_mmm_builder_ERROR', dt('MMM builder could not write file: @file', ['@file' => $name]));
-      }
-    }
-  }
+function _mmm_builder_process_commands($commands) {
+  $results = [];
+  $commands->execute($results, drush_get_context('DRUSH_SIMULATE'));
   if (drush_get_context('DRUSH_SIMULATE') || drush_get_context('DRUSH_VERBOSE')) {
-    return $files;
+    return $results;
   }
 }
 
