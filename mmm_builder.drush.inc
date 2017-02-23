@@ -3,6 +3,7 @@
 use clever_systems\mmm_builder\Commands\CommandInterface;
 use clever_systems\mmm_builder\Compiler;
 use clever_systems\mmm_builder\Project;
+use clever_systems\mmm_builder\Scaffolder;
 
 /**
  * Implements hook_drush_command().
@@ -14,41 +15,98 @@ function mmm_builder_drush_command() {
     'outputformat' => array(
       'default' => 'key-value',
     ),
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUPAL_ROOT,
   );
 
+  $items['mmm-builder-prepare'] = array(
+      // @fixme Add example project file.
+      'description' => '1: Prepare settings dispatcher, dev settings, Boxfile and .gitignore.',
+      'aliases' => array('mbp'),
+    ) + $common;
+
   $items['mmm-builder-compile'] = array(
-    'description' => "Drush command mmm-builder.",
-    'arguments' => array(
-      'include' => 'File to include. See example.mmm-project.php. Defaults to ../mmm-project.php',
-    ),
-    'examples' => array(
-      'drush mmm-builder example.project.php --simulate' => 'Do something.',
-    ),
-    'aliases' => array('mbc'),
-  ) + $common;
+      'description' => '2: Compile from project definition: sites, aliases, DBs, baseurls.',
+      'arguments' => array(
+        'include' => 'File to include. See example.mmm-project.php. Defaults to ../mmm-project.php',
+      ),
+      'aliases' => array('mbc'),
+      'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+    ) + $common;
+
+  $items['mmm-builder-post-clone'] = array(
+      'description' => 'After cloning, symlink settings.local and htaccess.',
+      'aliases' => array('mbp'),
+    ) + $common;
+
+  $items['mmm-builder-post-update'] = array(
+      'description' => 'After updating, move htaccess to snippets folder.',
+      'aliases' => array('mbp'),
+    ) + $common;
+
+  $items['mmm-builder-activate-site'] = array(
+      'description' => 'Finally include settings dispatcher.',
+      'arguments' => array(
+        'site' => 'Site. Defaults to "default".',
+      ),
+      'aliases' => array('mbas'),
+    ) + $common;
 
   return $items;
 }
 
-/**
- * Implementation of drush_hook_COMMAND_validate().
- */
 function drush_mmm_builder_compile_validate($include = '../mmm-project.php') {
   return _mmm_builder_validate_root_or_simulate()
     && _mmm_builder_validate_file($include)
-    && _mmm_builder_validate_autoload();
+    && _mmm_builder_autoload();
 }
 
 
-/**
- * Implementation of drush_hook_COMMAND().
- */
 function drush_mmm_builder_compile($include = '../mmm-project.php') {
   /** @var Project $project */
   $project = include $include;
   $compiler = new Compiler($project);
   $commands = $compiler->compile();
+  return _mmm_builder_process_commands($commands);
+}
+
+function drush_mmm_builder_prepare_validate() {
+  return _mmm_builder_autoload();
+}
+
+
+function drush_mmm_builder_prepare() {
+  $commands = (new Scaffolder())->doPrepare();
+  return _mmm_builder_process_commands($commands);
+}
+
+function drush_mmm_builder_post_clone_validate() {
+  return _mmm_builder_autoload();
+}
+
+
+function drush_mmm_builder_post_clone() {
+  $commands = (new Scaffolder())->postClone();
+  return _mmm_builder_process_commands($commands);
+}
+
+function drush_mmm_builder_post_update_validate() {
+  return _mmm_builder_autoload();
+}
+
+
+function drush_mmm_builder_post_update() {
+  $commands = (new Scaffolder())->postUpdate();
+  return _mmm_builder_process_commands($commands);
+}
+
+function drush_mmm_builder_activate_site_validate($site = 'default') {
+  return is_file("docroot/sites/$site/settings.php")
+    && _mmm_builder_autoload();
+}
+
+
+function drush_mmm_builder_activate_site($site = 'default') {
+  $commands = (new Scaffolder())->activateSite($site);
   return _mmm_builder_process_commands($commands);
 }
 
@@ -80,7 +138,7 @@ function _mmm_builder_validate_file($include) {
 /**
  * @return bool
  */
-function _mmm_builder_validate_autoload() {
+function _mmm_builder_autoload() {
   // Hackily guess some autoloader paths.
   $paths = [
     DRUPAL_ROOT . '/../vendor/autoload.php',
