@@ -74,6 +74,33 @@ EOD
 EOD
     ));
 
+    $commands->add(new WriteFile('mmm-project.php', <<<'EOD'
+<?php
+/**
+ * @file mmm-project.php
+ */
+namespace clever_systems\mmm_builder;
+use clever_systems\mmm_builder\ServerType\FreistilboxServer;
+use clever_systems\mmm_builder\ServerType\UberspaceServer;
+
+// TODO: edit me.
+
+$project = new Project(8);
+
+$project->addInstallation('dev', new UberspaceServer('HOST', 'USER'))
+  ->addSite('http://dev.USER.HOST.uberspace.de', 'default')
+  ->setDocroot('/var/www/virtual/USER/installations/dev/docroot')
+  ->setDbCredentialPattern('USER_{{site}}');
+
+$project->addInstallation('live', new FreistilboxServer('c145', 's2222'))
+  ->addSite('http://example.com', 'default');
+
+// Do not forget!
+return $project;
+
+EOD
+    ));
+
     return $commands;
   }
 

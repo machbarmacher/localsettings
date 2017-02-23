@@ -19,7 +19,6 @@ function mmm_builder_drush_command() {
   );
 
   $items['mmm-builder-prepare'] = array(
-      // @fixme Add example project file.
       'description' => '1: Prepare settings dispatcher, dev settings, Boxfile and .gitignore.',
       'aliases' => array('mbp'),
     ) + $common;
