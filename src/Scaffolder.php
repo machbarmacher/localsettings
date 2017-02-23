@@ -101,6 +101,13 @@ return $project;
 EOD
     ));
 
+    // Save htaccess to .original.
+    $this->postUpdate($commands);
+
+    // @fixme Let installations alter their .htaccess.
+
+    $this->postClone($commands);
+
     return $commands;
   }
 
@@ -109,8 +116,6 @@ EOD
     if (!$commands) {
       $commands = new Commands();
     }
-
-
 
     // Symlink environment specific files.
     // Note that target is relative to source directory.
@@ -131,7 +136,7 @@ EOD
       $commands = new Commands();
     }
 
-    $commands->add(new MoveFile('docroot/.htaccess.all.d/50-core', 'docroot/.htaccess'));
+    $commands->add(new MoveFile('docroot/.htaccess.original', 'docroot/.htaccess'));
 
     return $commands;
   }
@@ -141,7 +146,7 @@ EOD
       $commands = new Commands();
     }
 
-    $commands->add(new MoveFile('docroot/.htaccess', 'docroot/.htaccess.all.d/50-core'));
+    $commands->add(new MoveFile('docroot/.htaccess', 'docroot/.htaccess.original'));
 
     return $commands;
   }

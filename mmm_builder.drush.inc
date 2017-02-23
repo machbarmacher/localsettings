@@ -21,7 +21,7 @@ function mmm_builder_drush_command() {
   $items['mmm-builder-prepare'] = array(
       'description' => '1: Prepare settings dispatcher, dev settings, Boxfile and .gitignore.',
       'aliases' => array('mbp'),
-      // @fixme Add server specific htaccess snippet.
+      // @todo Check if drupals scaffolding conflicts with htaccess patch.
     ) + $common;
 
   $items['mmm-builder-compile'] = array(
@@ -83,8 +83,6 @@ function drush_mmm_builder_prepare_validate() {
 function drush_mmm_builder_prepare() {
   $scaffolder = new Scaffolder();
   $commands = $scaffolder->doPrepare();
-  $commands = $scaffolder->postUpdate($commands);
-  $commands = $scaffolder->postClone($commands);
   return _mmm_builder_process_commands($commands);
 }
 

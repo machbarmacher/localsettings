@@ -34,12 +34,6 @@ class Compiler {
     $commands->add(new WriteFile("$drush_dir/aliases.drushrc.php", $this->compileAliases()));
     $commands->add(new WriteFile('../settings.baseurl.php', $this->compileBaseUrls()));
     $commands->add(new WriteFile('../settings.databases.php', $this->compileDbCredentials()));
-
-    $patterns = ['docroot/.htaccess.*', 'settings.*.php'];
-    foreach ($patterns as $pattern) {
-      (new FileAssembler($pattern))->execute($commands);
-    }
-    return $commands;
   }
 
   public function compileAliases() {
@@ -86,5 +80,5 @@ class Compiler {
     }
     return (string)$php;
   }
-  
+
 }
