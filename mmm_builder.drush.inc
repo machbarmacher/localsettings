@@ -21,6 +21,7 @@ function mmm_builder_drush_command() {
   $items['mmm-builder-prepare'] = array(
       'description' => '1: Prepare settings dispatcher, dev settings, Boxfile and .gitignore.',
       'aliases' => array('mbp'),
+      // @fixme Include post-update, post-clone, add server specific htaccess snippet.
     ) + $common;
 
   $items['mmm-builder-compile'] = array(
@@ -29,25 +30,26 @@ function mmm_builder_drush_command() {
         'include' => 'File to include. See example.mmm-project.php. Defaults to ../mmm-project.php',
       ),
       'aliases' => array('mbc'),
+      // For --simulate we don't need a drupal root.
       'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
-    ) + $common;
-
-  $items['mmm-builder-post-clone'] = array(
-      'description' => 'After cloning, symlink settings.local and htaccess.',
-      'aliases' => array('mbp'),
     ) + $common;
 
   $items['mmm-builder-post-update'] = array(
       'description' => 'After updating, move htaccess to snippets folder.',
-      'aliases' => array('mbp'),
+      'aliases' => array('mbpu'),
     ) + $common;
 
-  $items['mmm-builder-activate-site'] = array(
+  $items['mmm-builder-post-clone'] = array(
+      'description' => 'After cloning, symlink settings.local and htaccess.',
+      'aliases' => array('mbpc'),
+    ) + $common;
+
+  $items['mmm-builder-activate'] = array(
       'description' => 'Finally include settings dispatcher.',
       'arguments' => array(
         'site' => 'Site. Defaults to "default".',
       ),
-      'aliases' => array('mbas'),
+      'aliases' => array('mba'),
     ) + $common;
 
   return $items;
@@ -78,16 +80,6 @@ function drush_mmm_builder_prepare() {
   return _mmm_builder_process_commands($commands);
 }
 
-function drush_mmm_builder_post_clone_validate() {
-  return _mmm_builder_autoload();
-}
-
-
-function drush_mmm_builder_post_clone() {
-  $commands = (new Scaffolder())->postClone();
-  return _mmm_builder_process_commands($commands);
-}
-
 function drush_mmm_builder_post_update_validate() {
   return _mmm_builder_autoload();
 }
@@ -98,13 +90,23 @@ function drush_mmm_builder_post_update() {
   return _mmm_builder_process_commands($commands);
 }
 
-function drush_mmm_builder_activate_site_validate($site = 'default') {
+function drush_mmm_builder_post_clone_validate() {
+  return _mmm_builder_autoload();
+}
+
+
+function drush_mmm_builder_post_clone() {
+  $commands = (new Scaffolder())->postClone();
+  return _mmm_builder_process_commands($commands);
+}
+
+function drush_mmm_builder_activate_validate($site = 'default') {
   return is_file("docroot/sites/$site/settings.php")
     && _mmm_builder_autoload();
 }
 
 
-function drush_mmm_builder_activate_site($site = 'default') {
+function drush_mmm_builder_activate($site = 'default') {
   $commands = (new Scaffolder())->activateSite($site);
   return _mmm_builder_process_commands($commands);
 }

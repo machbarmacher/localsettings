@@ -83,7 +83,7 @@ namespace clever_systems\mmm_builder;
 use clever_systems\mmm_builder\ServerType\FreistilboxServer;
 use clever_systems\mmm_builder\ServerType\UberspaceServer;
 
-// TODO: edit me.
+// TODO: After adjusting, run "drusn mbc", when OK.
 
 $project = new Project(8);
 
