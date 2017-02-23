@@ -10,23 +10,23 @@ use clever_systems\mmm_builder\Project;
 function mmm_builder_drush_command() {
   $items = array();
 
+  $common = array(
+    'outputformat' => array(
+      'default' => 'key-value',
+    ),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+  );
+
   $items['mmm-builder-compile'] = array(
     'description' => "Drush command mmm-builder.",
     'arguments' => array(
       'include' => 'File to include. See example.mmm-project.php. Defaults to ../mmm-project.php',
     ),
-    // Give one or more example commandline usages for this command
     'examples' => array(
       'drush mmm-builder example.project.php --simulate' => 'Do something.',
     ),
-    // Delete the 'outputformat' record if command does not
-    // produce any output.
-    'outputformat' => array(
-      'default' => 'key-value',
-    ),
     'aliases' => array('mbc'),
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
-  );
+  ) + $common;
 
   return $items;
 }
