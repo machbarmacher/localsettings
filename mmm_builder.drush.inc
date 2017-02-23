@@ -34,6 +34,11 @@ function mmm_builder_drush_command() {
       'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
     ) + $common;
 
+  $items['mmm-builder-pre-update'] = array(
+      'description' => 'Before updating, restore htaccess from snippets folder.',
+      'aliases' => array('mbbu'),
+    ) + $common;
+
   $items['mmm-builder-post-update'] = array(
       'description' => 'After updating, move htaccess to snippets folder.',
       'aliases' => array('mbpu'),
@@ -80,6 +85,16 @@ function drush_mmm_builder_prepare() {
   $commands = $scaffolder->doPrepare();
   $commands = $scaffolder->postUpdate($commands);
   $commands = $scaffolder->postClone($commands);
+  return _mmm_builder_process_commands($commands);
+}
+
+function drush_mmm_builder_pre_update_validate() {
+  return _mmm_builder_autoload();
+}
+
+
+function drush_mmm_builder_pre_update($commands = NULL) {
+  $commands = (new Scaffolder())->preUpdate($commands);
   return _mmm_builder_process_commands($commands);
 }
 

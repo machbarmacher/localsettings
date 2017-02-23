@@ -126,6 +126,16 @@ EOD
     return $commands;
   }
 
+  function preUpdate($commands = NULL) {
+    if (!$commands) {
+      $commands = new Commands();
+    }
+
+    $commands->add(new MoveFile('docroot/.htaccess.all.d/50-core', 'docroot/.htaccess'));
+
+    return $commands;
+  }
+
   function postUpdate($commands = NULL) {
     if (!$commands) {
       $commands = new Commands();
