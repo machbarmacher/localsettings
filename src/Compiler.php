@@ -30,6 +30,7 @@ class Compiler {
     $files['../settings.baseurl.php'] = $this->compileBaseUrls();
     $files['../settings.databases.php'] = $this->compileDbCredentials();
     $files['../settings.php'] = $this->scaffoldSettings();
+    // @fixme assemble docroot/.htaccess and settings.foo.php 
     return $files;
   }
 
