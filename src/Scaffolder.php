@@ -104,13 +104,17 @@ EOD
     return $commands;
   }
 
-  function postClone() {
+  function postClone($commands = NULL) {
+    if (!$commands) {
+      $commands = new Commands();
+    }
+
     $installation_name = $this->getInstallationName();
-    $commands = new Commands();
     $link_targets = [
       ['settings.local.php', $target = "settings.local.$installation_name.php"],
       ['docroot/.htaccess', $target = "docroot/.htaccess.$installation_name"],
     ];
+
     foreach ($link_targets as list($link, $target)) {
       if (!file_exists($link) && file_exists($target)) {
         $commands->add(new Symlink($link, $target));
@@ -119,8 +123,10 @@ EOD
     return $commands;
   }
 
-  function postUpdate() {
-    $commands = new Commands();
+  function postUpdate($commands = NULL) {
+    if (!$commands) {
+      $commands = new Commands();
+    }
 
     $commands->add(new MoveFile('docroot/.htaccess', 'docroot/.htaccess.all.d/50-core'));
 

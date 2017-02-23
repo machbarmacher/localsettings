@@ -21,7 +21,7 @@ function mmm_builder_drush_command() {
   $items['mmm-builder-prepare'] = array(
       'description' => '1: Prepare settings dispatcher, dev settings, Boxfile and .gitignore.',
       'aliases' => array('mbp'),
-      // @fixme Include post-update, post-clone, add server specific htaccess snippet.
+      // @fixme Add server specific htaccess snippet.
     ) + $common;
 
   $items['mmm-builder-compile'] = array(
@@ -76,7 +76,10 @@ function drush_mmm_builder_prepare_validate() {
 
 
 function drush_mmm_builder_prepare() {
-  $commands = (new Scaffolder())->doPrepare();
+  $scaffolder = new Scaffolder();
+  $commands = $scaffolder->doPrepare();
+  $commands = $scaffolder->postUpdate($commands);
+  $commands = $scaffolder->postClone($commands);
   return _mmm_builder_process_commands($commands);
 }
 
@@ -85,8 +88,8 @@ function drush_mmm_builder_post_update_validate() {
 }
 
 
-function drush_mmm_builder_post_update() {
-  $commands = (new Scaffolder())->postUpdate();
+function drush_mmm_builder_post_update($commands = NULL) {
+  $commands = (new Scaffolder())->postUpdate($commands);
   return _mmm_builder_process_commands($commands);
 }
 
@@ -95,8 +98,8 @@ function drush_mmm_builder_post_clone_validate() {
 }
 
 
-function drush_mmm_builder_post_clone() {
-  $commands = (new Scaffolder())->postClone();
+function drush_mmm_builder_post_clone($commands = NULL) {
+  $commands = (new Scaffolder())->postClone($commands);
   return _mmm_builder_process_commands($commands);
 }
 
