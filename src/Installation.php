@@ -237,16 +237,16 @@ class Installation {
     return $this->server->alterHtaccess($content);
   }
 
-  public function useEnvironment($name) {
+  public function behaveLike($name) {
     $this->use_environment_name = $name;
     return $this;
   }
 
-  public function usesEnvironment() {
+  public function behavesLike() {
     return $this->use_environment_name;
   }
 
-  public function usesOtherEnvironment() {
+  public function behavesLikeOther() {
     return $this->use_environment_name !== $this->name;
   }
 

@@ -88,7 +88,7 @@ class Compiler {
       // Simulated ? Look at the previous location.
       : '.htaccess';
     foreach ($this->project->getInstallations() as $installation) {
-      if ($installation->usesOtherEnvironment()) {
+      if ($installation->behavesLikeOther()) {
         continue;
       }
       $installation_name = $installation->getName();
@@ -112,7 +112,7 @@ class Compiler {
   public function getEnvironmentNames() {
     $environment_names = [];
     foreach ($this->project->getInstallations() as $installation) {
-      if ($installation->usesOtherEnvironment()) {
+      if ($installation->behavesLikeOther()) {
         continue;
       }
       $environment_names[] = $installation->getName();

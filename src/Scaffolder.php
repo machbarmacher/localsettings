@@ -110,7 +110,7 @@ $project->addInstallation('live', new FreistilboxServer('c145', 's2222'))
 
 $project->addInstallation('test', new FreistilboxServer('c145', 's2323'))
   ->addSite('http://test.example.com')
-  ->useEnvironment('live');
+  ->behaveLike('live');
 
 // Do not forget!
 return $project;
