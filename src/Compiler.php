@@ -119,4 +119,12 @@ class Compiler {
     }
     return $environment_names;
   }
+
+  /**
+   * @return \clever_systems\mmm_builder\Project
+   */
+  public function getProject() {
+    return $this->project;
+  }
+
 }

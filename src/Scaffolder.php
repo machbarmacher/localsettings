@@ -40,6 +40,8 @@ class Scaffolder {
 
     $compiler->writeSettingsLocal($commands, $installation_name);
 
+    $drupal_major_version = $compiler->getProject()->getDrupalMajorVersion();
+    $settings_variable = ($drupal_major_version == 7) ? '$conf' : '$settings';
     $commands->add(new WriteFile('../settings.php', <<<EOD
 <?php
 // MMM settings file.
@@ -48,7 +50,7 @@ use clever_systems\mmm_runtime\Runtime;
 
 require '../settings.baseurl.php';
 require '../settings.databases.php';
-Runtime::getEnvironment()->settings();
+Runtime::getEnvironment()->settings($settings_variable, \$databases);
 include '../settings.common.php';
 include '../settings.local.php';
 
