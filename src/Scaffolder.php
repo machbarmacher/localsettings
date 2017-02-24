@@ -19,7 +19,15 @@ class Scaffolder {
     return 'dev';
   }
 
-  // @fixme Do not double-massage .htaccess
+  // @fixme Add config-sync/README.txt
+  // @fixme Fix composer scaffolding:
+  //"pre-drupal-scaffold-cmd": [
+  //"ddrush mbbu --force"
+  //],
+  //"post-drupal-scaffold-cmd": [
+  //"ddrush mbpu --force"
+  //]
+
   function doPrepare() {
     $installation_name = $this->getInstallationName();
     $commands = new Commands();
