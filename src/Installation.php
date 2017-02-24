@@ -213,7 +213,7 @@ class Installation {
         }
         else {
           // D8 does not need base url anymore.
-          $php->addToBody("\$settings['trusted_host_patterns'][] = '$host';");
+          $php->addToBody("  \$settings['trusted_host_patterns'][] = '$host';");
         }
       }
       $php->addToBody('}');

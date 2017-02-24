@@ -121,17 +121,10 @@ EOD
     // Save htaccess to .original.
     $this->postUpdate($commands);
 
-    // Let installations alter their .htaccess.
-    $compiler->alterHtaccess($commands);
-
-    // Symlink installation-specific htaccess and settings.local
-    $this->postClone($commands);
-
     return $commands;
   }
 
   function postClone($commands = NULL) {
-    $installation_name = $this->getInstallationName();
     if (!$commands) {
       $commands = new Commands();
     }
@@ -140,15 +133,8 @@ EOD
     $commands->add(new EnsureDirectory('../tmp'));
     $commands->add(new EnsureDirectory('../logs'));
 
-    // Symlink environment specific files.
-    // Note that target is relative to source directory.
-    $link_targets = [
-      ['../settings.local.php', $target = "settings.local.$installation_name.php"],
-      ['.htaccess', $target = ".htaccess.$installation_name"],
-    ];
-    foreach ($link_targets as list($link, $target)) {
-      $commands->add(new Symlink($link, $target));
-    }
+    $this->symlinkEnvironmentSpecificFiles($commands);
+
     return $commands;
   }
 
@@ -168,8 +154,14 @@ EOD
     if (!$commands) {
       $commands = new Commands();
     }
+    $compiler = (new CompilerFactory())->get();
 
     $commands->add(new MoveFile('.htaccess', '.htaccess.original'));
+
+    // Let installations alter their .htaccess.
+    $compiler->alterHtaccess($commands);
+
+    $this->symlinkEnvironmentSpecificFiles($commands);
 
     return $commands;
   }
@@ -185,5 +177,24 @@ EOD
       ));
 
     return $commands;
+  }
+
+  /**
+   * @param $commands
+   */
+  public function symlinkEnvironmentSpecificFiles($commands) {
+// Symlink environment specific files.
+    // Note that target is relative to source directory.
+    $installation_name = $this->getInstallationName();
+    $link_targets = [
+      [
+        '../settings.local.php',
+        $target = "settings.local.$installation_name.php"
+      ],
+      ['.htaccess', $target = ".htaccess.$installation_name"],
+    ];
+    foreach ($link_targets as list($link, $target)) {
+      $commands->add(new Symlink($link, $target));
+    }
   }
 }

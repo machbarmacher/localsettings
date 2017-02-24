@@ -8,7 +8,8 @@ abstract class AbstractSymlink extends AbstractFileOp implements CommandInterfac
   use FileExistsTrait;
   protected function doExecute() {
     if ($this->checkTargetDoesNotExist($this->filename)) {
-      symlink($this->getLinkTarget(), $this->filename);
+      // Ignore warning if exists.
+      @symlink($this->getLinkTarget(), $this->filename);
     }
   }
   protected function getContent() {
