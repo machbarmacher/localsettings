@@ -68,13 +68,14 @@ EOD
 
     $commands->add(new WriteFile('../.gitignore', <<<EOD
 # Ignore paths that are symlinked per environment.
-/config
-/private
-/tmp
-/logs
-/config-sync
 /settings.local.php
 /docroot/.htaccess
+# Ignore server content.
+/config
+/tmp
+/logs
+# Ignore application content.
+/private
 /docroot/sites/*/files
 /docroot/sites/*/private
 
