@@ -156,12 +156,14 @@ EOD
     }
     $compiler = (new CompilerFactory())->get();
 
-    $commands->add(new MoveFile('.htaccess', '.htaccess.original'));
+    if (file_exists('.htaccess') && !is_link('.htaccess')) {
+      $commands->add(new MoveFile('.htaccess', '.htaccess.original'));
 
-    // Let installations alter their .htaccess.
-    $compiler->alterHtaccess($commands);
+      // Let installations alter their .htaccess.
+      $compiler->alterHtaccess($commands);
 
-    $this->symlinkEnvironmentSpecificFiles($commands);
+      $this->symlinkEnvironmentSpecificFiles($commands);
+    }
 
     return $commands;
   }
