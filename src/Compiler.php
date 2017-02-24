@@ -30,7 +30,6 @@ class Compiler {
     $drush_dir = ($this->project->getDrupalMajorVersion() == 8) ?
       '../drush' : 'sites/all/drush';
 
-    $commands = new Commands();
     $commands->add(new WriteFile('sites/sites.php', $this->compileSitesPhp()));
     $commands->add(new WriteFile("$drush_dir/aliases.drushrc.php", $this->compileAliases()));
     $commands->add(new WriteFile('../settings.baseurl.php', $this->compileBaseUrls()));
