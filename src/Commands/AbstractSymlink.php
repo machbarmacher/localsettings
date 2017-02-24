@@ -4,8 +4,6 @@
 namespace clever_systems\mmm_builder\Commands;
 
 
-use Drush\Log\LogLevel;
-
 abstract class AbstractSymlink extends AbstractFileOp implements CommandInterface {
   use FileExistsTrait;
   protected function doExecute() {
