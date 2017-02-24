@@ -16,6 +16,9 @@ function mmm_builder_drush_command() {
     'outputformat' => array(
       'default' => 'key-value',
     ),
+    'options' => [
+      'force' => 'Overwrite existing  files.'
+    ],
     'bootstrap' => DRUSH_BOOTSTRAP_DRUPAL_ROOT,
   );
 
