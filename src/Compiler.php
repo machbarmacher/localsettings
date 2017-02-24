@@ -107,7 +107,8 @@ class Compiler {
       }
       $installation_name = $installation->getName();
       $content = ($installation_name === $current_installation_name)
-        ? file_get_contents('sites/default/settings.php') : '';
+        ? file_get_contents('sites/default/settings.php')
+        . "\n\n// TODO: Clean up." : "<?php\n";
       $commands->add(new  WriteFile("../settings.local.$installation_name.php", $content));
     }
   }

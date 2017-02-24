@@ -26,6 +26,8 @@ class Scaffolder {
       $commands->add(new Symlink('docroot', 'web'));
     }
 
+    $commands->add(new WriteFile('../settings.common.php', "<?php\n"));
+
     $compiler->writeSettingsLocal($commands, $installation_name);
 
     $commands->add(new WriteFile('../settings.php', <<<EOD
