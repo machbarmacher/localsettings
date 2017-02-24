@@ -56,6 +56,7 @@ RewriteBase /
 Options +SymLinksIfOwnerMatch
 # END Uberspace
 
+
 EOD
     . $content;
   }

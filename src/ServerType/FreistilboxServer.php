@@ -60,6 +60,7 @@ RewriteBase /
 Options +FollowSymLinks
 # END Freistilbox
 
+
 EOD
       . $content;
   }
