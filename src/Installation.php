@@ -192,21 +192,26 @@ class Installation {
     foreach ($this->site_uris as $site => $uris) {
       $site_id = $this->getSiteId($site);
       $php->addToBody("if (Runtime::getEnvironment()->match('$site_id')) {");
+      if ($this->project->getDrupalMajorVersion() == 7) {
+        $php->addToBody("  \$conf['mmm']['installation'] = '$this->name';");
+        $php->addToBody("  \$conf['mmm']['environment'] = '$this->use_environment_name';");
+      }
+      else {
+        $php->addToBody("  \$settings['mmm']['installation'] = '$this->name';");
+        $php->addToBody("  \$settings['mmm']['environment'] = '$this->use_environment_name';");
+      }
+
       // Add drush "uri".
       $uri_map = array_combine($uris, $uris);
       $uri_map["http://$site"] = $uris[0];
       foreach ($uri_map as $uri_in => $uri) {
         $host = parse_url($uri_in, PHP_URL_HOST);
         if ($this->project->getDrupalMajorVersion() == 7) {
-          $php->addToBody("  \$conf['mmm']['installation'] = '$this->name';");
-          $php->addToBody("  \$conf['mmm']['environment'] = '$this->use_environment_name';");
           $php->addToBody("  if (\$host === '$host') {");
           $php->addToBody("    \$base_url = '$uri'; return;");
           $php->addToBody('  }');
         }
         else {
-          $php->addToBody("  \$settings['mmm']['installation'] = '$this->name';");
-          $php->addToBody("  \$settings['mmm']['environment'] = '$this->use_environment_name';");
           // D8 does not need base url anymore.
           $php->addToBody("\$settings['trusted_host_patterns'][] = '$host';");
         }
