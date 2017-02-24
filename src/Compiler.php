@@ -26,7 +26,7 @@ class Compiler {
   /**
    * @return Commands
    */
-  public function compile() {
+  public function compile(Commands $commands) {
     $drush_dir = ($this->project->getDrupalMajorVersion() == 8) ?
       '../drush' : 'sites/all/drush';
 

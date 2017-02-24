@@ -1,6 +1,7 @@
 <?php
 
 use clever_systems\mmm_builder\Commands\CommandInterface;
+use clever_systems\mmm_builder\Commands\Commands;
 use clever_systems\mmm_builder\Compiler;
 use clever_systems\mmm_builder\CompilerFactory;
 use clever_systems\mmm_builder\Project;
@@ -78,7 +79,8 @@ function drush_mmm_builder_compile($include = NULL) {
   global $mmm_builder_compiler_factory;
   /** @var CompilerFactory $mmm_builder_compiler_factory */
   $compiler = $mmm_builder_compiler_factory->get();
-  $commands = $compiler->compile();
+  $commands = new Commands();
+  $compiler->compile($commands);
   return _mmm_builder_process_commands($commands);
 }
 
