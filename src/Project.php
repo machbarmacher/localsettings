@@ -50,6 +50,10 @@ class Project {
     return $this->drupal_major_version;
   }
 
+  public function getSettingsVariable() {
+    return ($this->drupal_major_version == 7) ? '$conf' : '$settings';
+  }
+
   /**
    * @return Installation[]
    */

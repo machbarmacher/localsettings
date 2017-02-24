@@ -187,19 +187,14 @@ class Installation {
 
 
   public function compileBaseUrls(PhpFile $php) {
+    $settings_variable = $this->project->getSettingsVariable();
     $php->addToBody('');
     $php->addToBody("// Installation: $this->name");
     foreach ($this->site_uris as $site => $uris) {
       $site_id = $this->getSiteId($site);
       $php->addToBody("if (Runtime::getEnvironment()->match('$site_id')) {");
-      if ($this->project->getDrupalMajorVersion() == 7) {
-        $php->addToBody("  \$conf['mmm']['installation'] = '$this->name';");
-        $php->addToBody("  \$conf['mmm']['environment'] = '$this->use_environment_name';");
-      }
-      else {
-        $php->addToBody("  \$settings['mmm']['installation'] = '$this->name';");
-        $php->addToBody("  \$settings['mmm']['environment'] = '$this->use_environment_name';");
-      }
+      $php->addToBody("  {$settings_variable}['mmm']['installation'] = '$this->name';");
+      $php->addToBody("  {$settings_variable}['mmm']['environment'] = '$this->use_environment_name';");
 
       // Add drush "uri".
       $uri_map = array_combine($uris, $uris);
