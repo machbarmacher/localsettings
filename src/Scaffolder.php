@@ -181,10 +181,7 @@ EOD
     return $commands;
   }
 
-  /**
-   * @param $commands
-   */
-  public function symlinkEnvironmentSpecificFiles($commands) {
+  public function symlinkEnvironmentSpecificFiles(Commands $commands) {
 // Symlink environment specific files.
     // Note that target is relative to source directory.
     $installation_name = $this->getInstallationName();
