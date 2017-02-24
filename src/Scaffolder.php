@@ -5,6 +5,7 @@ namespace clever_systems\mmm_builder;
 
 
 use clever_systems\mmm_builder\Commands\Commands;
+use clever_systems\mmm_builder\Commands\DeleteFile;
 use clever_systems\mmm_builder\Commands\EnsureDirectory;
 use clever_systems\mmm_builder\Commands\MoveFile;
 use clever_systems\mmm_builder\Commands\Symlink;
@@ -145,9 +146,10 @@ EOD
       $commands = new Commands();
     }
 
+    // First delete, otherwise MoveFile anc composer will leave it as symlink
+    // and only replace its content (which in fact changes the linked version).
+    $commands->add(new DeleteFile('.htaccess'));
     $commands->add(new MoveFile('.htaccess.original', '.htaccess'));
-
-    $commands->add(new WriteFile('.gitignore', ''));
 
     return $commands;
   }
@@ -157,6 +159,8 @@ EOD
       $commands = new Commands();
     }
     $compiler = (new CompilerFactory())->get();
+
+    $commands->add(new WriteFile('.gitignore', ''));
 
     if (file_exists('.htaccess') && !is_link('.htaccess')) {
       $commands->add(new MoveFile('.htaccess', '.htaccess.original'));
