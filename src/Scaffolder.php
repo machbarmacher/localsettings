@@ -68,19 +68,20 @@ EOD
 
     $commands->add(new WriteFile('../.gitignore', <<<EOD
 # Ignore paths that are symlinked per environment.
+/config
+/private
+/tmp
+/logs
+/config-sync
 /settings.local.php
 /docroot/.htaccess
+/docroot/sites/*/files
+/docroot/sites/*/private
 
 EOD
     ));
 
-    $commands->add(new WriteFile('.gitignore', <<<EOD
-# Ignore paths that contain user-generated content.
-/sites/*/files
-/sites/*/private
-
-EOD
-    ));
+    $commands->add(new WriteFile('.gitignore', ''));
 
     $commands->add(new WriteFile('../mmm-project.php', <<<'EOD'
 <?php
@@ -153,6 +154,8 @@ EOD
     }
 
     $commands->add(new MoveFile('.htaccess.original', '.htaccess'));
+
+    $commands->add(new WriteFile('.gitignore', ''));
 
     return $commands;
   }
