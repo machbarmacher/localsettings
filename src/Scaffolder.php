@@ -29,6 +29,8 @@ class Scaffolder {
       $commands->add(new EnsureDirectory("../crontab.d/$environment_name"));
     }
     $commands->add(new EnsureDirectory("../crontab.d/common"));
+    $commands->add(new WriteFile("../crontab.d/common/50-cron",
+      "0 * * * * drush -r \$DRUPAL_ROOT cron -y\n"));
 
     if (!file_exists('../docroot') && is_dir('../web')) {
       $commands->add(new Symlink('docroot', 'web'));
