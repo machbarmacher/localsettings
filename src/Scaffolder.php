@@ -5,6 +5,7 @@ namespace clever_systems\mmm_builder;
 
 
 use clever_systems\mmm_builder\Commands\Commands;
+use clever_systems\mmm_builder\Commands\EnsureDirectory;
 use clever_systems\mmm_builder\Commands\MoveFile;
 use clever_systems\mmm_builder\Commands\Symlink;
 use clever_systems\mmm_builder\Commands\WriteFile;
@@ -123,6 +124,10 @@ EOD
     if (!$commands) {
       $commands = new Commands();
     }
+
+    $commands->add(new EnsureDirectory('../private'));
+    $commands->add(new EnsureDirectory('../tmp'));
+    $commands->add(new EnsureDirectory('../logs'));
 
     // Symlink environment specific files.
     // Note that target is relative to source directory.
