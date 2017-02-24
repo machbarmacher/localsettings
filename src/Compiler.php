@@ -28,7 +28,7 @@ class Compiler {
    */
   public function compile() {
     $drush_dir = ($this->project->getDrupalMajorVersion() == 8) ?
-      'drush' : 'sites/all/drush';
+      '../drush' : 'sites/all/drush';
 
     $commands = new Commands();
     $commands->add(new WriteFile('sites/sites.php', $this->compileSitesPhp()));
