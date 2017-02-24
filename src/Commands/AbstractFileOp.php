@@ -26,10 +26,12 @@ abstract class AbstractFileOp implements CommandInterface {
       drush_mkdir($dirname);
       // Assure we can write.
       foreach ([$this->filename, $dirname] as $item) {
-        $permissions = fileperms($item);
-        $user_can_write = 0200;
-        if (!(!$permissions & $user_can_write)) {
-          chmod($item, $permissions | $user_can_write);
+        if (file_exists($item)) {
+          $permissions = fileperms($item);
+          $user_can_write = 0200;
+          if (!(!$permissions & $user_can_write)) {
+            chmod($item, $permissions | $user_can_write);
+          }
         }
       }
       $this->doExecute();
