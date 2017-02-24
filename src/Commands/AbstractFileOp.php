@@ -21,7 +21,17 @@ abstract class AbstractFileOp implements CommandInterface {
   public function execute(array &$results, $simulate = FALSE) {
     $results[$this->filename] = $this->getContent();
     if (!$simulate) {
-      drush_mkdir(dirname($this->filename));
+      $dirname = dirname($this->filename);
+      // Assure directory is there.
+      drush_mkdir($dirname);
+      // Assure we can write.
+      foreach ([$this->filename, $dirname] as $item) {
+        $permissions = fileperms($item);
+        $user_can_write = 0200;
+        if (!(!$permissions & $user_can_write)) {
+          chmod($item, $permissions | $user_can_write);
+        }
+      }
       $this->doExecute();
     }
   }
