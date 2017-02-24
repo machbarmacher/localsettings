@@ -18,6 +18,7 @@ class Scaffolder {
     return 'dev';
   }
 
+  // @fixme Do not double-massage .htaccess
   function doPrepare() {
     $installation_name = $this->getInstallationName();
     $commands = new Commands();
