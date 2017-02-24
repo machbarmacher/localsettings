@@ -173,7 +173,7 @@ EOD
 
     $commands->add(new WriteFile("sites/$site/settings.php", <<<EOD
 <?php
-require DRUPAL_ROOT . '../settings.php';
+require DRUPAL_ROOT . '/../settings.php';
 
 EOD
       ));
