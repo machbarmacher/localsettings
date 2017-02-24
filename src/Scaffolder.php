@@ -25,9 +25,9 @@ class Scaffolder {
     $environment_names = $compiler->getEnvironmentNames();
 
     foreach ($environment_names as $environment_name) {
-      $commands->add(new EnsureDirectory("../crontab.$environment_name.d"));
+      $commands->add(new EnsureDirectory("../crontab.d/$environment_name"));
     }
-    $commands->add(new EnsureDirectory("../crontab.common.d"));
+    $commands->add(new EnsureDirectory("../crontab.d/common"));
 
     if (!file_exists('../docroot') && is_dir('../web')) {
       $commands->add(new Symlink('docroot', 'web'));
