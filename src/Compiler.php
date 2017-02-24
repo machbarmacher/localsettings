@@ -101,15 +101,23 @@ class Compiler {
   }
 
   public function writeSettingsLocal(Commands $commands, $current_installation_name) {
+    $environment_names = $this->getEnvironmentNames();
+    foreach ($environment_names as $environment_name) {
+      $content = ($environment_name === $current_installation_name)
+        ? file_get_contents('sites/default/settings.php')
+        . "\n\n// TODO: Clean up." : "<?php\n";
+      $commands->add(new  WriteFile("../settings.local.$environment_name.php", $content));
+    }
+  }
+
+  public function getEnvironmentNames() {
+    $environment_names = [];
     foreach ($this->project->getInstallations() as $installation) {
       if ($installation->usesOtherEnvironment()) {
         continue;
       }
-      $installation_name = $installation->getName();
-      $content = ($installation_name === $current_installation_name)
-        ? file_get_contents('sites/default/settings.php')
-        . "\n\n// TODO: Clean up." : "<?php\n";
-      $commands->add(new  WriteFile("../settings.local.$installation_name.php", $content));
+      $environment_names[] = $installation->getName();
     }
+    return $environment_names;
   }
 }
