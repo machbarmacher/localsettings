@@ -232,17 +232,4 @@ class Installation {
     return $this->server->alterHtaccess($content);
   }
 
-  public function behaveLike($name) {
-    $this->use_environment_name = $name;
-    return $this;
-  }
-
-  public function behavesLike() {
-    return $this->use_environment_name;
-  }
-
-  public function behavesLikeOther() {
-    return $this->use_environment_name !== $this->name;
-  }
-
 }

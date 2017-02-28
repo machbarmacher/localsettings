@@ -89,9 +89,6 @@ class Compiler {
       // Simulated ? Look at the previous location.
       : '.htaccess';
     foreach ($this->project->getInstallations() as $installation) {
-      if ($installation->behavesLikeOther()) {
-        continue;
-      }
       $installation_name = $installation->getName();
       $commands->add(new AlterFile($original_file, ".htaccess.$installation_name",
         function ($content) use ($installation) {
@@ -113,9 +110,6 @@ class Compiler {
   public function getEnvironmentNames() {
     $environment_names = [];
     foreach ($this->project->getInstallations() as $installation) {
-      if ($installation->behavesLikeOther()) {
-        continue;
-      }
       $environment_names[] = $installation->getName();
     }
     return $environment_names;

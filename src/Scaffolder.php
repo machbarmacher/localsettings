@@ -120,8 +120,7 @@ $project->addInstallation('live', new FreistilboxServer('c145', 's2222'))
   ->addSite('http://example.com');
 
 $project->addInstallation('test', new FreistilboxServer('c145', 's2323'))
-  ->addSite('http://test.example.com')
-  ->behaveLike('live');
+  ->addSite('http://test.example.com');
 
 // Do not forget!
 return $project;
