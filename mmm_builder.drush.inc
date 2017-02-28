@@ -172,7 +172,7 @@ function _mmm_builder_autoload() {
 
 /**
  * @param CommandInterface $commands
- * @return bool
+ * @return array|bool
  */
 function _mmm_builder_process_commands($commands) {
   $results = [];
