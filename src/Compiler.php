@@ -131,10 +131,13 @@ class Compiler {
   }
 
   public static function prepare(Commands $commands) {
+    // Step 1
     Scaffolder::writeProject($commands);
+    // Step 2 is compiling
   }
 
   public function scaffold(Commands $commands, $installation_name) {
+    // Step 3
     $environment_names = $this->getEnvironmentNames();
 
     foreach ($environment_names as $environment_name) {
@@ -161,17 +164,19 @@ class Compiler {
 
     Scaffolder::writeGitignoreForComposer($commands);
 
-    // Save htaccess to .original.
+    $this->postClone($commands);
     $this->postUpdate($commands);
-
   }
 
   public static function preUpdate(Commands $commands) {
+    // Prepare update and scaffold of docroot.
+    // Make htacces a file again, not a symlink.
     Scaffolder::moveBackHtaccess($commands);
   }
 
   public function postUpdate(Commands $commands) {
-
+    // A docroot update brought upstream versions:
+    // Use our gitignore; Alter and symlink htaccess.
     Scaffolder::writeGitignoreForDrupal($commands);
     if (file_exists('.htaccess') && !is_link('.htaccess')) {
       Scaffolder::moveAwayHtaccess($commands);
@@ -183,7 +188,7 @@ class Compiler {
   }
 
   public function postClone(Commands $commands) {
-
+    // A git clone "forgot" all .gitignored files and folders.
     $commands->add(new EnsureDirectory('../private'));
     $commands->add(new EnsureDirectory('../tmp'));
     $commands->add(new EnsureDirectory('../logs'));
@@ -195,6 +200,7 @@ class Compiler {
   }
 
   public static function activateSite(Commands $commands, $site) {
+    // Step 4
     Scaffolder::delegateSettings($commands, $site);
   }
 }
