@@ -89,7 +89,7 @@ class Compiler {
       $installation->compileBaseUrls($php);
     }
 
-    $php->addToFooter("if (empty({$settings_variable}['mmm']['installation'])) error_log('MMM Unknown host or site Id: ' . \$host . ' / ' . Runtime::getEnvironment()->getLocalSiteId());");
+    $php->addToFooter("if (empty({$settings_variable}['mmm']['installation'])) error_log('MMM Unknown host or site Id: ' . Runtime::getEnvironment()->getNormalizedSiteUrn());");
     return (string)$php;
   }
 
