@@ -211,6 +211,7 @@ class Installation {
           $php->addToBody("  \$settings['trusted_host_patterns'][] = '$host';");
         }
       }
+      $php->addToBody('  return;');
       $php->addToBody('}');
     }
   }
