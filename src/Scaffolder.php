@@ -18,6 +18,7 @@ class Scaffolder {
   //"post-drupal-scaffold-cmd": [
   //"ddrush mbpu --force"
   //]
+  // @fixme Add post composer update hook "delete .git dirs"
 
   public static function moveAwayHtaccess(Commands $commands) {
     $commands->add(new MoveFile('.htaccess', '.htaccess.original'));

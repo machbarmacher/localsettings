@@ -18,6 +18,7 @@ DynamicInstallations
     * add and use runtime installation variable
 * databases
     * add and use runtime installation variable
+* Merge baseurls and databases to .compiled.php
 
 // baseurls & databases use runtime-environment-select. 
 $installation = Runtime::getInstallation();
