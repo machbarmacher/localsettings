@@ -89,22 +89,27 @@ EOD
     $commands->add(new WriteFile('../.gitignore', <<<EOD
 # Ignore paths that are symlinked per environment.
 /settings.local.php
-/docroot/.htaccess
 # Ignore server content.
 /config
 /tmp
 /logs
 # Ignore application content.
 /private
-/docroot/sites/*/files
-/docroot/sites/*/private
 
 EOD
     ));
   }
 
   public static function writeGitignoreForDrupal(Commands $commands) {
-    $commands->add(new WriteFile('.gitignore', ''));
+    $commands->add(new WriteFile('.gitignore', <<<EOD
+# Ignore application content.
+/sites/*/files
+/sites/*/private
+# Ignore server specific files.
+/.htaccess
+
+EOD
+      ));
   }
 
   /**
@@ -120,7 +125,7 @@ namespace clever_systems\mmm_builder;
 use clever_systems\mmm_builder\ServerType\FreistilboxServer;
 use clever_systems\mmm_builder\ServerType\UberspaceServer;
 
-// TODO: After adjusting, run "drusn mbc", when ok "drush mba".
+// TODO: Adjust, then run "drush mb2/3/4".
 
 $project = new Project(8);
 
