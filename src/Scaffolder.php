@@ -85,7 +85,7 @@ EOD
     ));
   }
 
-  public static function writeComposerGitignore(Commands $commands) {
+  public static function writeGitignoreForComposer(Commands $commands) {
     $commands->add(new WriteFile('../.gitignore', <<<EOD
 # Ignore paths that are symlinked per environment.
 /settings.local.php
@@ -103,7 +103,7 @@ EOD
     ));
   }
 
-  public static function wrieDrupalGitignore(Commands $commands) {
+  public static function writeGitignoreForDrupal(Commands $commands) {
     $commands->add(new WriteFile('.gitignore', ''));
   }
 

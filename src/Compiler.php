@@ -156,7 +156,7 @@ class Compiler {
 
     Scaffolder::writeBoxfile($commands);
 
-    Scaffolder::writeComposerGitignore($commands);
+    Scaffolder::writeGitignoreForComposer($commands);
 
     // Save htaccess to .original.
     $this->postUpdate($commands);
@@ -169,7 +169,7 @@ class Compiler {
 
   public function postUpdate(Commands $commands) {
 
-    Scaffolder::wrieDrupalGitignore($commands);
+    Scaffolder::wrieGitignoreForDrupal($commands);
     if (file_exists('.htaccess') && !is_link('.htaccess')) {
       Scaffolder::moveAwayHtaccess($commands);
       $this->letInstallationsAlterHtaccess($commands);
