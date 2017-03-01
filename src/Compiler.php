@@ -171,7 +171,7 @@ class Compiler {
 
   public function postUpdate(Commands $commands) {
 
-    Scaffolder::wrieGitignoreForDrupal($commands);
+    Scaffolder::writeGitignoreForDrupal($commands);
     if (file_exists('.htaccess') && !is_link('.htaccess')) {
       Scaffolder::moveAwayHtaccess($commands);
       $this->letInstallationsAlterHtaccess($commands);
