@@ -31,6 +31,8 @@ class Scaffolder {
   function doPrepare() {
     $installation_name = $this->getInstallationName();
     $commands = new Commands();
+
+
     $compiler = (new CompilerFactory())->get();
     $environment_names = $compiler->getEnvironmentNames();
 
@@ -50,83 +52,13 @@ class Scaffolder {
     $compiler->writeSettingsLocal($commands, $installation_name);
 
     $drupal_major_version = $compiler->getProject()->getDrupalMajorVersion();
-    $settings_variable = ($drupal_major_version == 7) ? '$conf' : '$settings';
-    $commands->add(new WriteFile('../settings.php', <<<EOD
-<?php
-// MMM settings file.
-require '../vendor/autoload.php';
-use clever_systems\mmm_runtime\Runtime;
+    $this->writeSettings($commands, $drupal_major_version);
 
-require '../settings.baseurl.php';
-require '../settings.databases.php';
-Runtime::getEnvironment()->settings($settings_variable, \$databases);
-include '../settings.common.php';
-include '../settings.local.php';
+    $this->writeBoxfile($commands);
 
-EOD
-      ));
+    $this->writeGitignore($commands);
 
-    $commands->add(new WriteFile('../Boxfile', <<<EOD
-version: 2.0
-shared_folders:
-  - docroot/sites/default/files
-  - logs
-env_specific_files:
-  docroot/.htaccess:
-    production: .htaccess.live
-  settings.local.php:
-    production: settings.local.live.php
-
-EOD
-      ));
-
-    $commands->add(new WriteFile('../.gitignore', <<<EOD
-# Ignore paths that are symlinked per environment.
-/settings.local.php
-/docroot/.htaccess
-# Ignore server content.
-/config
-/tmp
-/logs
-# Ignore application content.
-/private
-/docroot/sites/*/files
-/docroot/sites/*/private
-
-EOD
-    ));
-
-    $commands->add(new WriteFile('.gitignore', ''));
-
-    $commands->add(new WriteFile('../mmm-project.php', <<<'EOD'
-<?php
-/**
- * @file mmm-project.php
- */
-namespace clever_systems\mmm_builder;
-use clever_systems\mmm_builder\ServerType\FreistilboxServer;
-use clever_systems\mmm_builder\ServerType\UberspaceServer;
-
-// TODO: After adjusting, run "drusn mbc", when ok "drush mba".
-
-$project = new Project(8);
-
-$project->addInstallation('dev', new UberspaceServer('HOST', 'USER'))
-  ->addSite('http://dev.USER.HOST.uberspace.de')
-  ->setDocroot('/var/www/virtual/USER/installations/dev/docroot')
-  ->setDbCredentialPattern('USER_{{installation}}_{{site}}');
-
-$project->addInstallation('live', new FreistilboxServer('c145', 's2222'))
-  ->addSite('http://example.com');
-
-$project->addInstallation('test', new FreistilboxServer('c145', 's2323'))
-  ->addSite('http://test.example.com');
-
-// Do not forget!
-return $project;
-
-EOD
-    ));
+    $this->writeProject($commands);
 
     // Save htaccess to .original.
     $this->postUpdate($commands);
@@ -208,5 +140,104 @@ EOD
     foreach ($link_targets as list($link, $target)) {
       $commands->add(new Symlink($link, $target));
     }
+  }
+
+  /**
+   * @param $commands
+   * @param $drupal_major_version
+   */
+  protected function writeSettings($commands, $drupal_major_version) {
+    $settings_variable = ($drupal_major_version == 7) ? '$conf' : '$settings';
+    $commands->add(new WriteFile('../settings.php', <<<EOD
+<?php
+// MMM settings file.
+require '../vendor/autoload.php';
+use clever_systems\mmm_runtime\Runtime;
+
+require '../settings.baseurl.php';
+require '../settings.databases.php';
+Runtime::getEnvironment()->settings($settings_variable, \$databases);
+include '../settings.common.php';
+include '../settings.local.php';
+
+EOD
+    ));
+  }
+
+  /**
+   * @param $commands
+   */
+  protected function writeBoxfile($commands) {
+    $commands->add(new WriteFile('../Boxfile', <<<EOD
+version: 2.0
+shared_folders:
+  - docroot/sites/default/files
+  - logs
+env_specific_files:
+  docroot/.htaccess:
+    production: .htaccess.live
+  settings.local.php:
+    production: settings.local.live.php
+
+EOD
+    ));
+  }
+
+  /**
+   * @param $commands
+   */
+  protected function writeGitignore($commands) {
+    $commands->add(new WriteFile('../.gitignore', <<<EOD
+# Ignore paths that are symlinked per environment.
+/settings.local.php
+/docroot/.htaccess
+# Ignore server content.
+/config
+/tmp
+/logs
+# Ignore application content.
+/private
+/docroot/sites/*/files
+/docroot/sites/*/private
+
+EOD
+    ));
+
+    $commands->add(new WriteFile('.gitignore', ''));
+  }
+
+  /**
+   * @param $commands
+   */
+  protected function writeProject($commands) {
+    $commands->add(new WriteFile('../mmm-project.php', <<<'EOD'
+<?php
+/**
+ * @file mmm-project.php
+ */
+namespace clever_systems\mmm_builder;
+use clever_systems\mmm_builder\ServerType\FreistilboxServer;
+use clever_systems\mmm_builder\ServerType\UberspaceServer;
+
+// TODO: After adjusting, run "drusn mbc", when ok "drush mba".
+
+$project = new Project(8);
+
+$project->addInstallation('dev', new UberspaceServer('HOST', 'USER'))
+  ->addSite('http://dev.USER.HOST.uberspace.de')
+  ->setDocroot('/var/www/virtual/USER/installations/dev/docroot')
+  ->setDbCredentialPattern('USER_{{installation}}_{{site}}');
+
+$project->addInstallation('live', new FreistilboxServer('c145', 's2222'))
+  ->addSite('http://example.com');
+
+$project->addInstallation('test', new FreistilboxServer('c145', 's2323'))
+  ->addSite('http://test.example.com');
+
+// Do not forget!
+return $project;
+
+EOD
+    ));
   }
 }
