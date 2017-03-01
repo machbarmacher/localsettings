@@ -125,6 +125,7 @@ class Compiler {
       $content = ($environment_name === $current_installation_name)
         ? file_get_contents('sites/default/settings.php')
         . "\n\n// TODO: Clean up." : "<?php\n";
+      // @todo Remove comments.
       $commands->add(new  WriteFile("../settings.local.$environment_name.php", $content));
     }
   }
