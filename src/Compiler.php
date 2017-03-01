@@ -5,15 +5,20 @@
 
 namespace clever_systems\mmm_builder;
 
-
 use clever_systems\mmm_builder\Commands\AlterFile;
 use clever_systems\mmm_builder\Commands\Commands;
+use clever_systems\mmm_builder\Commands\EnsureDirectory;
+use clever_systems\mmm_builder\Commands\Symlink;
 use clever_systems\mmm_builder\Commands\WriteFile;
 use clever_systems\mmm_builder\RenderPhp\PhpFile;
 
 class Compiler {
   /** @var Project */
   protected $project;
+
+  protected function getInstallationName() {
+    return 'dev'; // For now.
+  }
 
   /**
    * Compiler constructor.
@@ -24,8 +29,23 @@ class Compiler {
   }
 
   /**
-   * @return Commands
+   * @return \clever_systems\mmm_builder\Project
    */
+  public function getProject() {
+    return $this->project;
+  }
+
+  /**
+   * @return string[]
+   */
+  public function getEnvironmentNames() {
+    $environment_names = [];
+    foreach ($this->project->getInstallations() as $installation) {
+      $environment_names[] = $installation->getName();
+    }
+    return $environment_names;
+  }
+
   public function compile(Commands $commands) {
     $drush_dir = ($this->project->getDrupalMajorVersion() == 8) ?
       '../drush' : 'sites/all/drush';
@@ -82,7 +102,7 @@ class Compiler {
     return (string)$php;
   }
 
-  public function alterHtaccess(Commands $commands) {
+  public function letInstallationsAlterHtaccess(Commands $commands) {
     $original_file = !drush_get_option('simulate')
       // Not simulated? Look at the correct location.
       ? '.htaccess.original'
@@ -107,19 +127,71 @@ class Compiler {
     }
   }
 
-  public function getEnvironmentNames() {
-    $environment_names = [];
-    foreach ($this->project->getInstallations() as $installation) {
-      $environment_names[] = $installation->getName();
+  public static function prepare(Commands $commands) {
+    Scaffolder::writeProject($commands);
+  }
+
+  public function scaffold(Commands $commands, $installation_name) {
+    $environment_names = $this->getEnvironmentNames();
+
+    foreach ($environment_names as $environment_name) {
+      $commands->add(new EnsureDirectory("../crontab.d/$environment_name"));
     }
-    return $environment_names;
+    $commands->add(new EnsureDirectory("../crontab.d/common"));
+    $commands->add(new WriteFile("../crontab.d/common/50-cron",
+      "0 * * * * drush -r \$DRUPAL_ROOT cron -y\n"));
+
+    if (!file_exists('../docroot') && is_dir('../web')) {
+      $commands->add(new Symlink('docroot', 'web'));
+    }
+
+    $commands->add(new WriteFile('../config-sync/.gitkeep', ''));
+
+    $commands->add(new WriteFile('../settings.common.php', "<?php\n"));
+
+    $this->writeSettingsLocal($commands, $installation_name);
+
+    $drupal_major_version = $this->getProject()->getDrupalMajorVersion();
+    Scaffolder::writeSettings($commands, $drupal_major_version);
+
+    Scaffolder::writeBoxfile($commands);
+
+    Scaffolder::writeComposerGitignore($commands);
+
+    // Save htaccess to .original.
+    $this->postUpdate($commands);
+
   }
 
-  /**
-   * @return \clever_systems\mmm_builder\Project
-   */
-  public function getProject() {
-    return $this->project;
+  public static function preUpdate(Commands $commands) {
+    Scaffolder::moveBackHtaccess($commands);
   }
 
+  public function postUpdate(Commands $commands) {
+
+    Scaffolder::wrieDrupalGitignore($commands);
+    if (file_exists('.htaccess') && !is_link('.htaccess')) {
+      Scaffolder::moveAwayHtaccess($commands);
+      $this->letInstallationsAlterHtaccess($commands);
+      Scaffolder::symlinkHtaccess($commands, $this->getInstallationName());
+    }
+
+    return $commands;
+  }
+
+  public function postClone(Commands $commands) {
+
+    $commands->add(new EnsureDirectory('../private'));
+    $commands->add(new EnsureDirectory('../tmp'));
+    $commands->add(new EnsureDirectory('../logs'));
+
+    Scaffolder::symlinkSettingsLocal($commands, $this->getInstallationName());
+    Scaffolder::symlinkHtaccess($commands, $this->getInstallationName());
+
+    return $commands;
+  }
+
+  public static function activateSite(Commands $commands, $site) {
+    Scaffolder::delegateSettings($commands, $site);
+  }
 }

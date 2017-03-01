@@ -24,8 +24,8 @@ function mmm_builder_drush_command() {
   );
 
   $items['mmm-builder-prepare'] = array(
-      'description' => '1: Prepare settings dispatcher, dev settings, Boxfile and .gitignore.',
-      'aliases' => array('mbp'),
+      'description' => '1: Prepare mmm-project.php.',
+      'aliases' => array('mbp', 'mb1'),
       // @todo Check if drupals scaffolding conflicts with htaccess patch.
     ) + $common;
 
@@ -34,32 +34,42 @@ function mmm_builder_drush_command() {
       'arguments' => array(
         'include' => 'File to include. See example.mmm-project.php. Defaults to ../mmm-project.php',
       ),
-      'aliases' => array('mbc'),
+      'aliases' => array('mbc', 'mb2'),
       // For --simulate we don't need a drupal root.
       'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
     ) + $common;
 
+  $items['mmm-builder-scaffold'] = array(
+      'description' => '3: Scaffold settings dispatcher, dev settings, Boxfile and .gitignore.',
+      'arguments' => array(
+        'include' => 'File to include. See example.mmm-project.php. Defaults to ../mmm-project.php',
+      ),
+      'aliases' => array('mbs', 'mb3'),
+      // For --simulate we don't need a drupal root.
+      'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+    ) + $common;
+
+  $items['mmm-builder-activate'] = array(
+      'description' => '4: Finally include settings dispatcher.',
+      'arguments' => array(
+        'site' => 'Site. Defaults to "default".',
+      ),
+      'aliases' => array('mba', 'mb4'),
+    ) + $common;
+
   $items['mmm-builder-pre-update'] = array(
-      'description' => 'Before updating, restore htaccess from snippets folder.',
+      'description' => 'Helper: Before updating, restore htaccess from snippets folder.',
       'aliases' => array('mbbu'),
     ) + $common;
 
   $items['mmm-builder-post-update'] = array(
-      'description' => 'After updating, move htaccess to snippets folder.',
+      'description' => 'Helper: After updating, move htaccess to snippets folder.',
       'aliases' => array('mbpu'),
     ) + $common;
 
   $items['mmm-builder-post-clone'] = array(
-      'description' => 'After cloning, symlink settings.local and htaccess.',
+      'description' => 'Helper: After cloning, symlink settings.local and htaccess.',
       'aliases' => array('mbpc'),
-    ) + $common;
-
-  $items['mmm-builder-activate'] = array(
-      'description' => 'Finally include settings dispatcher.',
-      'arguments' => array(
-        'site' => 'Site. Defaults to "default".',
-      ),
-      'aliases' => array('mba'),
     ) + $common;
 
   return $items;
@@ -76,11 +86,30 @@ function drush_mmm_builder_compile_validate($include = NULL) {
 
 
 function drush_mmm_builder_compile($include = NULL) {
+  $commands = new Commands();
+  /** @var CompilerFactory $mmm_builder_compiler_factory */
+  global $mmm_builder_compiler_factory;
+  $compiler = $mmm_builder_compiler_factory->get();
+  $compiler->compile($commands);
+  return _mmm_builder_process_commands($commands);
+}
+
+function drush_mmm_builder_scaffold_validate($include = NULL) {
+  /** @var CompilerFactory $mmm_builder_compiler_factory */
+  global $mmm_builder_compiler_factory;
+  $mmm_builder_compiler_factory = new CompilerFactory($include);
+  return _mmm_builder_validate_root_or_simulate()
+    && $mmm_builder_compiler_factory->validate()
+    && _mmm_builder_autoload();
+}
+
+
+function drush_mmm_builder_scaffold($installation_name = 'dev', $include = NULL) {
+  $commands = new Commands();
   global $mmm_builder_compiler_factory;
   /** @var CompilerFactory $mmm_builder_compiler_factory */
   $compiler = $mmm_builder_compiler_factory->get();
-  $commands = new Commands();
-  $compiler->compile($commands);
+  $compiler->scaffold($commands, $installation_name);
   return _mmm_builder_process_commands($commands);
 }
 
@@ -90,8 +119,8 @@ function drush_mmm_builder_prepare_validate() {
 
 
 function drush_mmm_builder_prepare() {
-  $scaffolder = new Scaffolder();
-  $commands = $scaffolder->doPrepare();
+  $commands = new Commands();
+  Compiler::prepare($commands);
   return _mmm_builder_process_commands($commands);
 }
 
@@ -100,28 +129,47 @@ function drush_mmm_builder_pre_update_validate() {
 }
 
 
-function drush_mmm_builder_pre_update($commands = NULL) {
-  $commands = (new Scaffolder())->preUpdate($commands);
+function drush_mmm_builder_pre_update() {
+  $commands = new Commands();
+  Compiler::preUpdate($commands);
   return _mmm_builder_process_commands($commands);
 }
 
-function drush_mmm_builder_post_update_validate() {
-  return _mmm_builder_autoload();
+function drush_mmm_builder_post_update_validate($include = NULL) {
+  global $mmm_builder_compiler_factory;
+  /** @var CompilerFactory $mmm_builder_compiler_factory */
+  $mmm_builder_compiler_factory = new CompilerFactory($include);
+  return _mmm_builder_validate_root_or_simulate()
+    && $mmm_builder_compiler_factory->validate()
+    && _mmm_builder_autoload();
 }
 
 
-function drush_mmm_builder_post_update($commands = NULL) {
-  $commands = (new Scaffolder())->postUpdate($commands);
+function drush_mmm_builder_post_update($include = NULL) {
+  $commands = new Commands();
+  global $mmm_builder_compiler_factory;
+  /** @var CompilerFactory $mmm_builder_compiler_factory */
+  $compiler = $mmm_builder_compiler_factory->get();
+  $compiler->postUpdate($commands);
   return _mmm_builder_process_commands($commands);
 }
 
-function drush_mmm_builder_post_clone_validate() {
-  return _mmm_builder_autoload();
+function drush_mmm_builder_post_clone_validate($include = NULL) {
+  global $mmm_builder_compiler_factory;
+  /** @var CompilerFactory $mmm_builder_compiler_factory */
+  $mmm_builder_compiler_factory = new CompilerFactory($include);
+  return _mmm_builder_validate_root_or_simulate()
+    && $mmm_builder_compiler_factory->validate()
+    && _mmm_builder_autoload();
 }
 
 
-function drush_mmm_builder_post_clone($commands = NULL) {
-  $commands = (new Scaffolder())->postClone($commands);
+function drush_mmm_builder_post_clone() {
+  $commands = new Commands();
+  global $mmm_builder_compiler_factory;
+  /** @var CompilerFactory $mmm_builder_compiler_factory */
+  $compiler = $mmm_builder_compiler_factory->get();
+  $compiler->postClone($commands);
   return _mmm_builder_process_commands($commands);
 }
 
@@ -132,7 +180,8 @@ function drush_mmm_builder_activate_validate($site = 'default') {
 
 
 function drush_mmm_builder_activate($site = 'default') {
-  $commands = (new Scaffolder())->activateSite($site);
+  $commands = new Commands();
+  Compiler::activateSite($commands, $site);
   return _mmm_builder_process_commands($commands);
 }
 

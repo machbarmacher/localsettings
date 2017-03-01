@@ -6,20 +6,11 @@ namespace clever_systems\mmm_builder;
 
 use clever_systems\mmm_builder\Commands\Commands;
 use clever_systems\mmm_builder\Commands\DeleteFile;
-use clever_systems\mmm_builder\Commands\EnsureDirectory;
 use clever_systems\mmm_builder\Commands\MoveFile;
 use clever_systems\mmm_builder\Commands\Symlink;
 use clever_systems\mmm_builder\Commands\WriteFile;
 
 class Scaffolder {
-  /**
-   * Get installation name - for now just assume dev.
-   */
-  function getInstallationName() {
-    return 'dev';
-  }
-
-  // @fixme Add config-sync/README.txt
   // @fixme Fix composer scaffolding:
   //"pre-drupal-scaffold-cmd": [
   //"ddrush mbbu --force"
@@ -28,125 +19,38 @@ class Scaffolder {
   //"ddrush mbpu --force"
   //]
 
-  function doPrepare() {
-    $installation_name = $this->getInstallationName();
-    $commands = new Commands();
-
-
-    $compiler = (new CompilerFactory())->get();
-    $environment_names = $compiler->getEnvironmentNames();
-
-    foreach ($environment_names as $environment_name) {
-      $commands->add(new EnsureDirectory("../crontab.d/$environment_name"));
-    }
-    $commands->add(new EnsureDirectory("../crontab.d/common"));
-    $commands->add(new WriteFile("../crontab.d/common/50-cron",
-      "0 * * * * drush -r \$DRUPAL_ROOT cron -y\n"));
-
-    if (!file_exists('../docroot') && is_dir('../web')) {
-      $commands->add(new Symlink('docroot', 'web'));
-    }
-
-    $commands->add(new WriteFile('../settings.common.php', "<?php\n"));
-
-    $compiler->writeSettingsLocal($commands, $installation_name);
-
-    $drupal_major_version = $compiler->getProject()->getDrupalMajorVersion();
-    $this->writeSettings($commands, $drupal_major_version);
-
-    $this->writeBoxfile($commands);
-
-    $this->writeGitignore($commands);
-
-    $this->writeProject($commands);
-
-    // Save htaccess to .original.
-    $this->postUpdate($commands);
-
-    return $commands;
+  public static function moveAwayHtaccess(Commands $commands) {
+    $commands->add(new MoveFile('.htaccess', '.htaccess.original'));
   }
 
-  function postClone($commands = NULL) {
-    if (!$commands) {
-      $commands = new Commands();
-    }
-
-    $commands->add(new EnsureDirectory('../private'));
-    $commands->add(new EnsureDirectory('../tmp'));
-    $commands->add(new EnsureDirectory('../logs'));
-
-    $this->symlinkEnvironmentSpecificFiles($commands);
-
-    return $commands;
-  }
-
-  function preUpdate($commands = NULL) {
-    if (!$commands) {
-      $commands = new Commands();
-    }
-
+  /**
+   * @param \clever_systems\mmm_builder\Commands\Commands $commands
+   */
+  public static function moveBackHtaccess(Commands $commands) {
     // First delete, otherwise MoveFile anc composer will leave it as symlink
     // and only replace its content (which in fact changes the linked version).
     $commands->add(new DeleteFile('.htaccess'));
     $commands->add(new MoveFile('.htaccess.original', '.htaccess'));
-
-    return $commands;
   }
 
-  function postUpdate($commands = NULL) {
-    if (!$commands) {
-      $commands = new Commands();
-    }
-    $compiler = (new CompilerFactory())->get();
-
-    $commands->add(new WriteFile('.gitignore', ''));
-
-    if (file_exists('.htaccess') && !is_link('.htaccess')) {
-      $commands->add(new MoveFile('.htaccess', '.htaccess.original'));
-
-      // Let installations alter their .htaccess.
-      $compiler->alterHtaccess($commands);
-
-      $this->symlinkEnvironmentSpecificFiles($commands);
-    }
-
-    return $commands;
-  }
-
-  function activateSite($site) {
-    $commands = new Commands();
-
+  public static function delegateSettings(Commands $commands, $site) {
     $commands->add(new WriteFile("sites/$site/settings.php", <<<EOD
 <?php
 require DRUPAL_ROOT . '/../settings.php';
 
 EOD
-      ));
-
-    return $commands;
+    ));
   }
 
-  public function symlinkEnvironmentSpecificFiles(Commands $commands) {
-// Symlink environment specific files.
-    // Note that target is relative to source directory.
-    $installation_name = $this->getInstallationName();
-    $link_targets = [
-      [
-        '../settings.local.php',
-        $target = "settings.local.$installation_name.php"
-      ],
-      ['.htaccess', $target = ".htaccess.$installation_name"],
-    ];
-    foreach ($link_targets as list($link, $target)) {
-      $commands->add(new Symlink($link, $target));
-    }
+  public static function symlinkSettingsLocal(Commands $commands, $installation_name) {
+    $commands->add(new Symlink('../settings.local.php', "settings.local.$installation_name.php"));
   }
 
-  /**
-   * @param $commands
-   * @param $drupal_major_version
-   */
-  protected function writeSettings($commands, $drupal_major_version) {
+  public static function symlinkHtaccess(Commands $commands, $installation_name) {
+    $commands->add(new Symlink('.htaccess', ".htaccess.$installation_name"));
+  }
+
+  public static function writeSettings(Commands $commands, $drupal_major_version) {
     $settings_variable = ($drupal_major_version == 7) ? '$conf' : '$settings';
     $commands->add(new WriteFile('../settings.php', <<<EOD
 <?php
@@ -164,10 +68,7 @@ EOD
     ));
   }
 
-  /**
-   * @param $commands
-   */
-  protected function writeBoxfile($commands) {
+  public static function writeBoxfile(Commands $commands) {
     $commands->add(new WriteFile('../Boxfile', <<<EOD
 version: 2.0
 shared_folders:
@@ -183,10 +84,7 @@ EOD
     ));
   }
 
-  /**
-   * @param $commands
-   */
-  protected function writeGitignore($commands) {
+  public static function writeComposerGitignore(Commands $commands) {
     $commands->add(new WriteFile('../.gitignore', <<<EOD
 # Ignore paths that are symlinked per environment.
 /settings.local.php
@@ -202,14 +100,16 @@ EOD
 
 EOD
     ));
+  }
 
+  public static function wrieDrupalGitignore(Commands $commands) {
     $commands->add(new WriteFile('.gitignore', ''));
   }
 
   /**
    * @param $commands
    */
-  protected function writeProject($commands) {
+  public static function writeProject(Commands $commands) {
     $commands->add(new WriteFile('../mmm-project.php', <<<'EOD'
 <?php
 /**
