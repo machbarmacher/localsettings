@@ -198,7 +198,6 @@ class Installation {
       $site_id = $this->getSiteId($site);
       $php->addToBody("if (Runtime::getEnvironment()->match('$site_id')) {");
       $php->addToBody("  {$settings_variable}['mmm']['installation'] = '$this->name';");
-      $php->addToBody("  {$settings_variable}['mmm']['environment'] = '$this->use_environment_name';");
 
       // Add drush "uri".
       $uri_map = array_combine($uris, $uris);
