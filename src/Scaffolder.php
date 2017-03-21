@@ -70,6 +70,8 @@ EOD
   }
 
   public static function writeBoxfile(Commands $commands) {
+    // @fixme Iterate installations
+    // @fixme Delegate to fsb server. Also the docroot->web symlink.
     $commands->add(new WriteFile('../Boxfile', <<<EOD
 version: 2.0
 shared_folders:

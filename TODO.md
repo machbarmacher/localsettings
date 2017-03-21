@@ -1,6 +1,11 @@
 mmm-builder Todo
 ================
 
+* scaffold Boxfile depending on installations and docroot
+* symink docroot if needed
+* remove installation / environment separation in base_url
+* consider renaming installation => instance
+
 DynamicInstallations
 --------------------
 

@@ -189,6 +189,7 @@ class Compiler {
 
   public function postClone(Commands $commands) {
     // A git clone "forgot" all .gitignored files and folders.
+    // @fixme Add tmp/default etc.
     $commands->add(new EnsureDirectory('../private'));
     $commands->add(new EnsureDirectory('../tmp'));
     $commands->add(new EnsureDirectory('../logs'));
