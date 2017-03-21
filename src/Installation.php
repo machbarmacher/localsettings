@@ -157,10 +157,14 @@ class Installation {
       $php->addToBody("\$aliases['$alias_name'] = [")
         ->addToBody("  'uri' => '$uri',")
         ->addToBody("  'root' => '$root',")
-        ->addToBody("  'remote-user' => '$user',")
-        ->addToBody("  'remote-host' => '$host',")
         ->addToBody("  '#mmm-local-host-id' => '$local_host_id',")
         ->addToBody('];');
+      // Drush sitealias altering in root is broken, do it here.
+      // https://github.com/drush-ops/drush/issues/2432
+      $php->addToBody("if (!Runtime::getEnvironment()->match('$local_host_id')) {")
+        ->addToBody("  \$aliases['$alias_name']['remote-user'] = '$user';")
+        ->addToBody("  \$aliases['$alias_name']['remote-host'] = '$host';")
+        ->addToBody('}');
       $site_list[] = "@$alias_name";
     }
     if ($multisite) {
