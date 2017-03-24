@@ -176,7 +176,7 @@ class Installation {
         ->addToBody('];');
     }
     $php->addToBody("if (Runtime::getEnvironment()->match('$local_host_id$root')) {")
-      ->addToBody("  \$aliases['this-installation'] = \$aliases['$this->name'];")
+      ->addToBody("  \$aliases['this'] = \$aliases['$this->name'];")
       ->addToBody('}');
   }
 
