@@ -175,6 +175,9 @@ class Installation {
         ->addToBody("'site-list' => [$site_list_imploded],")
         ->addToBody('];');
     }
+    $php->addToBody("if (Runtime::getEnvironment()->match('$local_host_id$root')) {")
+      ->addToBody("  \$aliases['this-installation'] = \$aliases['$this->name'];")
+      ->addToBody('}');
   }
 
   public function compileSitesPhp(PhpFile $php) {
