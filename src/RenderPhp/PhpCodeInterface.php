@@ -1,7 +1,7 @@
 <?php
 
 
-namespace clever_systems\mmm_builder\RenderPhp;
+namespace machbarmacher\localsettings\RenderPhp;
 
 
 interface PhpCodeInterface {

@@ -3,7 +3,7 @@
  * @file ServerBase.php
  */
 
-namespace clever_systems\mmm_builder;
+namespace machbarmacher\localsettings;
 
 
 abstract class ServerBase implements ServerInterface {

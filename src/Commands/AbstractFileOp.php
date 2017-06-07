@@ -1,7 +1,7 @@
 <?php
 
 
-namespace clever_systems\mmm_builder\Commands;
+namespace machbarmacher\localsettings\Commands;
 
 
 abstract class AbstractFileOp implements CommandInterface {

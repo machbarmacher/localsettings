@@ -1,14 +1,14 @@
 <?php
 
 
-namespace clever_systems\mmm_builder;
+namespace machbarmacher\localsettings;
 
 
-use clever_systems\mmm_builder\Commands\Commands;
-use clever_systems\mmm_builder\Commands\DeleteFile;
-use clever_systems\mmm_builder\Commands\MoveFile;
-use clever_systems\mmm_builder\Commands\Symlink;
-use clever_systems\mmm_builder\Commands\WriteFile;
+use machbarmacher\localsettings\Commands\Commands;
+use machbarmacher\localsettings\Commands\DeleteFile;
+use machbarmacher\localsettings\Commands\MoveFile;
+use machbarmacher\localsettings\Commands\Symlink;
+use machbarmacher\localsettings\Commands\WriteFile;
 
 class Scaffolder {
   // @fixme Fix composer scaffolding:
@@ -25,7 +25,7 @@ class Scaffolder {
   }
 
   /**
-   * @param \clever_systems\mmm_builder\Commands\Commands $commands
+   * @param \machbarmacher\localsettings\Commands\Commands $commands
    */
   public static function moveBackHtaccess(Commands $commands) {
     // First delete, otherwise MoveFile anc composer will leave it as symlink
@@ -123,9 +123,9 @@ EOD
 /**
  * @file mmm-project.php
  */
-namespace clever_systems\mmm_builder;
-use clever_systems\mmm_builder\ServerType\FreistilboxServer;
-use clever_systems\mmm_builder\ServerType\UberspaceServer;
+namespace machbarmacher\localsettings;
+use machbarmacher\localsettings\ServerType\FreistilboxServer;
+use machbarmacher\localsettings\ServerType\UberspaceServer;
 
 // TODO: Adjust, then run "drush mb2/3/4".
 

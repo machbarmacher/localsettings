@@ -1,7 +1,7 @@
 <?php
 
 
-namespace clever_systems\mmm_builder;
+namespace machbarmacher\localsettings;
 
 
 class CompilerFactory {

@@ -3,10 +3,10 @@
  * @file mmm-project.php
  */
 
-namespace clever_systems\mmm_builder;
+namespace machbarmacher\localsettings;
 
-use clever_systems\mmm_builder\ServerType\FreistilboxServer;
-use clever_systems\mmm_builder\ServerType\UberspaceServer;
+use machbarmacher\localsettings\ServerType\FreistilboxServer;
+use machbarmacher\localsettings\ServerType\UberspaceServer;
 
 $project = new Project(7);
 

@@ -1,6 +1,6 @@
 {
-    "name": "clever-systems/mmm-builder",
-    "description": "MachbarMacher Site Management: Builder",
+    "name": "machbarmacher/localsettings",
+    "description": "Localsettings",
     "type": "drupal-drush",
     "authors": [
         {
@@ -11,7 +11,7 @@
     "require": {
     },
     "autoload": {
-        "psr-4": { "clever_systems\\mmm_builder\\": ["src/"] }
+        "psr-4": { "machbarmacher\\localsettings\\": ["src/"] }
     },
     "bin": [
     ]

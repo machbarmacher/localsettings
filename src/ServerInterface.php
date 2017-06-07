@@ -3,7 +3,7 @@
  * @file ServerInterface.php
  */
 
-namespace clever_systems\mmm_builder;
+namespace machbarmacher\localsettings;
 
 
 interface ServerInterface {

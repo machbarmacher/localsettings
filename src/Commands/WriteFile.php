@@ -1,7 +1,7 @@
 <?php
 
 
-namespace clever_systems\mmm_builder\Commands;
+namespace machbarmacher\localsettings\Commands;
 
 
 class WriteFile extends AbstractWriteFile implements CommandInterface {

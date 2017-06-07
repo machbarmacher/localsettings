@@ -1,6 +1,6 @@
 <?php
 
-namespace clever_systems\mmm_builder\Tools;
+namespace machbarmacher\localsettings\Tools;
 
 /**
  * @file DbCredentialTools.php

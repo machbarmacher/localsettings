@@ -3,11 +3,11 @@
  * @file Project.php
  */
 
-namespace clever_systems\mmm_builder;
+namespace machbarmacher\localsettings;
 
 /**
  * Class Project
- * @package clever_systems\mmm_builder
+ * @package machbarmacher\localsettings
  *
  * @todo Add docroot relative to gitroot setting.
  */

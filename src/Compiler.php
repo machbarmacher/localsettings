@@ -3,14 +3,14 @@
  * @file Compiler.php
  */
 
-namespace clever_systems\mmm_builder;
+namespace machbarmacher\localsettings;
 
-use clever_systems\mmm_builder\Commands\AlterFile;
-use clever_systems\mmm_builder\Commands\Commands;
-use clever_systems\mmm_builder\Commands\EnsureDirectory;
-use clever_systems\mmm_builder\Commands\Symlink;
-use clever_systems\mmm_builder\Commands\WriteFile;
-use clever_systems\mmm_builder\RenderPhp\PhpFile;
+use machbarmacher\localsettings\Commands\AlterFile;
+use machbarmacher\localsettings\Commands\Commands;
+use machbarmacher\localsettings\Commands\EnsureDirectory;
+use machbarmacher\localsettings\Commands\Symlink;
+use machbarmacher\localsettings\Commands\WriteFile;
+use machbarmacher\localsettings\RenderPhp\PhpFile;
 
 class Compiler {
   /** @var Project */
@@ -29,7 +29,7 @@ class Compiler {
   }
 
   /**
-   * @return \clever_systems\mmm_builder\Project
+   * @return \machbarmacher\localsettings\Project
    */
   public function getProject() {
     return $this->project;

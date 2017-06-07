@@ -1,16 +1,16 @@
 <?php
 
-use clever_systems\mmm_builder\Commands\CommandInterface;
-use clever_systems\mmm_builder\Commands\Commands;
-use clever_systems\mmm_builder\Compiler;
-use clever_systems\mmm_builder\CompilerFactory;
-use clever_systems\mmm_builder\Project;
-use clever_systems\mmm_builder\Scaffolder;
+use machbarmacher\localsettings\Commands\CommandInterface;
+use machbarmacher\localsettings\Commands\Commands;
+use machbarmacher\localsettings\Compiler;
+use machbarmacher\localsettings\CompilerFactory;
+use machbarmacher\localsettings\Project;
+use machbarmacher\localsettings\Scaffolder;
 
 /**
  * Implements hook_drush_command().
  */
-function mmm_builder_drush_command() {
+function localsettings_drush_command() {
   $items = array();
 
   $common = array(
@@ -75,126 +75,126 @@ function mmm_builder_drush_command() {
   return $items;
 }
 
-function drush_mmm_builder_compile_validate($include = NULL) {
-  global $mmm_builder_compiler_factory;
-  /** @var CompilerFactory $mmm_builder_compiler_factory */
-  $mmm_builder_compiler_factory = new CompilerFactory($include);
-  return _mmm_builder_validate_root_or_simulate()
-    && $mmm_builder_compiler_factory->validate()
-    && _mmm_builder_autoload();
+function drush_localsettings_compile_validate($include = NULL) {
+  global $localsettings_compiler_factory;
+  /** @var CompilerFactory $localsettings_compiler_factory */
+  $localsettings_compiler_factory = new CompilerFactory($include);
+  return _localsettings_validate_root_or_simulate()
+    && $localsettings_compiler_factory->validate()
+    && _localsettings_autoload();
 }
 
 
-function drush_mmm_builder_compile($include = NULL) {
+function drush_localsettings_compile($include = NULL) {
   $commands = new Commands();
-  /** @var CompilerFactory $mmm_builder_compiler_factory */
-  global $mmm_builder_compiler_factory;
-  $compiler = $mmm_builder_compiler_factory->get();
+  /** @var CompilerFactory $localsettings_compiler_factory */
+  global $localsettings_compiler_factory;
+  $compiler = $localsettings_compiler_factory->get();
   $compiler->compile($commands);
-  return _mmm_builder_process_commands($commands);
+  return _localsettings_process_commands($commands);
 }
 
-function drush_mmm_builder_scaffold_validate($include = NULL) {
-  /** @var CompilerFactory $mmm_builder_compiler_factory */
-  global $mmm_builder_compiler_factory;
-  $mmm_builder_compiler_factory = new CompilerFactory($include);
-  return _mmm_builder_validate_root_or_simulate()
-    && $mmm_builder_compiler_factory->validate()
-    && _mmm_builder_autoload();
+function drush_localsettings_scaffold_validate($include = NULL) {
+  /** @var CompilerFactory $localsettings_compiler_factory */
+  global $localsettings_compiler_factory;
+  $localsettings_compiler_factory = new CompilerFactory($include);
+  return _localsettings_validate_root_or_simulate()
+    && $localsettings_compiler_factory->validate()
+    && _localsettings_autoload();
 }
 
 
-function drush_mmm_builder_scaffold($installation_name = 'dev', $include = NULL) {
+function drush_localsettings_scaffold($installation_name = 'dev', $include = NULL) {
   $commands = new Commands();
-  global $mmm_builder_compiler_factory;
-  /** @var CompilerFactory $mmm_builder_compiler_factory */
-  $compiler = $mmm_builder_compiler_factory->get();
+  global $localsettings_compiler_factory;
+  /** @var CompilerFactory $localsettings_compiler_factory */
+  $compiler = $localsettings_compiler_factory->get();
   $compiler->scaffold($commands, $installation_name);
-  return _mmm_builder_process_commands($commands);
+  return _localsettings_process_commands($commands);
 }
 
-function drush_mmm_builder_prepare_validate() {
-  return _mmm_builder_autoload();
+function drush_localsettings_prepare_validate() {
+  return _localsettings_autoload();
 }
 
 
-function drush_mmm_builder_prepare() {
+function drush_localsettings_prepare() {
   $commands = new Commands();
   Compiler::prepare($commands);
-  return _mmm_builder_process_commands($commands);
+  return _localsettings_process_commands($commands);
 }
 
-function drush_mmm_builder_pre_update_validate() {
-  return _mmm_builder_autoload();
+function drush_localsettings_pre_update_validate() {
+  return _localsettings_autoload();
 }
 
 
-function drush_mmm_builder_pre_update() {
+function drush_localsettings_pre_update() {
   $commands = new Commands();
   Compiler::preUpdate($commands);
-  return _mmm_builder_process_commands($commands);
+  return _localsettings_process_commands($commands);
 }
 
-function drush_mmm_builder_post_update_validate($include = NULL) {
-  global $mmm_builder_compiler_factory;
-  /** @var CompilerFactory $mmm_builder_compiler_factory */
-  $mmm_builder_compiler_factory = new CompilerFactory($include);
-  return _mmm_builder_validate_root_or_simulate()
-    && $mmm_builder_compiler_factory->validate()
-    && _mmm_builder_autoload();
+function drush_localsettings_post_update_validate($include = NULL) {
+  global $localsettings_compiler_factory;
+  /** @var CompilerFactory $localsettings_compiler_factory */
+  $localsettings_compiler_factory = new CompilerFactory($include);
+  return _localsettings_validate_root_or_simulate()
+    && $localsettings_compiler_factory->validate()
+    && _localsettings_autoload();
 }
 
 
-function drush_mmm_builder_post_update($include = NULL) {
+function drush_localsettings_post_update($include = NULL) {
   $commands = new Commands();
-  global $mmm_builder_compiler_factory;
-  /** @var CompilerFactory $mmm_builder_compiler_factory */
-  $compiler = $mmm_builder_compiler_factory->get();
+  global $localsettings_compiler_factory;
+  /** @var CompilerFactory $localsettings_compiler_factory */
+  $compiler = $localsettings_compiler_factory->get();
   $compiler->postUpdate($commands);
-  return _mmm_builder_process_commands($commands);
+  return _localsettings_process_commands($commands);
 }
 
-function drush_mmm_builder_post_clone_validate($include = NULL) {
-  global $mmm_builder_compiler_factory;
-  /** @var CompilerFactory $mmm_builder_compiler_factory */
-  $mmm_builder_compiler_factory = new CompilerFactory($include);
-  return _mmm_builder_validate_root_or_simulate()
-    && $mmm_builder_compiler_factory->validate()
-    && _mmm_builder_autoload();
+function drush_localsettings_post_clone_validate($include = NULL) {
+  global $localsettings_compiler_factory;
+  /** @var CompilerFactory $localsettings_compiler_factory */
+  $localsettings_compiler_factory = new CompilerFactory($include);
+  return _localsettings_validate_root_or_simulate()
+    && $localsettings_compiler_factory->validate()
+    && _localsettings_autoload();
 }
 
 
-function drush_mmm_builder_post_clone() {
+function drush_localsettings_post_clone() {
   $commands = new Commands();
-  global $mmm_builder_compiler_factory;
-  /** @var CompilerFactory $mmm_builder_compiler_factory */
-  $compiler = $mmm_builder_compiler_factory->get();
+  global $localsettings_compiler_factory;
+  /** @var CompilerFactory $localsettings_compiler_factory */
+  $compiler = $localsettings_compiler_factory->get();
   $compiler->postClone($commands);
-  return _mmm_builder_process_commands($commands);
+  return _localsettings_process_commands($commands);
 }
 
-function drush_mmm_builder_activate_validate($site = 'default') {
+function drush_localsettings_activate_validate($site = 'default') {
   return is_file("sites/$site/settings.php")
-    && _mmm_builder_autoload();
+    && _localsettings_autoload();
 }
 
 
-function drush_mmm_builder_activate($site = 'default') {
+function drush_localsettings_activate($site = 'default') {
   $commands = new Commands();
   Compiler::activateSite($commands, $site);
-  return _mmm_builder_process_commands($commands);
+  return _localsettings_process_commands($commands);
 }
 
 /**
  * @return bool
  */
-function _mmm_builder_validate_root_or_simulate() {
+function _localsettings_validate_root_or_simulate() {
 // Always try to bootstrap to prepare autoloader.
   $has_drupal_root = drush_bootstrap(DRUSH_BOOTSTRAP_DRUPAL_ROOT);
   if (!drush_get_context('DRUSH_SIMULATE')
     && !$has_drupal_root
   ) {
-    return drush_set_error('DRUSH_mmm_builder_ERROR', dt('MMM builder needs to run in a valid drupal root if not called with --simulate.'));
+    return drush_set_error('DRUSH_localsettings_ERROR', dt('MMM builder needs to run in a valid drupal root if not called with --simulate.'));
   }
   return TRUE;
 }
@@ -202,7 +202,7 @@ function _mmm_builder_validate_root_or_simulate() {
 /**
  * @return bool
  */
-function _mmm_builder_autoload() {
+function _localsettings_autoload() {
   // Hackily guess some autoloader paths.
   $paths = [
     DRUPAL_ROOT . '/../vendor/autoload.php',
@@ -214,7 +214,7 @@ function _mmm_builder_autoload() {
     }
   }
   if (!class_exists(Compiler::class)) {
-    return drush_set_error('DRUSH_mmm_builder_ERROR', dt('Autoloader not found.'));
+    return drush_set_error('DRUSH_localsettings_ERROR', dt('Autoloader not found.'));
   }
   return TRUE;
 }
@@ -223,7 +223,7 @@ function _mmm_builder_autoload() {
  * @param CommandInterface $commands
  * @return array|bool
  */
-function _mmm_builder_process_commands($commands) {
+function _localsettings_process_commands($commands) {
   $results = [];
   $commands->execute($results, drush_get_context('DRUSH_SIMULATE'));
   if (drush_get_context('DRUSH_SIMULATE') || drush_get_context('DRUSH_VERBOSE')) {

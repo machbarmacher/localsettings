@@ -3,11 +3,11 @@
  * @file Uberspace.php
  */
 
-namespace clever_systems\mmm_builder\ServerType;
+namespace machbarmacher\localsettings\ServerType;
 
 
-use clever_systems\mmm_builder\ServerBase;
-use clever_systems\mmm_builder\ServerInterface;
+use machbarmacher\localsettings\ServerBase;
+use machbarmacher\localsettings\ServerInterface;
 
 class UberspaceServer extends ServerBase implements ServerInterface {
   /** @var string */

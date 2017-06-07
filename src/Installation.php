@@ -3,11 +3,11 @@
  * @file Installation.php
  */
 
-namespace clever_systems\mmm_builder;
+namespace machbarmacher\localsettings;
 
 
-use clever_systems\mmm_builder\RenderPhp\PhpFile;
-use clever_systems\mmm_builder\Tools\DbCredentialTools;
+use machbarmacher\localsettings\RenderPhp\PhpFile;
+use machbarmacher\localsettings\Tools\DbCredentialTools;
 
 class Installation {
   /** @var string */
