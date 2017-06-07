@@ -17,7 +17,7 @@ class Compiler {
   protected $project;
 
   protected function getInstallationName() {
-    return 'dev'; // For now.
+    return 'dev'; // @todo
   }
 
   /**

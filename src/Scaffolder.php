@@ -37,7 +37,7 @@ class Scaffolder {
   public static function delegateSettings(Commands $commands, $site) {
     $commands->add(new WriteFile("sites/$site/settings.php", <<<EOD
 <?php
-require DRUPAL_ROOT . '/../settings.php';
+require DRUPAL_ROOT . '/../localsettings/settings.php';
 
 EOD
     ));
