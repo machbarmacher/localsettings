@@ -38,7 +38,7 @@ class Compiler {
   /**
    * @return string[]
    */
-  public function getEnvironmentNames() {
+  public function getInstallationNames() {
     $environment_names = [];
     foreach ($this->project->getInstallations() as $installation) {
       $environment_names[] = $installation->getName();
@@ -122,13 +122,13 @@ class Compiler {
   }
 
   public function writeSettingsLocal(Commands $commands, $current_installation_name) {
-    $environment_names = $this->getEnvironmentNames();
-    foreach ($environment_names as $environment_name) {
-      $content = ($environment_name === $current_installation_name)
+    $installation_names = $this->getInstallationNames();
+    foreach ($installation_names as $installation_name) {
+      $content = ($installation_name === $current_installation_name)
         ? file_get_contents('sites/default/settings.php')
         . "\n\n// TODO: Clean up." : "<?php\n";
       // @todo Remove comments.
-      $commands->add(new  WriteFile("../settings.local.$environment_name.php", $content));
+      $commands->add(new  WriteFile("../settings.local.$installation_name.php", $content));
     }
   }
 
@@ -138,12 +138,12 @@ class Compiler {
     // Step 2 is compiling
   }
 
-  public function scaffold(Commands $commands, $installation_name) {
+  public function scaffold(Commands $commands, $current_installation_name) {
     // Step 3
-    $environment_names = $this->getEnvironmentNames();
+    $installation_names = $this->getInstallationNames();
 
-    foreach ($environment_names as $environment_name) {
-      $commands->add(new EnsureDirectory("../crontab.d/$environment_name"));
+    foreach ($installation_names as $installation_name) {
+      $commands->add(new EnsureDirectory("../crontab.d/$installation_name"));
     }
     $commands->add(new EnsureDirectory("../crontab.d/common"));
     $commands->add(new WriteFile("../crontab.d/common/50-cron",
@@ -157,7 +157,7 @@ class Compiler {
 
     $commands->add(new WriteFile('../settings.common.php', "<?php\n"));
 
-    $this->writeSettingsLocal($commands, $installation_name);
+    $this->writeSettingsLocal($commands, $current_installation_name);
 
     $drupal_major_version = $this->getProject()->getDrupalMajorVersion();
     Scaffolder::writeSettings($commands, $drupal_major_version);
