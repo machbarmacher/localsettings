@@ -52,8 +52,8 @@ class Compiler {
 
     $commands->add(new WriteFile('sites/sites.php', $this->compileSitesPhp()));
     $commands->add(new WriteFile("$drush_dir/aliases.drushrc.php", $this->compileAliases()));
-    $commands->add(new WriteFile('../settings.baseurl.php', $this->compileBaseUrls()));
-    $commands->add(new WriteFile('../settings.databases.php', $this->compileDbCredentials()));
+    $commands->add(new WriteFile('../localsettings/settings.baseurl.php', $this->compileBaseUrls()));
+    $commands->add(new WriteFile('../localsettings/settings.databases.php', $this->compileDbCredentials()));
   }
 
   public function compileAliases() {
@@ -128,7 +128,7 @@ class Compiler {
         ? file_get_contents('sites/default/settings.php')
         . "\n\n// TODO: Clean up." : "<?php\n";
       // @todo Remove comments.
-      $commands->add(new  WriteFile("../settings.local.$installation_name.php", $content));
+      $commands->add(new  WriteFile("../localsettings/settings.local.$installation_name.php", $content));
     }
   }
 
@@ -139,27 +139,29 @@ class Compiler {
   }
 
   public function scaffold(Commands $commands, $current_installation_name) {
+    $drupal_major_version = $this->getProject()->getDrupalMajorVersion();
     // Step 3
     $installation_names = $this->getInstallationNames();
 
     foreach ($installation_names as $installation_name) {
-      $commands->add(new EnsureDirectory("../crontab.d/$installation_name"));
+      $commands->add(new EnsureDirectory("../localsettings/crontab.d/$installation_name"));
     }
-    $commands->add(new EnsureDirectory("../crontab.d/common"));
-    $commands->add(new WriteFile("../crontab.d/common/50-cron",
+    $commands->add(new EnsureDirectory("../localsettings/crontab.d/common"));
+    $commands->add(new WriteFile("../localsettings/crontab.d/common/50-cron",
       "0 * * * * drush -r \$DRUPAL_ROOT cron -y\n"));
 
     if (!file_exists('../docroot') && is_dir('../web')) {
       $commands->add(new Symlink('docroot', 'web'));
     }
 
-    $commands->add(new WriteFile('../config-sync/.gitkeep', ''));
+    if ($drupal_major_version != 7) {
+      $commands->add(new WriteFile('../config-sync/.gitkeep', ''));
+    }
 
     $commands->add(new WriteFile('../settings.common.php', "<?php\n"));
 
     $this->writeSettingsLocal($commands, $current_installation_name);
 
-    $drupal_major_version = $this->getProject()->getDrupalMajorVersion();
     Scaffolder::writeSettings($commands, $drupal_major_version);
 
     Scaffolder::writeBoxfile($commands);

@@ -59,11 +59,11 @@ EOD
 require '../vendor/autoload.php';
 use clever_systems\mmm_runtime\Runtime;
 
-require '../settings.baseurl.php';
-require '../settings.databases.php';
+require '../localsettings/settings.baseurl.php';
+require '../localsettings/settings.databases.php';
 Runtime::getEnvironment()->settings($settings_variable, \$databases);
-include '../settings.common.php';
-include '../settings.local.php';
+include '../localsettings/settings.common.php';
+include '../localsettings/settings.local.php';
 
 EOD
     ));
@@ -127,7 +127,7 @@ namespace machbarmacher\localsettings;
 use machbarmacher\localsettings\ServerType\FreistilboxServer;
 use machbarmacher\localsettings\ServerType\UberspaceServer;
 
-// TODO: Adjust, then run "drush mb2/3/4".
+// TODO: Adjust, then run "drush ls2/3/4".
 
 $project = new Project(8);
 
