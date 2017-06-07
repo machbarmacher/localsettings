@@ -16,10 +16,7 @@ class CompilerFactory {
    * CompilerFactory constructor.
    * @param string|null $include
    */
-  public function __construct($include = NULL) {
-    if (!$include) {
-      $include = '../mmm-project.php';
-    }
+  public function __construct($include) {
     $this->include = $include;
     $this->project = @include $include;
     if ($this->valid()) {
@@ -38,7 +35,7 @@ class CompilerFactory {
 
   public function validate() {
     if (!$this->valid()) {
-      return drush_set_error('DRUSH_mmm_builder_ERROR', dt('File not found: @file', ['@file' => $this->include]));
+      return drush_set_error('DRUSH_localsettings_ERROR', dt('File not found: @file', ['@file' => $this->include]));
     }
     return TRUE;
   }

@@ -23,53 +23,53 @@ function localsettings_drush_command() {
     'bootstrap' => DRUSH_BOOTSTRAP_DRUPAL_ROOT,
   );
 
-  $items['mmm-builder-prepare'] = array(
-      'description' => '1: Prepare mmm-project.php.',
-      'aliases' => array('mbp', 'mb1'),
+  $items['localsettings-prepare'] = array(
+      'description' => '1: Prepare ../localsettings/project.php.',
+      'aliases' => array('lsp', 'ls1'),
       // @todo Check if drupals scaffolding conflicts with htaccess patch.
     ) + $common;
 
-  $items['mmm-builder-compile'] = array(
+  $items['localsettings-compile'] = array(
       'description' => '2: Compile from project definition: sites, aliases, DBs, baseurls.',
       'arguments' => array(
-        'include' => 'File to include. See example.mmm-project.php. Defaults to ../mmm-project.php',
+        'include' => 'File to include. See example.project.php. Defaults to ../localsettings/project.php',
       ),
-      'aliases' => array('mbc', 'mb2'),
+      'aliases' => array('lsc', 'ls2'),
       // For --simulate we don't need a drupal root.
       'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
     ) + $common;
 
-  $items['mmm-builder-scaffold'] = array(
+  $items['localsettings-scaffold'] = array(
       'description' => '3: Scaffold settings dispatcher, dev settings, Boxfile and .gitignore.',
       'arguments' => array(
         'include' => 'File to include. See example.mmm-project.php. Defaults to ../mmm-project.php',
       ),
-      'aliases' => array('mbs', 'mb3'),
+      'aliases' => array('lss', 'ls3'),
       // For --simulate we don't need a drupal root.
       'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
     ) + $common;
 
-  $items['mmm-builder-activate'] = array(
+  $items['localsettings-activate'] = array(
       'description' => '4: Finally include settings dispatcher.',
       'arguments' => array(
         'site' => 'Site. Defaults to "default".',
       ),
-      'aliases' => array('mba', 'mb4'),
+      'aliases' => array('lsa', 'ls4'),
     ) + $common;
 
-  $items['mmm-builder-pre-update'] = array(
+  $items['localsettings-pre-update'] = array(
       'description' => 'Helper: Before updating, restore htaccess from snippets folder.',
-      'aliases' => array('mbbu'),
+      'aliases' => array('lsbu'),
     ) + $common;
 
-  $items['mmm-builder-post-update'] = array(
+  $items['localsettings-post-update'] = array(
       'description' => 'Helper: After updating, move htaccess to snippets folder.',
-      'aliases' => array('mbpu'),
+      'aliases' => array('lspu'),
     ) + $common;
 
-  $items['mmm-builder-post-clone'] = array(
+  $items['localsettings-post-clone'] = array(
       'description' => 'Helper: After cloning, symlink settings.local and htaccess.',
-      'aliases' => array('mbpc'),
+      'aliases' => array('lspc'),
     ) + $common;
 
   return $items;
@@ -95,6 +95,9 @@ function drush_localsettings_compile($include = NULL) {
 }
 
 function drush_localsettings_scaffold_validate($include = NULL) {
+  if (!$include) {
+    $include = '../localsettings/project.php';
+  }
   /** @var CompilerFactory $localsettings_compiler_factory */
   global $localsettings_compiler_factory;
   $localsettings_compiler_factory = new CompilerFactory($include);
