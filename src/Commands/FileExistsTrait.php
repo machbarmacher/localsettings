@@ -23,7 +23,7 @@ trait FileExistsTrait {
    * @return bool
    */
   protected function checkTargetDoesNotExist($filename) {
-    if (file_exists($filename) && !drush_get_option(['f', 'force'])) {
+    if (file_exists($filename) && !drush_get_option(['f', 'force'], TRUE)) {
       drush_log(dt('Target already exists: !file', ['!file' => $filename]), LogLevel::ERROR);
       return FALSE;
     }

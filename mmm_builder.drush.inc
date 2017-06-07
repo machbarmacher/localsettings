@@ -18,7 +18,7 @@ function localsettings_drush_command() {
       'default' => 'key-value',
     ),
     'options' => [
-      'force' => 'Overwrite existing  files.'
+      'force' => 'Overwrite existing files, defaults to 1.'
     ],
     'bootstrap' => DRUSH_BOOTSTRAP_DRUPAL_ROOT,
   );
