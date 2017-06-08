@@ -21,6 +21,10 @@ class PhpFile implements PhpCodeInterface {
     $this->footer = new PhpLines();
   }
 
+  public function empty() {
+    return $this->header->empty() && $this->body->empty() && $this->footer->empty();
+  }
+
   /**
    * @param string|PhpCodeInterface $line
    * @return $this

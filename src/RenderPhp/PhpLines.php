@@ -29,4 +29,8 @@ class PhpLines {
   public function __toString() {
     return implode("\n", $this->lines);
   }
+
+  public function empty() {
+    return !$this->lines;
+  }
 }

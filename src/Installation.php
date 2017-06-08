@@ -187,11 +187,12 @@ class Installation {
       foreach ($uris as $uri) {
         // @todo Care for port when needed.
         $host = parse_url($uri, PHP_URL_HOST);
-        $php->addToBody("\$sites['$host'] = '$site';");
+        if ($site !== 'default') {
+          $php->addToBody("\$sites['$host'] = '$site';");
+        }
       }
     }
   }
-
 
   public function compileBaseUrls(PhpFile $php) {
     $settings_variable = $this->project->getSettingsVariable();
