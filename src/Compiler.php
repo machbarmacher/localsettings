@@ -160,7 +160,7 @@ class Compiler {
       $commands->add(new WriteFile('../config-sync/.gitkeep', ''));
     }
 
-    $commands->add(new WriteFile('../settings.common.php', "<?php\n"));
+    $commands->add(new WriteFile('../localsettings/settings.common.php', "<?php\n"));
 
     $this->writeSettingsLocal($commands, $current_installation_name);
 
