@@ -37,7 +37,7 @@ class Installation {
     $this->server = $server;
     $this->project = $project;
 
-    $this->docroot = $this->server->normalizeDocroot($this->server->getDefaultDocroot());
+    $this->docroot = $this->server->makeDocrootAbsolute($this->server->getDefaultDocroot());
     $this->use_environment_name = $name;
   }
 
@@ -49,14 +49,58 @@ class Installation {
   }
 
   /**
+   * @return \machbarmacher\localsettings\Project
+   */
+  public function getProject() {
+    return $this->project;
+  }
+
+  /**
+   * @return \machbarmacher\localsettings\ServerInterface
+   */
+  public function getServer() {
+    return $this->server;
+  }
+
+  /**
    * @return string
    */
-  public function getSiteId($site = 'default') {
+  public function getDocroot() {
+    return $this->docroot;
+  }
+
+  /**
+   * @return string
+   */
+  public function getProjektUniqueInstallationName() {
     $user = $this->server->getUser();
     $host = $this->server->getShortHostName();
-    $path = $this->docroot;
-    // $path is absolute and already has a leading slash.
-    return "$user@$host$path#$site";
+    $path = $this->server->makeDocrootRelative($this->docroot);
+    $name = "$user@$host:$path";
+    return $name;
+  }
+
+  /**
+   * @return string
+   */
+  public function geProjectUniqueSiteName($site) {
+    $name = $this->getProjektUniqueInstallationName();
+    if ($this->isMultisite()) {
+      $name .= "#$site";
+    }
+    return $name;
+  }
+
+  public function getServerUniqueSiteName($site) {
+    $name = $this->server->getServerUniqueInstallationName($this);
+    if ($this->isMultisite()) {
+      $name .= "#$site";
+    }
+    return $name;
+  }
+
+  public function isMultisite() {
+    return (bool)array_diff_key($this->site_uris, ['default' => TRUE]);
   }
 
   /**
@@ -108,7 +152,7 @@ class Installation {
    * @return $this
    */
   public function setDocroot($docroot) {
-    $this->docroot = $this->server->normalizeDocroot($docroot);
+    $this->docroot = $this->server->makeDocrootAbsolute($docroot);
     return $this;
   }
 
@@ -134,7 +178,7 @@ class Installation {
       $credential_pattern = DbCredentialTools::getDbCredentialsFromDbUrl($credential_pattern);
     }
     foreach ($this->site_uris as $site => $_) {
-      $replacements = ['{{installation}}' => $this->name, '{{site}}' => $site];
+      $replacements = ['{{installation}}' => $this->name, '{{site}}' => $site, '{{dirname}}' => '$dirname'];
       $this->db_credentials[$site] = DbCredentialTools::substituteInDbCredentials($credential_pattern, $replacements);
     }
     return $this;
@@ -153,15 +197,15 @@ class Installation {
       $root = $this->docroot;
       $host = $this->server->getHost();
       $user = $this->server->getUser();
-      $local_host_id = $this->server->getLocalHostId();
+      $server_unique_site_name = $this->server->getServerUniqueInstallationName($this);
       $php->addToBody("\$aliases['$alias_name'] = [")
         ->addToBody("  'uri' => '$uri',")
         ->addToBody("  'root' => '$root',")
-        ->addToBody("  '#mmm-local-host-id' => '$local_host_id',")
+        ->addToBody("  '#server_unique_site_name' => '$server_unique_site_name',")
         ->addToBody('];');
       // Drush sitealias altering in root is broken, do it here.
       // https://github.com/drush-ops/drush/issues/2432
-      $php->addToBody("if (!Runtime::getEnvironment()->match('$local_host_id')) {")
+      $php->addToBody("if (!Runtime::getEnvironment()->match('$server_unique_site_name')) {")
         ->addToBody("  \$aliases['$alias_name']['remote-user'] = '$user';")
         ->addToBody("  \$aliases['$alias_name']['remote-host'] = '$host';")
         ->addToBody('}');
@@ -175,7 +219,7 @@ class Installation {
         ->addToBody("'site-list' => [$site_list_imploded],")
         ->addToBody('];');
     }
-    $php->addToBody("if (Runtime::getEnvironment()->match('$local_host_id$root')) {")
+    $php->addToBody("if (Runtime::getEnvironment()->match('$server_unique_site_name$root')) {")
       ->addToBody("  \$aliases['this'] = \$aliases['$this->name'];")
       ->addToBody('}');
   }
@@ -199,7 +243,7 @@ class Installation {
     $php->addToBody('');
     $php->addToBody("// Installation: $this->name");
     foreach ($this->site_uris as $site => $uris) {
-      $site_id = $this->getSiteId($site);
+      $site_id = $this->geProjectUniqueSiteName($site);
       $php->addToBody("if (Runtime::getEnvironment()->match('$site_id')) {");
       $php->addToBody("  {$settings_variable}['mmm']['installation'] = '$this->name';");
 
@@ -227,7 +271,7 @@ class Installation {
     $php->addToBody('');
     $php->addToBody("// Installation: $this->name");
     foreach ($this->db_credentials as $site => $db_credential) {
-      $site_id = $this->getSiteId($site);
+      $site_id = $this->geProjectUniqueSiteName($site);
       $php->addToBody("if (Runtime::getEnvironment()->match('$site_id')) {")
         ->addToBody("  \$databases['default']['default'] = "
           // @todo Replace with better dumper.

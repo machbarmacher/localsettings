@@ -51,7 +51,11 @@ class Project {
   }
 
   public function getSettingsVariable() {
-    return ($this->drupal_major_version == 7) ? '$conf' : '$settings';
+    return $this->isD7() ? '$conf' : '$settings';
+  }
+
+  public function isD7() {
+    return $this->drupal_major_version == 7;
   }
 
   /**

@@ -55,13 +55,7 @@ EOD
     $settings_variable = ($drupal_major_version == 7) ? '$conf' : '$settings';
     $commands->add(new WriteFile('../settings.php', <<<EOD
 <?php
-// MMM settings file.
-require '../vendor/autoload.php';
-use clever_systems\mmm_runtime\Runtime;
-
-require '../localsettings/settings.baseurl.php';
-require '../localsettings/settings.databases.php';
-Runtime::getEnvironment()->settings($settings_variable, \$databases);
+require '../localsettings/settings.generated.php';
 include '../localsettings/settings.common.php';
 include '../localsettings/settings.local.php';
 
@@ -79,18 +73,21 @@ shared_folders:
   - logs
 env_specific_files:
   docroot/.htaccess:
-    production: .htaccess.live
-  settings.local.php:
-    production: settings.local.live.php
+    live: .htaccess.live
+    test: .htaccess.test
+  localsettings/settings.generated.php:
+    live: settings.generated.live.php
+    test: settings.generated.test.php
 
 EOD
+      // @fixme Allow more than live and test.
     ));
   }
 
   public static function writeGitignoreForComposer(Commands $commands) {
     $commands->add(new WriteFile('../.gitignore', <<<EOD
 # Ignore paths that are symlinked per environment.
-/settings.local.php
+/localsettings/settings.generated.php
 # Ignore server content.
 /config
 /tmp
@@ -118,10 +115,10 @@ EOD
    * @param $commands
    */
   public static function writeProject(Commands $commands) {
-    $commands->add(new WriteFile('../mmm-project.php', <<<'EOD'
+    $commands->add(new WriteFile('../localsettings/project.php', <<<'EOD'
 <?php
 /**
- * @file mmm-project.php
+ * @file localsettings/project.php
  */
 namespace machbarmacher\localsettings;
 use machbarmacher\localsettings\ServerType\FreistilboxServer;
