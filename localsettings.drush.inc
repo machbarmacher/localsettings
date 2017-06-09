@@ -76,10 +76,6 @@ function localsettings_drush_command() {
 }
 
 function drush_localsettings_compile_validate($include = NULL) {
-  if (!$include) {
-    $include = '../localsettings/project.php';
-  }
-
   global $localsettings_compiler_factory;
   /** @var CompilerFactory $localsettings_compiler_factory */
   $localsettings_compiler_factory = new CompilerFactory($include);

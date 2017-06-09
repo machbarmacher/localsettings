@@ -1,8 +1,6 @@
 localsettings Todo
 ==================
 
-* write server specific settings (to where?)
-* write some generated settings to "common"
 * Alter aliases depending on local host/user
   Note: host is not available simply on freistilbox.
 * rename common/local to customized-*

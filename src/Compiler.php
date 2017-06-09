@@ -59,8 +59,8 @@ class Compiler {
     $server_setting_files = [];
     foreach ($this->project->getInstallations() as $installation_name => $installation) {
       $php = new PhpFile();
-      $php->addRawStatement('// Basic settings');
-      $this->addBasicSettings($php, $installation);
+      $php->addRawStatement('// Basic installation facts.');
+      $this->addInstallationFacts($php, $installation);
       $php->addRawStatement('');
       $php->addRawStatement('// Base URLs');
       $installation->compileBaseUrls($php);
@@ -81,16 +81,20 @@ class Compiler {
         $server_setting_files[$server_name] = $server_setting_file;
         $commands->add(new WriteFile("../localsettings/$server_setting_file", $server_php));
       }
-      $php->addRawStatement("include {$server_setting_files[$server_name]};");
+      $php->addRawStatement("include '../localsettings/{$server_setting_files[$server_name]}';");
       $commands->add(new WriteFile("../localsettings/settings.generated.{$installation_name}.php", $php));
     }
+
+    $php = new PhpFile();
+    $this->addBasicFacts($php);
+    $commands->add(new WriteFile("../localsettings/settings.generated-basic.php", $php));
 
     $php = new PhpFile();
     $this->addGenericSettings($php);
     $commands->add(new WriteFile("../localsettings/settings.generated-common.php", $php));
   }
 
-  protected function addBasicSettings(PhpFile $php, Installation $installation) {
+  protected function addInstallationFacts(PhpFile $php, Installation $installation) {
     $settings_variable = $this->project->getSettingsVariable();
 
     $installation_name = $installation->getName();
@@ -103,18 +107,26 @@ EOD
     );
   }
 
-  protected function addGenericSettings(PhpFile $php) {
+  protected function addBasicFacts(PhpFile $php) {
     $is_d7 = $this->project->isD7();
     $settings_variable = $this->project->getSettingsVariable();
     $conf_path = $is_d7 ? 'conf_path()' : '\Drupal::service(\'site.path\')->get()';
+
+    $php->addRawStatement(<<<EOD
+\$site = {$settings_variable}['localsettings']['site'] = basename($conf_path);
+\$dirname = {$settings_variable}['localsettings']['dirname'] = basename(dirname(getcwd()));
+EOD
+    );
+  }
+
+  protected function addGenericSettings(PhpFile $php) {
+    $is_d7 = $this->project->isD7();
+    $settings_variable = $this->project->getSettingsVariable();
 
     $tmp_path_quoted = "\"../tmp/\$site\"";
     $private_path_quoted = "\"../private/\$site\"";
 
     $php->addRawStatement(<<<EOD
-\$site = {$settings_variable}['localsettings']['site'] = basename($conf_path);
-\$dirname = {$settings_variable}['localsettings']['dirname'] = basename(dirname(getcwd()));
-
 {$settings_variable}['file_public_path'] = "sites/\$site/files";
 
 if (!file_exists({$private_path_quoted})) { mkdir({$private_path_quoted}); }    
@@ -191,9 +203,9 @@ EOD
       $commands->add(new WriteFile('../config-sync/.gitkeep', ''));
     }
 
-    // Write settings.common.php
+    // Write settings.custom-common.php
     // This is not idempotent, and will break due to recursion if done twice.
-    if (!file_exists('../localsettings/settings.common.php')) {
+    if (!file_exists('../localsettings/settings.custom-common.php')) {
       $php = new PhpFile();
       // Transfer hash salt.
       foreach ($current_installation->getSiteUris() as $site => $_) {
@@ -206,12 +218,12 @@ EOD
           $php->addStatement($add_hash_salt);
         }
       }
-      $commands->add(new WriteFile('../localsettings/settings.common.php', $php));
+      $commands->add(new WriteFile('../localsettings/settings.custom-common.php', $php));
     }
 
-    // Write settings.local.*.php
+    // Write settings.custom.*.php
     foreach ($installations as $installation_name => $_) {
-      $commands->add(new WriteFile("../localsettings/settings.local.$installation_name.php", new PhpFile()));
+      $commands->add(new WriteFile("../localsettings/settings.custom.$installation_name.php", new PhpFile()));
     }
 
     Scaffolder::writeSettings($commands, $drupal_major_version);

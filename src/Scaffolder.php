@@ -44,8 +44,8 @@ EOD
   }
 
   public static function symlinkSettingsLocal(Commands $commands, $installation_name) {
-    $commands->add(new Symlink('../localsettings/settings.local.php', "settings.local.$installation_name.php"));
-    $commands->add(new Symlink('../localsettings/settings.generated.php', "settings.generated.$installation_name.php"));
+    $commands->add(new Symlink('../localsettings/settings.custom.INSTALLATION.php', "settings.custom.$installation_name.php"));
+    $commands->add(new Symlink('../localsettings/settings.generated.INSTALLATION.php', "settings.generated.$installation_name.php"));
   }
 
   public static function symlinkHtaccess(Commands $commands, $installation_name) {
@@ -55,9 +55,11 @@ EOD
   public static function writeSettings(Commands $commands, $drupal_major_version) {
     $commands->add(new WriteFile('../localsettings/settings.php', <<<EOD
 <?php
-require '../localsettings/settings.generated.php';
-include '../localsettings/settings.common.php';
-include '../localsettings/settings.local.php';
+require '../localsettings/settings.generated-basic.php';
+require '../localsettings/settings.generated.INSTALLATION.php';
+require '../localsettings/settings.generated-common.php';
+include '../localsettings/settings.custom.INSTALLATION.php';
+include '../localsettings/settings.custom-common.php';
 
 EOD
     ));
@@ -88,8 +90,8 @@ EOD
     $commands->add(new WriteFile('../.gitignore', <<<EOD
 .git
 # Ignore paths that are symlinked per environment.
-/localsettings/settings.generated.php
-/localsettings/settings.local.php
+/localsettings/settings.generated.INSTALLATION.php
+/localsettings/settings.custom.INSTALLATION.php
 # Ignore server content.
 /config
 /tmp

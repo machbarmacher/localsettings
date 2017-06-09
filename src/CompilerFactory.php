@@ -17,6 +17,9 @@ class CompilerFactory {
    * @param string|null $include
    */
   public function __construct($include) {
+    if (!$include) {
+      $include = '../localsettings/project.php';
+    }
     $this->include = $include;
     $this->project = @include $include;
     if ($this->valid()) {

@@ -82,7 +82,7 @@ EOD
   }
 
   public function addServerSpecificSettings(PhpFile $php, Project $project) {
-    parent::addSettings($php, $project);
+    parent::addServerSpecificSettings($php, $project);
     $is_d7 = $project->isD7();
     $settings_variable = $project->getSettingsVariable();
     $drupal_major_version = $project->getDrupalMajorVersion();
