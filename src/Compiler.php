@@ -59,9 +59,8 @@ class Compiler {
     $server_setting_files = [];
     foreach ($this->project->getInstallations() as $installation_name => $installation) {
       $php = new PhpFile();
-      $php->addRawStatement('// Generic settings');
+      $php->addRawStatement('// Basic settings');
       $this->addBasicSettings($php, $installation);
-      $this->addGenericSettings($php);
       $php->addRawStatement('');
       $php->addRawStatement('// Base URLs');
       $installation->compileBaseUrls($php);
@@ -69,12 +68,15 @@ class Compiler {
       $php->addRawStatement('// DB Credentials');
       $installation->compileDbCredentials($php);
       $php->addRawStatement('');
+      $php->addRawStatement('// Installation specific');
+      $installation->getServer()->addInstallationSpecificSettings($php, $installation);
+      $php->addRawStatement('');
       $php->addRawStatement('// Server specific');
       $server = $installation->getServer();
       $server_name = $server->getTypeName();
       if (!isset($server_setting_files[$server_name])) {
         $server_php = new PhpFile();
-        $server->addSettings($server_php, $installation);
+        $server->addServerSpecificSettings($server_php, $this->project);
         $server_setting_file = "settings.server.$server_name.php";
         $server_setting_files[$server_name] = $server_setting_file;
         $commands->add(new WriteFile("../localsettings/$server_setting_file", $server_php));
@@ -82,6 +84,10 @@ class Compiler {
       $php->addRawStatement("include {$server_setting_files[$server_name]};");
       $commands->add(new WriteFile("../localsettings/settings.generated.{$installation_name}.php", $php));
     }
+
+    $php = new PhpFile();
+    $this->addGenericSettings($php);
+    $commands->add(new WriteFile("../localsettings/settings.generated-common.php", $php));
   }
 
   protected function addBasicSettings(PhpFile $php, Installation $installation) {

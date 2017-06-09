@@ -20,6 +20,6 @@ interface ServerInterface {
   public function getUserHome();
   public function getWebHome();
   public function alterHtaccess($content);
-  public function addSettings(PhpFile $php, Installation $installation);
+  public function addInstallationSpecificSettings(PhpFile $php, Installation $installation);
   public function alterAlias(array &$alias);
 }

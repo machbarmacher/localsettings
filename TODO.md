@@ -5,6 +5,8 @@ localsettings Todo
 * write some generated settings to "common"
 * Alter aliases depending on local host/user
   Note: host is not available simply on freistilbox.
+* rename common/local to customized-*
+
 * Make file wrinting more foolproof: Include existing content, prompt overwrite for some files.
 
 * scaffold Boxfile depending on installations and docroot

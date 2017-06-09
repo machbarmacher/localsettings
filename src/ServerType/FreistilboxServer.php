@@ -7,6 +7,7 @@ namespace machbarmacher\localsettings\ServerType;
 
 
 use machbarmacher\localsettings\Installation;
+use machbarmacher\localsettings\Project;
 use machbarmacher\localsettings\RenderPhp\PhpFile;
 use machbarmacher\localsettings\ServerBase;
 use machbarmacher\localsettings\ServerInterface;
@@ -80,11 +81,11 @@ EOD
       . $content;
   }
 
-  public function addServerSettings(PhpFile $php, Installation $installation) {
-    parent::addSettings($php, $installation);
-    $is_d7 = $installation->getProject()->isD7();
-    $settings_variable = $installation->getProject()->getSettingsVariable();
-    $drupal_major_version = $installation->getProject()->getDrupalMajorVersion();
+  public function addServerSpecificSettings(PhpFile $php, Project $project) {
+    parent::addSettings($php, $project);
+    $is_d7 = $project->isD7();
+    $settings_variable = $project->getSettingsVariable();
+    $drupal_major_version = $project->getDrupalMajorVersion();
 
     // REDIS:
     // Get unique redis credentials.

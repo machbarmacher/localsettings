@@ -7,6 +7,7 @@ namespace machbarmacher\localsettings\ServerType;
 
 
 use machbarmacher\localsettings\Installation;
+use machbarmacher\localsettings\Project;
 use machbarmacher\localsettings\RenderPhp\PhpFile;
 use machbarmacher\localsettings\ServerBase;
 use machbarmacher\localsettings\ServerInterface;
@@ -71,9 +72,9 @@ EOD
     . $content;
   }
 
-  public function addSettings(PhpFile $php, Installation $installation) {
-    parent::addSettings($php, $installation);
-    $is_d7 = $installation->getProject()->isD7();
+  public function addServerSpecificSettings(PhpFile $php, Project $project) {
+    parent::addServerSpecificSettings($php, $project);
+    $is_d7 = $project->isD7();
     $user = $this->getUser();
     $host = $is_d7 ? 'localhost' : '127.0.0.1';
     $port = $is_d7 ? 3306 : 3307;

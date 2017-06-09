@@ -43,7 +43,7 @@ abstract class ServerBase implements ServerInterface {
     return "$account_name:$docroot";
   }
 
-  public function addSettings(PhpFile $php, Installation $installation) {
+  public function addInstallationSpecificSettings(PhpFile $php, Installation $installation) {
     $settings_variable = $installation->getProject()->getSettingsVariable();
     // $site is a placeholder here that uses the variable defined in settings.
     $unique_site_name = $installation->getUniqueSiteName('$site');
@@ -52,6 +52,9 @@ abstract class ServerBase implements ServerInterface {
 {$settings_variable}['cache_prefix']['default'] = "$unique_site_name";
 EOD
     );
+  }
+
+  public function addServerSpecificSettings(PhpFile $php, Project $project) {
   }
 
   public function alterAlias(array &$alias) {
