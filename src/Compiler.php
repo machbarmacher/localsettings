@@ -35,17 +35,6 @@ class Compiler {
     return $this->project;
   }
 
-  /**
-   * @return string[]
-   */
-  public function getInstallationNames() {
-    $environment_names = [];
-    foreach ($this->project->getInstallations() as $installation) {
-      $environment_names[] = $installation->getName();
-    }
-    return $environment_names;
-  }
-
   public function compile(Commands $commands) {
     // @todo Consider writing a sites.INSTALLATION.php and symlinking it.
     $php = new PhpFile();
@@ -158,8 +147,7 @@ EOD
   }
 
   public function writeSettingsLocal(Commands $commands, $current_installation_name) {
-    $installation_names = $this->getInstallationNames();
-    foreach ($installation_names as $installation_name) {
+    foreach ($this->project->getInstallations() as $installation_name => $installation) {
       $content = ($installation_name === $current_installation_name)
         ? file_get_contents('sites/default/settings.php')
         . "\n\n// TODO: Clean up." : "<?php\n";
@@ -177,9 +165,8 @@ EOD
   public function scaffold(Commands $commands, $current_installation_name) {
     $drupal_major_version = $this->getProject()->getDrupalMajorVersion();
     // Step 3
-    $installation_names = $this->getInstallationNames();
 
-    foreach ($installation_names as $installation_name) {
+    foreach ($this->project->getInstallations() as $installation_name => $installation) {
       $commands->add(new EnsureDirectory("../localsettings/crontab.d/$installation_name"));
     }
     $commands->add(new EnsureDirectory("../localsettings/crontab.d/common"));

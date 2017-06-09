@@ -29,6 +29,9 @@ class CompilerFactory {
     return (bool) $this->project;
   }
 
+  /**
+   * @return \machbarmacher\localsettings\Compiler
+   */
   public function get() {
     return $this->compiler;
   }
