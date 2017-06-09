@@ -50,7 +50,9 @@ class Compiler {
     // @todo Consider writing a sites.INSTALLATION.php and symlinking it.
     $php = new PhpFile();
     foreach ($this->project->getInstallations() as $installation_name => $installation) {
-      $installation->compileSitesPhp($php);
+      if ($installation->isMultisite()) {
+        $installation->compileSitesPhp($php);
+      }
     }
     // Only write if we have a multisite.
     if (!$php->empty()) {
@@ -68,8 +70,10 @@ class Compiler {
       $php->addToBody('// Generic settings');
       $this->addBasicSettings($php, $installation);
       $this->addGenericSettings($php);
+      $php->addToBody('');
       $php->addToBody('// Base URLs');
       $installation->compileBaseUrls($php);
+      $php->addToBody('');
       $php->addToBody('// DB Credentials');
       $installation->compileDbCredentials($php);
       $commands->add(new WriteFile("../localsettings/settings.generated.{$installation_name}.php", $php));
@@ -80,13 +84,11 @@ class Compiler {
     $settings_variable = $this->project->getSettingsVariable();
 
     $installation_name = $installation->getName();
-    $project_unique_site_name  = $installation->geProjectUniqueSiteName();
-    $server_unique_site_name  = $installation->getServer()->getServerUniqueInstallationName($installation);
+    $unique_site_name  = $installation->getUniqueSiteName('$site');
 
     $php->addToBody(<<<EOD
-\$installation = {$settings_variable}['localsettings']['installation'] = $installation_name;
-\$server_unique_site_name = {$settings_variable}['localsettings']['server_unique_site_name'] = $server_unique_site_name;
-\$project_unique_site_name = {$settings_variable}['localsettings']['project_unique_site_name'] = $project_unique_site_name;
+\$installation = {$settings_variable}['localsettings']['installation'] = '$installation_name';
+\$project_unique_site_name = {$settings_variable}['localsettings']['unique_site_name'] = "$unique_site_name";
 EOD
     );
   }

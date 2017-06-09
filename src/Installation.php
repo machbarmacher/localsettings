@@ -69,30 +69,8 @@ class Installation {
     return $this->docroot;
   }
 
-  /**
-   * @return string
-   */
-  public function getProjektUniqueInstallationName() {
-    $user = $this->server->getUser();
-    $host = $this->server->getShortHostName();
-    $path = $this->server->makeDocrootRelative($this->docroot);
-    $name = "$user@$host:$path";
-    return $name;
-  }
-
-  /**
-   * @return string
-   */
-  public function geProjectUniqueSiteName($site) {
-    $name = $this->getProjektUniqueInstallationName();
-    if ($this->isMultisite()) {
-      $name .= "#$site";
-    }
-    return $name;
-  }
-
-  public function getServerUniqueSiteName($site) {
-    $name = $this->server->getServerUniqueInstallationName($this);
+  public function getUniqueSiteName($site) {
+    $name = $this->server->getUniqueInstallationName($this);
     if ($this->isMultisite()) {
       $name .= "#$site";
     }
@@ -192,24 +170,19 @@ class Installation {
     $site_list= [];
     // Add single site aliases.
     foreach ($this->site_uris as $site => $uris) {
-      // Only use primary uri.
-      $uri = $uris[0];
       $alias_name = $multisite ? $this->name . '.' . $site : $this->name;
-      $root = $this->docroot;
-      $host = $this->server->getHost();
-      $user = $this->server->getUser();
-      $server_unique_site_name = $this->server->getServerUniqueInstallationName($this);
-      $php->addToBody("\$aliases['$alias_name'] = [")
-        ->addToBody("  'uri' => '$uri',")
-        ->addToBody("  'root' => '$root',")
-        ->addToBody("  '#server_unique_site_name' => '$server_unique_site_name',")
-        ->addToBody('];');
-      // Drush sitealias altering in root is broken, do it here.
-      // https://github.com/drush-ops/drush/issues/2432
-      $php->addToBody("if (!Runtime::getEnvironment()->match('$server_unique_site_name')) {")
-        ->addToBody("  \$aliases['$alias_name']['remote-user'] = '$user';")
-        ->addToBody("  \$aliases['$alias_name']['remote-host'] = '$host';")
-        ->addToBody('}');
+      $alias = [
+        // Only use primary uri.
+        'uri' => $uris[0],
+        'root' => $this->docroot,
+        'remote-user' => $this->server->getUser(),
+        'remote-host' => $this->server->getHost(),
+        '#server_unique_site_name' => $this->server->getUniqueInstallationName($this),
+      ];
+      $this->server->alterAlias($alias);
+      $php->addToBody("\$aliases['$alias_name'] = "
+      // @todo Replace with better dumper.
+      . var_export($alias, TRUE) . ';');
       $site_list[] = "@$alias_name";
     }
     if ($multisite) {
@@ -239,9 +212,7 @@ class Installation {
   public function compileBaseUrls(PhpFile $php) {
     foreach ($this->site_uris as $site => $uris) {
       $php->addToBody("if (\$site === '$site') {");
-      // Add drush "uri".
       $uri_map = array_combine($uris, $uris);
-      $uri_map["http://$site"] = $uris[0];
       foreach ($uri_map as $uri_in => $uri) {
         if ($this->project->isD7()) {
           $php->addToBody("  \$base_url = '$uri'; return;");

@@ -17,7 +17,7 @@ abstract class ServerBase implements ServerInterface {
   }
 
   public function makeDocrootRelative($docroot) {
-    $webhome = $this->getWebHome();
+    $webhome = $this->getWebHome() . '/';
     $webhome_len = strlen($webhome);
     if (substr($docroot, 0, $webhome_len) == $webhome) {
       $docroot = substr($docroot, $webhome_len);
@@ -37,7 +37,7 @@ abstract class ServerBase implements ServerInterface {
     return $this->getUser() . '@' . $this->getShortHostName();
   }
 
-  public function getServerUniqueInstallationName(Installation $installation) {
+  public function getUniqueInstallationName(Installation $installation) {
     $account_name = $this->getUniqueAccountName();
     $docroot = $this->makeDocrootRelative($installation->getDocroot());
     return "$account_name:$docroot";
@@ -54,4 +54,8 @@ EOD
     );
   }
 
+  public function alterAlias(array $alias) {
+    // @todo Add #localsettings_current_installation and make this alias.
+    // @todo Remove remote-host/user from local aliases.
+  }
 }

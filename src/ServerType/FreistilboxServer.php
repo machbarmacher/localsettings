@@ -59,7 +59,7 @@ class FreistilboxServer extends ServerBase implements ServerInterface {
     return 'freistilbox';
   }
 
-  public function getServerUniqueInstallationName(Installation $installation) {
+  public function getUniqueInstallationName(Installation $installation) {
     // Highlander: There's only one.
     return $this->getUniqueAccountName();
   }
