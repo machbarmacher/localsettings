@@ -46,15 +46,15 @@ abstract class ServerBase implements ServerInterface {
   public function addSettings(PhpFile $php, Installation $installation) {
     $settings_variable = $installation->getProject()->getSettingsVariable();
     // $site is a placeholder here that uses the variable defined in settings.
-    $server_unique_site_name = $installation->getServerUniqueSiteName('$site');
+    $unique_site_name = $installation->getUniqueSiteName('$site');
 
     $php->addToBody(<<<EOD
-{$settings_variable}['cache_prefix']['default'] = "$server_unique_site_name";
+{$settings_variable}['cache_prefix']['default'] = "$unique_site_name";
 EOD
     );
   }
 
-  public function alterAlias(array $alias) {
+  public function alterAlias(array &$alias) {
     // @todo Add #localsettings_current_installation and make this alias.
     // @todo Remove remote-host/user from local aliases.
   }

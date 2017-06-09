@@ -177,7 +177,7 @@ class Installation {
         'root' => $this->docroot,
         'remote-user' => $this->server->getUser(),
         'remote-host' => $this->server->getHost(),
-        '#server_unique_site_name' => $this->server->getUniqueInstallationName($this),
+        '#unique_site_name' => $this->getUniqueSiteName($site),
       ];
       $this->server->alterAlias($alias);
       $php->addToBody("\$aliases['$alias_name'] = "
@@ -211,11 +211,13 @@ class Installation {
 
   public function compileBaseUrls(PhpFile $php) {
     foreach ($this->site_uris as $site => $uris) {
-      $php->addToBody("if (\$site === '$site') {");
+      if ($this->isMultisite()) {
+        $php->addToBody("if (\$site === '$site') {");
+      }
       $uri_map = array_combine($uris, $uris);
       foreach ($uri_map as $uri_in => $uri) {
         if ($this->project->isD7()) {
-          $php->addToBody("  \$base_url = '$uri'; return;");
+          $php->addToBody("  \$base_url = '$uri';");
         }
         else {
           // D8 does not need base url anymore.
@@ -223,7 +225,9 @@ class Installation {
           $php->addToBody("  \$settings['trusted_host_patterns'][] = '$host';");
         }
       }
-      $php->addToBody('}');
+      if ($this->isMultisite()) {
+        $php->addToBody('}');
+      }
     }
   }
 

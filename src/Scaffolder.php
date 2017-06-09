@@ -44,7 +44,8 @@ EOD
   }
 
   public static function symlinkSettingsLocal(Commands $commands, $installation_name) {
-    $commands->add(new Symlink('../settings.local.php', "settings.local.$installation_name.php"));
+    $commands->add(new Symlink('../localsettings/settings.local.php', "settings.local.$installation_name.php"));
+    $commands->add(new Symlink('../localsettings/settings.generated.php', "settings.generated.$installation_name.php"));
   }
 
   public static function symlinkHtaccess(Commands $commands, $installation_name) {
@@ -52,8 +53,7 @@ EOD
   }
 
   public static function writeSettings(Commands $commands, $drupal_major_version) {
-    $settings_variable = ($drupal_major_version == 7) ? '$conf' : '$settings';
-    $commands->add(new WriteFile('../settings.php', <<<EOD
+    $commands->add(new WriteFile('../localsettings/settings.php', <<<EOD
 <?php
 require '../localsettings/settings.generated.php';
 include '../localsettings/settings.common.php';
@@ -86,6 +86,7 @@ EOD
 
   public static function writeGitignoreForComposer(Commands $commands) {
     $commands->add(new WriteFile('../.gitignore', <<<EOD
+.git
 # Ignore paths that are symlinked per environment.
 /localsettings/settings.generated.php
 # Ignore server content.

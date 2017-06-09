@@ -20,5 +20,5 @@ interface ServerInterface {
   public function getWebHome();
   public function alterHtaccess($content);
   public function addSettings(PhpFile $php, Installation $installation);
-  public function alterAlias(array $alias);
+  public function alterAlias(array &$alias);
 }

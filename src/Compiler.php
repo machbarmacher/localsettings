@@ -76,6 +76,9 @@ class Compiler {
       $php->addToBody('');
       $php->addToBody('// DB Credentials');
       $installation->compileDbCredentials($php);
+      $php->addToBody('');
+      $php->addToBody('// Server specific');
+      $installation->getServer()->addSettings($php, $installation);
       $commands->add(new WriteFile("../localsettings/settings.generated.{$installation_name}.php", $php));
     }
   }
@@ -88,7 +91,7 @@ class Compiler {
 
     $php->addToBody(<<<EOD
 \$installation = {$settings_variable}['localsettings']['installation'] = '$installation_name';
-\$project_unique_site_name = {$settings_variable}['localsettings']['unique_site_name'] = "$unique_site_name";
+\$unique_site_name = {$settings_variable}['localsettings']['unique_site_name'] = "$unique_site_name";
 EOD
     );
   }
@@ -103,11 +106,13 @@ EOD
 
     $php->addToBody(<<<EOD
 \$site = {$settings_variable}['localsettings']['site'] = basename($conf_path);
-\$dirname = {$settings_variable}['localsettings']['dirname'] = dirname(getcwd());
+\$dirname = {$settings_variable}['localsettings']['dirname'] = basename(dirname(getcwd()));
 
 {$settings_variable}['file_public_path'] = "sites/\$site/files";
+
 if (!file_exists({$private_path_quoted})) { mkdir({$private_path_quoted}); }    
 {$settings_variable}['file_private_path'] = {$private_path_quoted};
+
 if (!file_exists({$tmp_path_quoted})) { mkdir({$tmp_path_quoted}); }   
 EOD
     );
@@ -115,12 +120,12 @@ EOD
     // @fixme Add unique name method and tokens.
     if ($is_d7) {
       $php->addToBody(<<<EOD
-\$settings['file_temporary_path'] = {$tmp_path_quoted};
+\$conf['file_temporary_path'] = {$tmp_path_quoted};
 
-\$settings['environment_indicator_overwrite'] = TRUE;
-\$settings['environment_indicator_overwritten_name'] = \$project_unique_site_name;
-\$settings['environment_indicator_overwritten_color'] = '#'.dechex(hexdec(substr(md5(\$settings['environment_indicator_overwritten_name']), 0, 6)) & 0x7f7f7f); // Only dark colors.
-\$settings['environment_indicator_overwritten_text_color'] = '#ffffff';
+\$conf['environment_indicator_overwrite'] = TRUE;
+\$conf['environment_indicator_overwritten_name'] = \$unique_site_name;
+\$conf['environment_indicator_overwritten_color'] = '#' . dechex(hexdec(substr(md5(\$conf['environment_indicator_overwritten_name']), 0, 6)) & 0x7f7f7f); // Only dark colors.
+\$conf['environment_indicator_overwritten_text_color'] = '#ffffff';
 EOD
       );
     }
