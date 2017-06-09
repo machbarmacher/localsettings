@@ -23,4 +23,5 @@ interface ServerInterface {
   public function addInstallationSpecificSettings(PhpFile $php, Installation $installation);
   public function addServerSpecificSettings(PhpFile $php, Project $project);
   public function alterAlias(array &$alias);
+  public function getLocalServerCheck();
 }

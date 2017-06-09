@@ -58,7 +58,10 @@ EOD
   }
 
   public function alterAlias(array &$alias) {
-    // @todo Add #localsettings_current_installation and make this alias.
-    // @todo Remove remote-host/user from local aliases.
   }
+
+  public function getLocalServerCheck() {
+    return '($alias[\'remote-host\'] == gethostname()) && ($alias[\'remote-user\'] == get_current_user())';
+  }
+
 }

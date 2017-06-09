@@ -135,5 +135,9 @@ EOD
     $alias['#env-vars']['DRUSH_PHP'] = 'php5.6';
   }
 
+  public function getLocalServerCheck() {
+    return 'file_exists(\'/srv/www/freistilbox\') && (preg_match(\'/.freistilbox.net\$/\', $alias[\'remote-host\'])) && ($alias[\'remote-user\'] == (getenv(\'USER\') ?: getenv(\'LOGNAME\')))';
+  }
+
 
 }
