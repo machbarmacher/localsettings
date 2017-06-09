@@ -1,12 +1,11 @@
 localsettings Todo
 ==================
 
-* create symlinks
-* create settings.php
 * write server specific settings (to where?)
 * write some generated settings to "common"
 * Alter aliases depending on local host/user
   Note: host is not available simply on freistilbox.
+* Make file wrinting more foolproof: Include existing content, prompt overwrite for some files.
 
 * scaffold Boxfile depending on installations and docroot
 * symink docroot if needed

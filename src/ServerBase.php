@@ -48,7 +48,7 @@ abstract class ServerBase implements ServerInterface {
     // $site is a placeholder here that uses the variable defined in settings.
     $unique_site_name = $installation->getUniqueSiteName('$site');
 
-    $php->addToBody(<<<EOD
+    $php->addRawStatement(<<<EOD
 {$settings_variable}['cache_prefix']['default'] = "$unique_site_name";
 EOD
     );

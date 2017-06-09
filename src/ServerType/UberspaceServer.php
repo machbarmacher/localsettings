@@ -45,9 +45,13 @@ class UberspaceServer extends ServerBase implements ServerInterface {
     return $this->user;
   }
 
+  public function getTypeName() {
+    return 'uberspace';
+  }
+
   public function getShortHostName() {
     // User is unique.
-    return 'uberspace';
+    return $this->getTypeName();
   }
 
   public function getWebHome() {
@@ -74,7 +78,7 @@ EOD
     $host = $is_d7 ? 'localhost' : '127.0.0.1';
     $port = $is_d7 ? 3306 : 3307;
     $mysql_ini_file = $is_d7 ? '/.my.cnf' : '/.my.mariadb.cnf';
-    $php->addToBody(<<<EOD
+    $php->addRawStatement(<<<EOD
 \$databases['default']['default'] += [
   'driver' => 'mysql',
   'username' => '$user',

@@ -89,6 +89,7 @@ EOD
 .git
 # Ignore paths that are symlinked per environment.
 /localsettings/settings.generated.php
+/localsettings/settings.local.php
 # Ignore server content.
 /config
 /tmp

@@ -10,7 +10,10 @@ use machbarmacher\localsettings\Commands\Commands;
 use machbarmacher\localsettings\Commands\EnsureDirectory;
 use machbarmacher\localsettings\Commands\Symlink;
 use machbarmacher\localsettings\Commands\WriteFile;
+use machbarmacher\localsettings\RenderPhp\PhpAssignment;
 use machbarmacher\localsettings\RenderPhp\PhpFile;
+use machbarmacher\localsettings\RenderPhp\PhpIf;
+use machbarmacher\localsettings\Tools\IncludeTool;
 
 class Compiler {
   /** @var Project */
@@ -36,7 +39,6 @@ class Compiler {
   }
 
   public function compile(Commands $commands) {
-    // @todo Consider writing a sites.INSTALLATION.php and symlinking it.
     $php = new PhpFile();
     foreach ($this->project->getInstallations() as $installation_name => $installation) {
       if ($installation->isMultisite()) {
@@ -44,7 +46,7 @@ class Compiler {
       }
     }
     // Only write if we have a multisite.
-    if (!$php->empty()) {
+    if (!$php->isEmpty()) {
       $commands->add(new WriteFile('sites/sites.php', $php));
     }
 
@@ -54,20 +56,30 @@ class Compiler {
     }
     $commands->add(new WriteFile("../drush/aliases.drushrc.php", $php));
 
+    $server_setting_files = [];
     foreach ($this->project->getInstallations() as $installation_name => $installation) {
       $php = new PhpFile();
-      $php->addToBody('// Generic settings');
+      $php->addRawStatement('// Generic settings');
       $this->addBasicSettings($php, $installation);
       $this->addGenericSettings($php);
-      $php->addToBody('');
-      $php->addToBody('// Base URLs');
+      $php->addRawStatement('');
+      $php->addRawStatement('// Base URLs');
       $installation->compileBaseUrls($php);
-      $php->addToBody('');
-      $php->addToBody('// DB Credentials');
+      $php->addRawStatement('');
+      $php->addRawStatement('// DB Credentials');
       $installation->compileDbCredentials($php);
-      $php->addToBody('');
-      $php->addToBody('// Server specific');
-      $installation->getServer()->addSettings($php, $installation);
+      $php->addRawStatement('');
+      $php->addRawStatement('// Server specific');
+      $server = $installation->getServer();
+      $server_name = $server->getTypeName();
+      if (!isset($server_setting_files[$server_name])) {
+        $server_php = new PhpFile();
+        $server->addSettings($server_php, $installation);
+        $server_setting_file = "settings.server.$server_name.php";
+        $server_setting_files[$server_name] = $server_setting_file;
+        $commands->add(new WriteFile("../localsettings/$server_setting_file", $server_php));
+      }
+      $php->addRawStatement("include {$server_setting_files[$server_name]};");
       $commands->add(new WriteFile("../localsettings/settings.generated.{$installation_name}.php", $php));
     }
   }
@@ -78,7 +90,7 @@ class Compiler {
     $installation_name = $installation->getName();
     $unique_site_name  = $installation->getUniqueSiteName('$site');
 
-    $php->addToBody(<<<EOD
+    $php->addRawStatement(<<<EOD
 \$installation = {$settings_variable}['localsettings']['installation'] = '$installation_name';
 \$unique_site_name = {$settings_variable}['localsettings']['unique_site_name'] = "$unique_site_name";
 EOD
@@ -93,7 +105,7 @@ EOD
     $tmp_path_quoted = "\"../tmp/\$site\"";
     $private_path_quoted = "\"../private/\$site\"";
 
-    $php->addToBody(<<<EOD
+    $php->addRawStatement(<<<EOD
 \$site = {$settings_variable}['localsettings']['site'] = basename($conf_path);
 \$dirname = {$settings_variable}['localsettings']['dirname'] = basename(dirname(getcwd()));
 
@@ -108,7 +120,7 @@ EOD
 
     // @fixme Add unique name method and tokens.
     if ($is_d7) {
-      $php->addToBody(<<<EOD
+      $php->addRawStatement(<<<EOD
 \$conf['file_temporary_path'] = {$tmp_path_quoted};
 
 \$conf['environment_indicator_overwrite'] = TRUE;
@@ -119,7 +131,7 @@ EOD
       );
     }
     else {
-      $php->addToBody(<<<EOD
+      $php->addRawStatement(<<<EOD
 global \$config;
 \$config['system.file']['path']['temporary'] = {$tmp_path_quoted};
 
@@ -146,16 +158,6 @@ EOD
     }
   }
 
-  public function writeSettingsLocal(Commands $commands, $current_installation_name) {
-    foreach ($this->project->getInstallations() as $installation_name => $installation) {
-      $content = ($installation_name === $current_installation_name)
-        ? file_get_contents('sites/default/settings.php')
-        . "\n\n// TODO: Clean up." : "<?php\n";
-      // @todo Remove comments.
-      $commands->add(new  WriteFile("../localsettings/settings.local.$installation_name.php", $content));
-    }
-  }
-
   public static function prepare(Commands $commands) {
     // Step 1
     Scaffolder::writeProject($commands);
@@ -163,10 +165,12 @@ EOD
   }
 
   public function scaffold(Commands $commands, $current_installation_name) {
-    $drupal_major_version = $this->getProject()->getDrupalMajorVersion();
     // Step 3
+    $drupal_major_version = $this->getProject()->getDrupalMajorVersion();
+    $installations = $this->project->getInstallations();
+    $current_installation = $installations[$current_installation_name];
 
-    foreach ($this->project->getInstallations() as $installation_name => $installation) {
+    foreach ($installations as $installation_name => $_) {
       $commands->add(new EnsureDirectory("../localsettings/crontab.d/$installation_name"));
     }
     $commands->add(new EnsureDirectory("../localsettings/crontab.d/common"));
@@ -181,12 +185,32 @@ EOD
       $commands->add(new WriteFile('../config-sync/.gitkeep', ''));
     }
 
-    $commands->add(new WriteFile('../localsettings/settings.common.php', "<?php\n"));
+    // Write settings.common.php
+    // This is not idempotent, and will break due to recursion if done twice.
+    if (!file_exists('../localsettings/settings.common.php')) {
+      $php = new PhpFile();
+      // Transfer hash salt.
+      foreach ($current_installation->getSiteUris() as $site => $_) {
+        $settings = IncludeTool::getVariables("sites/$site/settings.php");
+        if (!empty($settings['drupal_hash_salt'])) {
+          $add_hash_salt = new PhpAssignment('$drupal_hash_salt', $settings['drupal_hash_salt']);
+          if ($current_installation->isMultisite()) {
+            $add_hash_salt = new PhpIf('', $add_hash_salt);
+          }
+          $php->addStatement($add_hash_salt);
+        }
+      }
+      $commands->add(new WriteFile('../localsettings/settings.common.php', $php));
+    }
 
-    $this->writeSettingsLocal($commands, $current_installation_name);
+    // Write settings.local.*.php
+    foreach ($installations as $installation_name => $_) {
+      $commands->add(new WriteFile("../localsettings/settings.local.$installation_name.php", new PhpFile()));
+    }
 
     Scaffolder::writeSettings($commands, $drupal_major_version);
 
+    // @todo Delegate to server.
     Scaffolder::writeBoxfile($commands);
 
     Scaffolder::writeGitignoreForComposer($commands);

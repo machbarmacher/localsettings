@@ -69,6 +69,13 @@ class Installation {
     return $this->docroot;
   }
 
+  /**
+   * @return \string[][]
+   */
+  public function getSiteUris() {
+    return $this->site_uris;
+  }
+
   public function getUniqueSiteName($site) {
     $name = $this->server->getUniqueInstallationName($this);
     if ($this->isMultisite()) {
@@ -164,8 +171,8 @@ class Installation {
 
   // @fixme Let server alter.
   public function compileAliases(PhpFile $php) {
-    $php->addToBody('');
-    $php->addToBody("// Installation: $this->name");
+    $php->addRawStatement('');
+    $php->addRawStatement("// Installation: $this->name");
     $multisite = count($this->site_uris) !== 1;
     $site_list= [];
     // Add single site aliases.
@@ -180,7 +187,7 @@ class Installation {
         '#unique_site_name' => $this->getUniqueSiteName($site),
       ];
       $this->server->alterAlias($alias);
-      $php->addToBody("\$aliases['$alias_name'] = "
+      $php->addRawStatement("\$aliases['$alias_name'] = "
       // @todo Replace with better dumper.
       . var_export($alias, TRUE) . ';');
       $site_list[] = "@$alias_name";
@@ -189,21 +196,21 @@ class Installation {
       // Add site-list installation alias.
       $site_list_quoted = array_map(function($s) {return "'$s'";}, $site_list);
       $site_list_imploded = implode(', ', $site_list_quoted);
-      $php->addToBody("\$aliases['$this->name'] = [")
-        ->addToBody("'site-list' => [$site_list_imploded],")
-        ->addToBody('];');
+      $php->addRawStatement("\$aliases['$this->name'] = [")
+        ->addRawStatement("'site-list' => [$site_list_imploded],")
+        ->addRawStatement('];');
     }
   }
 
   public function compileSitesPhp(PhpFile $php) {
-    $php->addToBody('');
-    $php->addToBody("// Installation: $this->name");
+    $php->addRawStatement('');
+    $php->addRawStatement("// Installation: $this->name");
     foreach ($this->site_uris as $site => $uris) {
       foreach ($uris as $uri) {
         // @todo Care for port when needed.
         $host = parse_url($uri, PHP_URL_HOST);
         if ($site !== 'default') {
-          $php->addToBody("\$sites['$host'] = '$site';");
+          $php->addRawStatement("\$sites['$host'] = '$site';");
         }
       }
     }
@@ -212,21 +219,21 @@ class Installation {
   public function compileBaseUrls(PhpFile $php) {
     foreach ($this->site_uris as $site => $uris) {
       if ($this->isMultisite()) {
-        $php->addToBody("if (\$site === '$site') {");
+        $php->addRawStatement("if (\$site === '$site') {");
       }
       $uri_map = array_combine($uris, $uris);
       foreach ($uri_map as $uri_in => $uri) {
         if ($this->project->isD7()) {
-          $php->addToBody("  \$base_url = '$uri';");
+          $php->addRawStatement("  \$base_url = '$uri';");
         }
         else {
           // D8 does not need base url anymore.
           $host = parse_url($uri_in, PHP_URL_HOST);
-          $php->addToBody("  \$settings['trusted_host_patterns'][] = '$host';");
+          $php->addRawStatement("  \$settings['trusted_host_patterns'][] = '$host';");
         }
       }
       if ($this->isMultisite()) {
-        $php->addToBody('}');
+        $php->addRawStatement('}');
       }
     }
   }
@@ -234,7 +241,7 @@ class Installation {
   public function compileDbCredentials(PhpFile $php) {
     foreach ($this->db_credentials as $site => $db_credential) {
       $php
-        ->addToBody("\$databases['default']['default'] = "
+        ->addRawStatement("\$databases['default']['default'] = "
           // @todo Replace with better dumper.
           . var_export(array_filter($db_credential), TRUE) . ';');
     }

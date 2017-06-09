@@ -10,6 +10,7 @@ use machbarmacher\localsettings\RenderPhp\PhpFile;
 interface ServerInterface {
   public function getUser();
   public function getHost();
+  public function getTypeName();
   public function getShortHostName();
   public function getUniqueAccountName();
   public function getUniqueInstallationName(Installation $installation);

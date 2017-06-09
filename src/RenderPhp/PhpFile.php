@@ -3,60 +3,57 @@
 
 namespace machbarmacher\localsettings\RenderPhp;
 
-
-class PhpFile implements PhpCodeInterface {
-  /** @var PhpLines */
-  protected $header;
-  /** @var PhpLines */
-  protected $body;
-  /** @var PhpLines */
-  protected $footer;
+/**
+ * Class PhpFile
+ * @package machbarmacher\localsettings\RenderPhp
+ *
+ * @todo Consider using symfony AST generator or zend\code.
+ */
+class PhpFile {
+  /** @var PhpStatements */
+  protected $statements;
 
   /**
    * PhpFile constructor.
    */
   public function __construct() {
-    $this->header = new PhpLines();
-    $this->body = new PhpLines();
-    $this->footer = new PhpLines();
-  }
-
-  public function empty() {
-    return $this->header->empty() && $this->body->empty() && $this->footer->empty();
+    $this->statements = new PhpStatements();
   }
 
   /**
-   * @param string|PhpCodeInterface $line
+   * @return \machbarmacher\localsettings\RenderPhp\PhpStatements
+   */
+  public function getLines() {
+    return $this->statements;
+  }
+
+  public function isEmpty() {
+    return $this->statements->isEmpty();
+  }
+
+  /**
+   * @param \machbarmacher\localsettings\RenderPhp\PhpStatementInterface $statement
    * @return $this
    */
-  public function addToHeader($line) {
-    $this->header->addLine($line);
+  public function addStatement(PhpStatementInterface $statement) {
+    $this->statements->addStatement($statement);
     return $this;
   }
 
   /**
-   * @param string|PhpCodeInterface $line
+   * @param string $string
    * @return $this
    */
-  public function addToBody($line) {
-    $this->body->addLine($line);
-    return $this;
+  public function addRawStatement($string) {
+    return $this->addStatement(new PhpRawStatement($string));
   }
 
-  /**
-   * @param string|PhpCodeInterface $line
-   * @return $this
-   */
-  public function addToFooter($line) {
-    $this->footer->addLine($line);
-    return $this;
-  }
 
   /**
    * @return string
    */
   public function __toString() {
-    return implode("\n", ["<?php", $this->header, $this->body, $this->footer, '']);
+    return implode("\n", ["<?php", $this->statements, '']);
   }
 
 }

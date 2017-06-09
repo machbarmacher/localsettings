@@ -54,9 +54,13 @@ class FreistilboxServer extends ServerBase implements ServerInterface {
     return '/srv/www/freistilbox/home/' . $this->site_handle;
   }
 
+  public function getTypeName() {
+    return 'freistilbox';
+  }
+
   public function getShortHostName() {
     // User is unique and we can't access host on runtime.
-    return 'freistilbox';
+    return $this->getTypeName();
   }
 
   public function getUniqueInstallationName(Installation $installation) {
@@ -94,7 +98,7 @@ EOD
       ['redis_client_host', 'redis_client_port', 'redis_client_password'] :
       ['redis.connection'];
 
-    $php->addToBody(<<<EOD
+    $php->addRawStatement(<<<EOD
 require "../config/drupal/settings-d{$drupal_major_version}-site.php";
 // Redis
 if (
