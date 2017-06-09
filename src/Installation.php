@@ -184,6 +184,7 @@ class Installation {
     return $this;
   }
 
+  // @fixme Let server alter.
   public function compileAliases(PhpFile $php) {
     $php->addToBody('');
     $php->addToBody("// Installation: $this->name");
@@ -219,9 +220,6 @@ class Installation {
         ->addToBody("'site-list' => [$site_list_imploded],")
         ->addToBody('];');
     }
-    $php->addToBody("if (Runtime::getEnvironment()->match('$server_unique_site_name$root')) {")
-      ->addToBody("  \$aliases['this'] = \$aliases['$this->name'];")
-      ->addToBody('}');
   }
 
   public function compileSitesPhp(PhpFile $php) {
@@ -239,44 +237,31 @@ class Installation {
   }
 
   public function compileBaseUrls(PhpFile $php) {
-    $settings_variable = $this->project->getSettingsVariable();
-    $php->addToBody('');
-    $php->addToBody("// Installation: $this->name");
     foreach ($this->site_uris as $site => $uris) {
-      $site_id = $this->geProjectUniqueSiteName($site);
-      $php->addToBody("if (Runtime::getEnvironment()->match('$site_id')) {");
-      $php->addToBody("  {$settings_variable}['mmm']['installation'] = '$this->name';");
-
+      $php->addToBody("if (\$site === '$site') {");
       // Add drush "uri".
       $uri_map = array_combine($uris, $uris);
       $uri_map["http://$site"] = $uris[0];
       foreach ($uri_map as $uri_in => $uri) {
-        $host = parse_url($uri_in, PHP_URL_HOST);
-        if ($this->project->getDrupalMajorVersion() == 7) {
-          $php->addToBody("  if (\$host === '$host') {");
-          $php->addToBody("    \$base_url = '$uri'; return;");
-          $php->addToBody('  }');
+        if ($this->project->isD7()) {
+          $php->addToBody("  \$base_url = '$uri'; return;");
         }
         else {
           // D8 does not need base url anymore.
+          $host = parse_url($uri_in, PHP_URL_HOST);
           $php->addToBody("  \$settings['trusted_host_patterns'][] = '$host';");
         }
       }
-      $php->addToBody('  return;');
       $php->addToBody('}');
     }
   }
 
   public function compileDbCredentials(PhpFile $php) {
-    $php->addToBody('');
-    $php->addToBody("// Installation: $this->name");
     foreach ($this->db_credentials as $site => $db_credential) {
-      $site_id = $this->geProjectUniqueSiteName($site);
-      $php->addToBody("if (Runtime::getEnvironment()->match('$site_id')) {")
-        ->addToBody("  \$databases['default']['default'] = "
+      $php
+        ->addToBody("\$databases['default']['default'] = "
           // @todo Replace with better dumper.
-          . var_export(array_filter($db_credential), TRUE) . '; return;')
-        ->addToBody('}');
+          . var_export(array_filter($db_credential), TRUE) . ';');
     }
   }
 
