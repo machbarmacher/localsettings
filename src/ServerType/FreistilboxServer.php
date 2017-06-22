@@ -132,7 +132,6 @@ EOD
 
   public function alterAlias(array &$alias) {
     parent::alterAlias($alias);
-    $alias['#env-vars']['DRUSH_PHP'] = 'php5.6';
   }
 
   public function getLocalServerCheck() {

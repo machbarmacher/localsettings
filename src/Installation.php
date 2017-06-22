@@ -24,6 +24,8 @@ class Installation {
   protected $db_credentials = [];
   /** @var string */
   protected $use_environment_name;
+  /** @var string[] */
+  protected $env_vars;
 
   /**
    * Installation constructor.
@@ -169,6 +171,14 @@ class Installation {
     return $this;
   }
 
+  /**
+   * @param string $name
+   * @param string $value
+   */
+  public function setEnvVar($name, $value) {
+    $this->env_vars[$name] = $value;
+  }
+
   // @fixme Let server alter.
   public function compileAliases(PhpFile $php) {
     $php->addRawStatement('');
@@ -186,6 +196,9 @@ class Installation {
         'remote-host' => $this->server->getHost(),
         '#unique_site_name' => $this->getUniqueSiteName($site),
       ];
+      if ($this->env_vars) {
+        $alias['#env-vars'] = $this->env_vars;
+      }
       $this->server->alterAlias($alias);
       $php->addRawStatement("\$aliases['$alias_name'] = "
       // @todo Replace with better dumper.
