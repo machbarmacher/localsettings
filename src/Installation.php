@@ -25,7 +25,7 @@ class Installation {
   /** @var string */
   protected $use_environment_name;
   /** @var string[] */
-  protected $env_vars;
+  protected $drush_environment_variables;
 
   /**
    * Installation constructor.
@@ -175,8 +175,8 @@ class Installation {
    * @param string $name
    * @param string $value
    */
-  public function setEnvVar($name, $value) {
-    $this->env_vars[$name] = $value;
+  public function setDrushEnvironmentVariable($name, $value) {
+    $this->drush_environment_variables[$name] = $value;
   }
 
   // @fixme Let server alter.
@@ -196,8 +196,8 @@ class Installation {
         'remote-host' => $this->server->getHost(),
         '#unique_site_name' => $this->getUniqueSiteName($site),
       ];
-      if ($this->env_vars) {
-        $alias['#env-vars'] = $this->env_vars;
+      if ($this->drush_environment_variables) {
+        $alias['#env-vars'] = $this->drush_environment_variables;
       }
       $this->server->alterAlias($alias);
       $php->addRawStatement("\$aliases['$alias_name'] = "
