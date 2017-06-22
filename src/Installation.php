@@ -234,14 +234,13 @@ class Installation {
       if ($this->isMultisite()) {
         $php->addRawStatement("if (\$site === '$site') {");
       }
-      $uri_map = array_combine($uris, $uris);
-      foreach ($uri_map as $uri_in => $uri) {
+      foreach ($uris as $uri) {
         if ($this->project->isD7()) {
           $php->addRawStatement("  \$base_url = '$uri';");
         }
         else {
           // D8 does not need base url anymore.
-          $host = parse_url($uri_in, PHP_URL_HOST);
+          $host = parse_url($uri, PHP_URL_HOST);
           $php->addRawStatement("  \$settings['trusted_host_patterns'][] = '$host';");
         }
       }
