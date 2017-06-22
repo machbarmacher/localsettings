@@ -134,9 +134,8 @@ EOD
     parent::alterAlias($alias);
   }
 
-  public function getLocalServerCheck() {
-    return 'file_exists(\'/srv/www/freistilbox\') && (preg_match(\'/.freistilbox.net\$/\', $alias[\'remote-host\'])) && ($alias[\'remote-user\'] == (getenv(\'USER\') ?: getenv(\'LOGNAME\')))';
+  public function getLocalServerCheck($host_expression, $user_expression) {
+    return "file_exists('/srv/www/freistilbox') && (preg_match('/.freistilbox.net\\\$/', $host_expression)) && ($user_expression == (getenv('USER') ?: getenv('LOGNAME')))";
   }
-
 
 }

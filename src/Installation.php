@@ -183,7 +183,7 @@ class Installation {
     // Name in curly braces? Then glob docroot.
     $glob_docroot = preg_match('/\{.*\}/', $this->name);
     if ($glob_docroot) {
-      $is_local = $this->server->getLocalServerCheck();
+      $is_local = $this->server->getLocalServerCheck($this->server->getHost(), $this->server->getUser());
       $canonical_name = preg_replace('/[{}]/', '', $this->name);
       $docroot_wildcards = '/(\*|\{.*\})/';
       $canonical_docroot = preg_replace($docroot_wildcards, $canonical_name, $this->docroot);

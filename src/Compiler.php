@@ -117,7 +117,7 @@ EOD
   protected function addAliasAlterCode(PhpFile $php) {
     $local_server_checks = [];
     foreach ($this->project->getInstallations() as $installation_name => $installation) {
-      $check = $installation->getServer()->getLocalServerCheck();
+      $check = $installation->getServer()->getLocalServerCheck("\$alias['remote-host']", "\$alias['remote-user']");
       $local_server_checks[$check] = $check;
     }
     $local_server_check_statements = new PhpStatements();
