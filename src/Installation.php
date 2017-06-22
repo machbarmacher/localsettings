@@ -179,7 +179,6 @@ class Installation {
     $this->drush_environment_variables[$name] = $value;
   }
 
-  // @fixme Let server alter.
   public function compileAliases(PhpFile $php) {
     $php->addRawStatement('');
     $php->addRawStatement("// Installation: $this->name");
