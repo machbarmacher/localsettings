@@ -180,6 +180,27 @@ class Installation {
   }
 
   public function compileAliases(PhpFile $php) {
+    // Name in curly braces? Then glob docroot.
+    $glob_docroot = preg_match('/\{.*\}/', $this->name);
+    if ($glob_docroot) {
+      $is_local = $this->server->getLocalServerCheck();
+      $canonical_name = preg_replace('/[{}]/', '', $this->name);
+      $docroot_wildcards = '/(\*|\{.*\})/';
+      $canonical_docroot = preg_replace($docroot_wildcards, $canonical_name, $this->docroot);
+      $docroot_pattern = '#' . preg_replace($docroot_wildcards, '(.*)', preg_quote($this->docroot, '#')) . '#';
+      preg_match($docroot_wildcards, $this->docroot, $matches);
+      $docroot_replacements = implode('', array_map(function($v) {
+        return "\$v";
+      }, range(1, count($matches))));
+      $php->addRawStatement("if ($is_local) {");
+      $php->addRawStatement("  \$docroots = glob('$this->docroot')");
+      $php->addRawStatement("  \$docroots = array_combine(preg_replace('$docroot_pattern', '$docroot_replacements', \$docroot), \$docroot);");
+      $php->addRawStatement("}");
+      $php->addRawStatement("else {");
+      $php->addRawStatement("  \$docroots = [$canonical_name => '$canonical_docroot'];");
+      $php->addRawStatement("}");
+      $php->addRawStatement("foreach (\$docroots as \$docroot) {");
+    }
     $php->addRawStatement('');
     $php->addRawStatement("// Installation: $this->name");
     $multisite = count($this->site_uris) !== 1;
@@ -190,23 +211,31 @@ class Installation {
       $alias = [
         // Only use primary uri.
         'uri' => $uris[0],
-        'root' => $this->docroot,
         'remote-user' => $this->server->getUser(),
         'remote-host' => $this->server->getHost(),
         '#unique_site_name' => $this->getUniqueSiteName($site),
       ];
+      if (!$glob_docroot) {
+        $alias['root'] = $this->docroot;
+      }
       if ($this->drush_environment_variables) {
         $alias['#env-vars'] = $this->drush_environment_variables;
       }
       $this->server->alterAlias($alias);
       $alias_exported = var_export($alias, TRUE);
       $php->addRawStatement("\$aliases['$alias_name'] = $alias_exported;");
+      if ($glob_docroot) {
+        $php->addRawStatement("\$aliases['$alias_name']['root] = \$docroot;");
+      }
       $site_list[] = "@$alias_name";
     }
     if ($multisite) {
       // Add site-list installation alias.
       $site_list_exported = var_export(['site-list' => $site_list], TRUE);
-      $php->addRawStatement("\$aliases['$this->name'] = $site_list_exported;")
+      $php->addRawStatement("\$aliases['$this->name'] = $site_list_exported;");
+    }
+    if ($glob_docroot) {
+      $php->addRawStatement("}");
     }
   }
 
