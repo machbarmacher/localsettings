@@ -49,7 +49,8 @@ class Compiler {
     }
     // Only write if we have a multisite.
     if (!$php->isEmpty()) {
-      $commands->add(new WriteFile('sites/sites.php', $php));
+      $commands->add(new WriteFile('../localsettings/sites.php', $php));
+      $commands->add(new Symlink('sites/sites.php', '../../localsettings/sites.php'));
     }
 
     $php = new PhpFile();
@@ -57,7 +58,7 @@ class Compiler {
       $installation->compileAliases($php);
     }
     $this->addAliasAlterCode($php);
-    $commands->add(new WriteFile("../drush/aliases.drushrc.php", $php));
+    $commands->add(new WriteFile("../localsettings/aliases.drushrc.php", $php));
 
     $server_setting_files = [];
     foreach ($this->project->getInstallations() as $installation_name => $installation) {
@@ -272,6 +273,9 @@ EOD
       }
       $commands->add(new WriteFile('../localsettings/settings.custom-common.php', $php));
     }
+
+    // Write aliases.drushrc.php alias
+    $commands->add(new Symlink('../drush/aliases.drushrc.php', '../localsettings/aliases.drushrc.php'));
 
     // Write settings.custom.*.php
     foreach ($installations as $installation_name => $_) {
