@@ -78,7 +78,7 @@ EOD
     $user = $this->getUser();
     $host = $is_d7 ? 'localhost' : '127.0.0.1';
     $port = $is_d7 ? 3306 : 3307;
-    $mysql_ini_file = $is_d7 ? '/.my.cnf' : '/.my.mariadb.cnf';
+    $mysql_ini_file = $is_d7 ? '.my.cnf' : '.my.mariadb.cnf';
     $php->addRawStatement(<<<EOD
 \$databases['default']['default'] += [
   'driver' => 'mysql',
