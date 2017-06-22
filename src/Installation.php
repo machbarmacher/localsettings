@@ -199,9 +199,8 @@ class Installation {
         $alias['#env-vars'] = $this->drush_environment_variables;
       }
       $this->server->alterAlias($alias);
-      $php->addRawStatement("\$aliases['$alias_name'] = "
-      // @todo Replace with better dumper.
-      . var_export($alias, TRUE) . ';');
+      $alias_exported = var_export($alias, TRUE);
+      $php->addRawStatement("\$aliases['$alias_name'] = $alias_exported;");
       $site_list[] = "@$alias_name";
     }
     if ($multisite) {
