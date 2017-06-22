@@ -6,15 +6,15 @@ namespace machbarmacher\localsettings\Commands;
 
 class Symlink extends AbstractSymlink implements CommandInterface {
   /** @var string */
-  protected $string;
+  protected $target;
 
-  public function __construct($filename, $string) {
+  public function __construct($filename, $target) {
     parent::__construct($filename);
-    $this->string = $string;
+    $this->target = $target;
   }
 
   protected function getLinkTarget() {
-    return $this->string;
+    return $this->target;
   }
 
 }
