@@ -96,8 +96,8 @@ EOD
     // Also we don NOT want the snippet to set $settings['cache']['default']
     // and $settings['cache_prefix']['default'] so we filter the include.
     $redis_relevant_keys = $is_d7 ?
-      ['redis_client_host', 'redis_client_port', 'redis_client_password'] :
-      ['redis.connection'];
+      "['redis_client_host', 'redis_client_port', 'redis_client_password']" :
+      "['redis.connection']";
 
     $php->addRawStatement(<<<EOD
 require "../config/drupal/settings-d{$drupal_major_version}-site.php";
