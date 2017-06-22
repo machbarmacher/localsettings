@@ -236,7 +236,16 @@ class Installation {
       }
       foreach ($uris as $uri) {
         if ($this->project->isD7()) {
-          $php->addRawStatement("  \$base_url = '$uri';");
+          $php->addRawStatement("  // Drush?");
+          $php->addRawStatement("  if(drupal_is_cli() && strpos(\$_SERVER['HTTP_HOST'], '.') === FALSE) {");
+          $php->addRawStatement("    \$base_url = '$uri';");
+          $php->addRawStatement("  }");
+          $php->addRawStatement("  else {");
+          $php->addRawStatement("    // Assume no subdir install.");
+          $php->addRawStatement("    \$base_url = (isset(\$_SERVER['HTTPS'])?'https://':'http://') . rtrim(\$_SERVER['HTTP_HOST'], '.')");
+          $php->addRawStatement("  }");
+          // We only need to do this for the main uri.
+          break;
         }
         else {
           // D8 does not need base url anymore.
