@@ -187,10 +187,10 @@ class Installation {
       $canonical_name = preg_replace('/[{}]/', '', $this->name);
       $docroot_wildcards = '/(\*|\{.*\})/';
       $canonical_docroot = preg_replace($docroot_wildcards, $canonical_name, $this->docroot);
-      $docroot_pattern = '#' . preg_replace($docroot_wildcards, '(.*)', preg_quote($this->docroot, '#')) . '#';
+      $docroot_pattern = '#' . preg_replace('/(\\\*|\{.*\})/', '(.*)', preg_quote($this->docroot, '#')) . '#';
       preg_match($docroot_wildcards, $this->docroot, $matches);
       $docroot_replacements = implode('', array_map(function($v) {
-        return "\$v";
+        return "\\$v";
       }, range(1, count($matches))));
       $php->addRawStatement("if ($is_local) {");
       $php->addRawStatement("  \$docroots = glob('$this->docroot')");
