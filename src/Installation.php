@@ -206,11 +206,8 @@ class Installation {
     }
     if ($multisite) {
       // Add site-list installation alias.
-      $site_list_quoted = array_map(function($s) {return "'$s'";}, $site_list);
-      $site_list_imploded = implode(', ', $site_list_quoted);
-      $php->addRawStatement("\$aliases['$this->name'] = [")
-        ->addRawStatement("'site-list' => [$site_list_imploded],")
-        ->addRawStatement('];');
+      $site_list_exported = var_export(['site-list' => $site_list], TRUE);
+      $php->addRawStatement("\$aliases['$this->name'] = $site_list_exported;")
     }
   }
 
