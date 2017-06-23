@@ -182,12 +182,14 @@ class Installation {
   public function compileAliases(PhpFile $php) {
     // Name in curly braces? Then glob docroot.
     $glob_docroot = preg_match('/\{.*\}/', $this->name);
+    $host = $this->server->getHost();
+    $user = $this->server->getUser();
     if ($glob_docroot) {
-      $is_local = $this->server->getLocalServerCheck($this->server->getHost(), $this->server->getUser());
-      $canonical_name = preg_replace('/[{}]/', '', $this->name);
+      $is_local = $this->server->getLocalServerCheck("'$host'", "'$user'");
+      $canonical_name = preg_replace('/[{}]/u', '', $this->name);
       $docroot_wildcards = '/(\*|\{.*\})/';
       $canonical_docroot = preg_replace($docroot_wildcards, $canonical_name, $this->docroot);
-      $docroot_pattern = '#' . preg_replace('/(\\\*|\{.*\})/', '(.*)', preg_quote($this->docroot, '#')) . '#';
+      $docroot_pattern = '#' . preg_replace('/(\\\\\*|\{.*\})/u', '(.*)', preg_quote($this->docroot, '#')) . '#';
       preg_match($docroot_wildcards, $this->docroot, $matches);
       $docroot_replacements = implode('', array_map(function($v) {
         return "\\$v";
@@ -211,8 +213,8 @@ class Installation {
       $alias = [
         // Only use primary uri.
         'uri' => $uris[0],
-        'remote-user' => $this->server->getUser(),
-        'remote-host' => $this->server->getHost(),
+        'remote-user' => $user,
+        'remote-host' => $host,
         '#unique_site_name' => $this->getUniqueSiteName($site),
       ];
       if (!$glob_docroot) {
