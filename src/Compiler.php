@@ -136,7 +136,7 @@ foreach (\$aliases as \$alias_name => &\$alias) {
     continue;
   }
   \$is_local = FALSE;
-  $local_server_check_statements
+$local_server_check_statements
   if (\$is_local) {
     unset(\$alias['remote-host']);
     unset(\$alias['remote-user']);
