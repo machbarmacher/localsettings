@@ -193,7 +193,7 @@ class Installation {
       preg_match($docroot_wildcards, $this->docroot, $matches);
       $docroot_replacements = implode('', array_map(function($v) {
         return "\\$v";
-      }, range(1, count($matches))));
+      }, range(1, count($matches) - 1)));
       $php->addRawStatement("if ($is_local) {");
       $php->addRawStatement("  \$docroots = glob('$this->docroot')");
       $php->addRawStatement("  \$docroots = array_combine(preg_replace('$docroot_pattern', '$docroot_replacements', \$docroot), \$docroot);");
