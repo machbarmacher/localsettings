@@ -137,8 +137,6 @@ foreach (\$aliases as \$alias_name => &\$alias) {
   }
   \$is_local = FALSE;
   $local_server_check_statements
-  \$is_local = \$is_local || (\$alias['remote-host'] == gethostname()) && (\$alias['remote-user'] == get_current_user());
-  \$is_local = \$is_local || file_exists('/srv/www/freistilbox') && (preg_match('/.freistilbox.net\$/', \$alias['remote-host'])) && (\$alias['remote-user'] == (getenv('USER') ?: getenv('LOGNAME')));
   if (\$is_local) {
     unset(\$alias['remote-host']);
     unset(\$alias['remote-user']);
