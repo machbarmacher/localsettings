@@ -195,7 +195,7 @@ class Installation {
         return "\\$v";
       }, range(1, count($matches) - 1)));
       $php->addRawStatement("if ($is_local) {");
-      $php->addRawStatement("  \$docroots = glob('$this->docroot')");
+      $php->addRawStatement("  \$docroots = glob('$this->docroot');");
       $php->addRawStatement(<<<EOD
   \$docroots = array_combine(array_map(function(\$v) {
     return preg_replace('$docroot_pattern', '$docroot_replacements', \$v);
