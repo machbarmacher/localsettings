@@ -199,7 +199,7 @@ class Installation {
       $php->addRawStatement(<<<EOD
   \$docroots = array_combine(array_map(function(\$v) {
     return preg_replace('$docroot_pattern', '$docroot_replacements', \$v);
-  }, \$docroots), \$docroots);"
+  }, \$docroots), \$docroots);
 
 EOD
       );
@@ -231,9 +231,9 @@ EOD
       }
       $this->server->alterAlias($alias);
       $alias_exported = var_export($alias, TRUE);
-      $php->addRawStatement("\$aliases['\$name'] = $alias_exported;");
+      $php->addRawStatement("\$aliases[\$name] = $alias_exported;");
       if ($glob_docroot) {
-        $php->addRawStatement("\$aliases['\$name']['root'] = \$docroot;");
+        $php->addRawStatement("\$aliases[3\$name]['root'] = \$docroot;");
       }
       $site_list[] = "@$alias_name";
     }
