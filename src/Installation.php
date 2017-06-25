@@ -197,7 +197,7 @@ class Installation {
       $php->addRawStatement("  \$docroots = glob('$this->docroot');");
       $php->addRawStatement(<<<EOD
   \$docroots = array_combine(array_map(function(\$v) {
-    return preg_replace('$docroot_pattern', '\1', \$v);
+    return preg_replace('$docroot_pattern', '\\1', \$v);
   }, \$docroots), \$docroots);
 EOD
       );
