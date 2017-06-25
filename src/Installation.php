@@ -51,6 +51,13 @@ class Installation {
   }
 
   /**
+   * @return mixed
+   */
+  public function getCanonicalName() {
+    return preg_replace('/[{}]/u', '', $this->name);
+  }
+
+  /**
    * @return \machbarmacher\localsettings\Project
    */
   public function getProject() {
@@ -189,7 +196,7 @@ class Installation {
     if ($glob_docroot) {
       $is_local = $this->server->getLocalServerCheck("'$host'", "'$user'");
       $wildcard = '/([*])/u';
-      $canonical_name = preg_replace('/[{}]/u', '', $this->name);
+      $canonical_name = $this->getCanonicalName();
       $canonical_docroot = preg_replace($wildcard, $canonical_name, $this->docroot);
       // First quote the docroot for later, then replace the quoted wildcard.
       $docroot_pattern = '#' . preg_replace('/(\\\\\*)/u', '(.*)', preg_quote($this->docroot, '#')) . '#';

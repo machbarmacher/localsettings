@@ -62,6 +62,7 @@ class Compiler {
 
     $server_setting_files = [];
     foreach ($this->project->getInstallations() as $installation_name => $installation) {
+      $canonical_installation_name = $installation->getCanonicalName();
       $php = new PhpFile();
       $php->addRawStatement('// Basic installation facts.');
       $this->addInstallationFacts($php, $installation);
@@ -86,7 +87,7 @@ class Compiler {
         $commands->add(new WriteFile("../localsettings/$server_setting_file", $server_php));
       }
       $php->addRawStatement("include '../localsettings/{$server_setting_files[$server_name]}';");
-      $commands->add(new WriteFile("../localsettings/settings.generated.{$installation_name}.php", $php));
+      $commands->add(new WriteFile("../localsettings/settings.generated.{$canonical_installation_name}.php", $php));
     }
 
     $php = new PhpFile();
