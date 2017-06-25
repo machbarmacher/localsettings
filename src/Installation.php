@@ -188,19 +188,16 @@ class Installation {
     $user = $this->server->getUser();
     if ($glob_docroot) {
       $is_local = $this->server->getLocalServerCheck("'$host'", "'$user'");
+      $wildcard = '/(\*)/u';
       $canonical_name = preg_replace('/[{}]/u', '', $this->name);
-      $docroot_wildcards = '/(\*|\{.*\})/';
-      $canonical_docroot = preg_replace($docroot_wildcards, $canonical_name, $this->docroot);
+      $canonical_docroot = preg_replace($wildcard, $canonical_name, $this->docroot);
+      // First quote the docroot for later, then replace the quoted wildcard.
       $docroot_pattern = '#' . preg_replace('/(\\\\\*|\{.*\})/u', '(.*)', preg_quote($this->docroot, '#')) . '#';
-      preg_match($docroot_wildcards, $this->docroot, $matches);
-      $docroot_replacements = implode('', array_map(function($v) {
-        return "\\$v";
-      }, range(1, count($matches) - 1)));
       $php->addRawStatement("if ($is_local) {");
       $php->addRawStatement("  \$docroots = glob('$this->docroot');");
       $php->addRawStatement(<<<EOD
   \$docroots = array_combine(array_map(function(\$v) {
-    return preg_replace('$docroot_pattern', '$docroot_replacements', \$v);
+    return preg_replace('$docroot_pattern', '\1', \$v);
   }, \$docroots), \$docroots);
 EOD
       );
