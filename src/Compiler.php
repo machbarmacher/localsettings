@@ -22,7 +22,12 @@ class Compiler {
   protected $project;
 
   protected function getCurrentInstallationName() {
-    return 'dev'; // @todo
+    foreach ($this->project->getInstallations() as $installation) {
+      if ($installation->isCurrent()) {
+        return $installation->getCanonicalName();
+      }
+    }
+    return NULL;
   }
 
   /**

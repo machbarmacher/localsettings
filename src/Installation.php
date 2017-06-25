@@ -52,6 +52,7 @@ class Installation {
 
   /**
    * @return mixed
+   * @fixme Move glob to InstallationBundle subclass.
    */
   public function getCanonicalName() {
     return preg_replace('/[{}]/u', '', $this->name);
@@ -186,15 +187,17 @@ class Installation {
     $this->drush_environment_variables[$name] = $value;
   }
 
+  /**
+   * @param \machbarmacher\localsettings\RenderPhp\PhpFile $php
+   * @fixme Move glob to InstallationBundle subclass.
+   */
   public function compileAliases(PhpFile $php) {
     $php->addRawStatement('');
     $php->addRawStatement("// Installation: $this->name");
     // Name in curly braces? Then glob docroot.
     $glob_docroot = preg_match('/\{.*\}/', $this->name);
-    $host = $this->server->getHost();
-    $user = $this->server->getUser();
     if ($glob_docroot) {
-      $is_local = $this->server->getLocalServerCheck("'$host'", "'$user'");
+      $is_local = $this->getLocalServerCheck();
       $wildcard = '/([*])/u';
       $canonical_name = $this->getCanonicalName();
       $canonical_docroot = preg_replace($wildcard, $canonical_name, $this->docroot);
@@ -224,8 +227,8 @@ EOD
       $uri = $uris[0];
       $alias = [
         // Only use primary uri.
-        'remote-user' => $user,
-        'remote-host' => $host,
+        'remote-user' => $this->server->getUser(),
+        'remote-host' => $this->server->getHost(),
       ];
       if (!$glob_docroot) {
         $alias['root'] = $this->docroot;
@@ -313,4 +316,34 @@ EOD
     return $this->server->alterHtaccess($content);
   }
 
+  /**
+   * @return mixed
+   */
+  public function getLocalServerCheck() {
+    $host = $this->server->getHost();
+    $user = $this->server->getUser();
+    $is_local = $this->server->getLocalServerCheck("'$host'", "'$user'");
+    return $is_local;
+  }
+
+  public function isLocal() {
+    $is_server = eval($this->getLocalServerCheck());
+    $is_local = $is_server && $this->isCurrent();
+    return $is_local;
+  }
+
+  /**
+   * @return bool
+   *
+   * @fixme Move glob to InstallationBundle subclass.
+   */
+  public function isCurrent() {
+    $current = realpath(DRUSH_DRUPAL_CORE);
+    foreach (glob($this->docroot) as $path) {
+      if (realpath($path) == $current) {
+        return TRUE;
+      }
+    }
+    return FALSE;
+  }
 }
