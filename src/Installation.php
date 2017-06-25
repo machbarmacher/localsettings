@@ -243,7 +243,7 @@ EOD
       $php->addRawStatement("\$aliases['$this->name'] = $site_list_exported;");
     }
     if ($glob_docroot) {
-      $php->addRawStatement("}");
+      $php->addRawStatement("} // of foreach()");
     }
   }
 
