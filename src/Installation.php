@@ -236,7 +236,7 @@ EOD
       $php->addRawStatement("\$aliases[\"$alias_name\"] = $alias_exported;");
       if ($glob_docroot) {
         $php->addRawStatement("\$aliases[\"$alias_name\"]['root'] = \$docroot;");
-        $php->addRawStatement("\$aliases[\"$alias_name\"]['uri'] = preg_replace('/\\{.*\\}/', \$name, $uri);");
+        $php->addRawStatement("\$aliases[\"$alias_name\"]['uri'] = preg_replace('/\\{.*\\}/', \$name, '$uri');");
       }
       $site_list[] = "@$alias_name";
     }
