@@ -188,11 +188,11 @@ class Installation {
     $user = $this->server->getUser();
     if ($glob_docroot) {
       $is_local = $this->server->getLocalServerCheck("'$host'", "'$user'");
-      $wildcard = '/(\*)/u';
+      $wildcard = '/([*])/u';
       $canonical_name = preg_replace('/[{}]/u', '', $this->name);
       $canonical_docroot = preg_replace($wildcard, $canonical_name, $this->docroot);
       // First quote the docroot for later, then replace the quoted wildcard.
-      $docroot_pattern = '#' . preg_replace('/(\\\\\*|\{.*\})/u', '(.*)', preg_quote($this->docroot, '#')) . '#';
+      $docroot_pattern = '#' . preg_replace('/(\\\\\*)/u', '(.*)', preg_quote($this->docroot, '#')) . '#';
       $php->addRawStatement("if ($is_local) {");
       $php->addRawStatement("  \$docroots = glob('$this->docroot');");
       $php->addRawStatement(<<<EOD
@@ -233,8 +233,8 @@ EOD
       $php->addRawStatement("\$aliases[\"$alias_name\"] = $alias_exported;");
       if ($glob_docroot) {
         $php->addRawStatement("\$aliases[\"$alias_name\"]['root'] = \$docroot;");
-        $php->addRawStatement("\$aliases[\"$alias_name\"]['uri'] = preg_replace('/\\{.*\\}/', \$name, '$uri');");
-        $php->addRawStatement("\$aliases[\"$alias_name\"]['#unique_site_name'] = preg_replace('/\\{.*\\}/', \$name, '$unique_site_name');");
+        $php->addRawStatement("\$aliases[\"$alias_name\"]['uri'] = preg_replace('/[*]/', \$name, '$uri');");
+        $php->addRawStatement("\$aliases[\"$alias_name\"]['#unique_site_name'] = preg_replace('/[*]/', \$name, '$unique_site_name');");
       }
       $site_list[] = "@$alias_name";
     }
