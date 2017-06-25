@@ -205,9 +205,9 @@ EOD
       );
       $php->addRawStatement("}");
       $php->addRawStatement("else {");
-      $php->addRawStatement("  \$docroots = [$canonical_name => '$canonical_docroot'];");
+      $php->addRawStatement("  \$docroots = ['$canonical_name' => '$canonical_docroot'];");
       $php->addRawStatement("}");
-      $php->addRawStatement("foreach (\$docroots as \$docroot) {");
+      $php->addRawStatement("foreach (\$docroots as \$name => \$docroot) {");
     }
     $php->addRawStatement('');
     $php->addRawStatement("// Installation: $this->name");
@@ -231,9 +231,9 @@ EOD
       }
       $this->server->alterAlias($alias);
       $alias_exported = var_export($alias, TRUE);
-      $php->addRawStatement("\$aliases['$alias_name'] = $alias_exported;");
+      $php->addRawStatement("\$aliases['\$name'] = $alias_exported;");
       if ($glob_docroot) {
-        $php->addRawStatement("\$aliases['$alias_name']['root] = \$docroot;");
+        $php->addRawStatement("\$aliases['\$name']['root'] = \$docroot;");
       }
       $site_list[] = "@$alias_name";
     }
