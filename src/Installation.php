@@ -200,7 +200,6 @@ class Installation {
   \$docroots = array_combine(array_map(function(\$v) {
     return preg_replace('$docroot_pattern', '$docroot_replacements', \$v);
   }, \$docroots), \$docroots);
-
 EOD
       );
       $php->addRawStatement("}");
