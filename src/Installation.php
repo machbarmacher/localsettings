@@ -180,6 +180,7 @@ class Installation {
   }
 
   public function compileAliases(PhpFile $php) {
+    $php->addRawStatement('');
     // Name in curly braces? Then glob docroot.
     $glob_docroot = preg_match('/\{.*\}/', $this->name);
     $host = $this->server->getHost();
@@ -208,7 +209,6 @@ EOD
       $php->addRawStatement("}");
       $php->addRawStatement("foreach (\$docroots as \$name => \$docroot) {");
     }
-    $php->addRawStatement('');
     $php->addRawStatement("// Installation: $this->name");
     $multisite = count($this->site_uris) !== 1;
     $site_list= [];
