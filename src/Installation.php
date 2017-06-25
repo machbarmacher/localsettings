@@ -22,8 +22,6 @@ class Installation {
   protected $docroot;
   /** @var array[] */
   protected $db_credentials = [];
-  /** @var string */
-  protected $use_environment_name;
   /** @var string[] */
   protected $drush_environment_variables;
 
@@ -40,7 +38,6 @@ class Installation {
     $this->project = $project;
 
     $this->docroot = $this->server->makeDocrootAbsolute($this->server->getDefaultDocroot());
-    $this->use_environment_name = $name;
   }
 
   /**
