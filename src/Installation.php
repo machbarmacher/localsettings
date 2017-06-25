@@ -140,17 +140,15 @@ EOD
   /**
    * @return mixed
    */
-  public function getLocalServerCheck() {
+  private function getLocalServerCheck() {
     $host = $this->server->getHost();
     $user = $this->server->getUser();
     $is_local = $this->server->getLocalServerCheck("'$host'", "'$user'");
     return $is_local;
   }
 
-  public function isLocal() {
-    $is_server = eval($this->getLocalServerCheck());
-    $is_local = $is_server && $this->isCurrent();
-    return $is_local;
+  private function isLocal() {
+    return eval($this->getLocalServerCheck());
   }
 
   /**
@@ -159,6 +157,9 @@ EOD
    * @fixme Move glob to InstallationBundle subclass.
    */
   public function isCurrent() {
+    if (!$this->isLocal()) {
+      return FALSE;
+    }
     $current = realpath(DRUSH_DRUPAL_CORE);
     foreach (glob($this->docroot) as $path) {
       if (realpath($path) == $current) {
