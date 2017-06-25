@@ -151,7 +151,7 @@ if (count(\$current_sites) == 1) {
   \$aliases['this'] = reset(\$current_sites);
 }
 else {
-  \$aliases['this'] = ['site-list' => \$current_sites];
+  \$aliases['this'] = ['site-list' => array_keys(\$current_sites)];
 }
 
 EOD

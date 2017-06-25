@@ -213,34 +213,37 @@ EOD
     $php->addRawStatement("// Installation: $this->name");
     $multisite = count($this->site_uris) !== 1;
     $site_list= [];
+    $installation_name_expression = $glob_docroot ? '$name' : $this->name;
     // Add single site aliases.
     foreach ($this->site_uris as $site => $uris) {
-      $alias_name = $multisite ? $this->name . '.' . $site : $this->name;
+      $alias_name = $multisite ? $installation_name_expression . '.' . $site : $installation_name_expression;
+      $uri = $uris[0];
       $alias = [
         // Only use primary uri.
-        'uri' => $uris[0],
         'remote-user' => $user,
         'remote-host' => $host,
         '#unique_site_name' => $this->getUniqueSiteName($site),
       ];
       if (!$glob_docroot) {
         $alias['root'] = $this->docroot;
+        $alias['uri'] = $uri;
       }
       if ($this->drush_environment_variables) {
         $alias['#env-vars'] = $this->drush_environment_variables;
       }
       $this->server->alterAlias($alias);
       $alias_exported = var_export($alias, TRUE);
-      $php->addRawStatement("\$aliases[\$name] = $alias_exported;");
+      $php->addRawStatement("\$aliases[\"$alias_name\"] = $alias_exported;");
       if ($glob_docroot) {
-        $php->addRawStatement("\$aliases[3\$name]['root'] = \$docroot;");
+        $php->addRawStatement("\$aliases[\"$alias_name\"]['root'] = \$docroot;");
+        $php->addRawStatement("\$aliases[\"$alias_name\"]['uri'] = preg_replace('/\\{.*\\}/', \$name, $uri);");
       }
       $site_list[] = "@$alias_name";
     }
     if ($multisite) {
       // Add site-list installation alias.
       $site_list_exported = var_export(['site-list' => $site_list], TRUE);
-      $php->addRawStatement("\$aliases['$this->name'] = $site_list_exported;");
+      $php->addRawStatement("\$aliases['$installation_name_expression'] = $site_list_exported;");
     }
     if ($glob_docroot) {
       $php->addRawStatement("} // of foreach()");
