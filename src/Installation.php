@@ -212,17 +212,18 @@ EOD
     $installation_name_expression = $glob_docroot ? '$name' : $this->name;
     // Add single site aliases.
     foreach ($this->site_uris as $site => $uris) {
+      $unique_site_name = $this->getUniqueSiteName($site);
       $alias_name = $multisite ? $installation_name_expression . '.' . $site : $installation_name_expression;
       $uri = $uris[0];
       $alias = [
         // Only use primary uri.
         'remote-user' => $user,
         'remote-host' => $host,
-        '#unique_site_name' => $this->getUniqueSiteName($site),
       ];
       if (!$glob_docroot) {
         $alias['root'] = $this->docroot;
         $alias['uri'] = $uri;
+        $alias['#unique_site_name'] = $unique_site_name;
       }
       if ($this->drush_environment_variables) {
         $alias['#env-vars'] = $this->drush_environment_variables;
@@ -233,6 +234,7 @@ EOD
       if ($glob_docroot) {
         $php->addRawStatement("\$aliases[\"$alias_name\"]['root'] = \$docroot;");
         $php->addRawStatement("\$aliases[\"$alias_name\"]['uri'] = preg_replace('/\\{.*\\}/', \$name, '$uri');");
+        $php->addRawStatement("\$aliases[\"$alias_name\"]['#unique_site_name'] = preg_replace('/\\{.*\\}/', \$name, '$unique_site_name');");
       }
       $site_list[] = "@$alias_name";
     }
