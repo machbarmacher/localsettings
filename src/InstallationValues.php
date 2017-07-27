@@ -2,6 +2,7 @@
 
 namespace machbarmacher\localsettings;
 
+use machbarmacher\localsettings\RenderPhp\PhpFile;
 use machbarmacher\localsettings\Tools\DbCredentialTools;
 
 class InstallationValues {
@@ -40,14 +41,6 @@ class InstallationValues {
    */
   public function getName() {
     return $this->name;
-  }
-
-  /**
-   * @return mixed
-   * @fixme Move glob to InstallationBundle subclass.
-   */
-  public function getCanonicalName() {
-    return preg_replace('/[{}]/u', '', $this->name);
   }
 
   /**
@@ -148,7 +141,7 @@ class InstallationValues {
    * @param string $site
    * @return $this
    */
-  public function setDbCredentials($credentials, $site = 'default') {
+  public function setDbCredential($credentials, $site = 'default') {
     if (is_string($credentials)) {
       $credentials = DbCredentialTools::getDbCredentialsFromDbUrl($credentials);
     }
@@ -157,6 +150,10 @@ class InstallationValues {
   }
 
   /**
+   * Set DB credentials that vary by
+   * - {{site}}: replaced instantly for all previously(!) defined sites
+   * - {{installation}}: installation name, replaced instantly, just convenience
+   * - {{dirname}}: installation directory name, replaced on runtime for cluster
    * @param array|string $credential_pattern
    * @return $this
    */
@@ -177,6 +174,81 @@ class InstallationValues {
    */
   public function setDrushEnvironmentVariable($name, $value) {
     $this->drush_environment_variables[$name] = $value;
+  }
+
+  /**
+   * @return mixed
+   */
+  protected function getLocalServerCheck() {
+    $host = $this->server->getHost();
+    $user = $this->server->getUser();
+    $is_local = $this->server->getLocalServerCheck("'$host'", "'$user'");
+    return $is_local;
+  }
+
+  /**
+   * @return bool
+   */
+  protected function isLocal() {
+    return eval($this->getLocalServerCheck());
+  }
+
+  public function alterHtaccess($content) {
+    return $this->server->alterHtaccess($content);
+  }
+
+  public function compileSitesPhp(PhpFile $php) {
+    $php->addRawStatement('');
+    $php->addRawStatement("// Installation: $this->name");
+    foreach ($this->site_uris as $site => $uris) {
+      foreach ($uris as $uri) {
+        // @todo Care for port when needed.
+        $host = parse_url($uri, PHP_URL_HOST);
+        if ($site !== 'default') {
+          $php->addRawStatement("\$sites['$host'] = '$site';");
+        }
+      }
+    }
+  }
+
+  public function compileBaseUrls(PhpFile $php) {
+    foreach ($this->site_uris as $site => $uris) {
+      if ($this->isMultisite()) {
+        $php->addRawStatement("if (\$site === '$site') {");
+      }
+      foreach ($uris as $uri) {
+        if ($this->project->isD7()) {
+          $php->addRawStatement("  // Drush?");
+          $php->addRawStatement("  if(drupal_is_cli() && strpos(\$_SERVER['HTTP_HOST'], '.') === FALSE) {");
+          $php->addRawStatement("    \$base_url = '$uri';");
+          $php->addRawStatement("  }");
+          $php->addRawStatement("  else {");
+          $php->addRawStatement("    // Assume no subdir install.");
+          $php->addRawStatement("    \$base_url = (isset(\$_SERVER['HTTPS'])?'https://':'http://') . rtrim(\$_SERVER['HTTP_HOST'], '.')");
+          $php->addRawStatement("  }");
+          // We only need to do this for the main uri.
+          break;
+        }
+        else {
+          // D8 does not need base url anymore.
+          $host = parse_url($uri, PHP_URL_HOST);
+          $php->addRawStatement("  \$settings['trusted_host_patterns'][] = '$host';");
+        }
+      }
+      if ($this->isMultisite()) {
+        $php->addRawStatement('}');
+      }
+    }
+  }
+
+  public function compileDbCredentials(PhpFile $php) {
+    foreach ($this->db_credentials as $site => $db_credential) {
+      foreach ($db_credential as $key => $value) {
+        // We assume $ always denotes a variable.
+        $value_quoted = (strpos($value, '$') !== FALSE) ? '"$value"' : "'$value'";
+        $php->addRawStatement("\$databases['default']['default']['$key'] = $value_quoted;");
+      }
+    }
   }
 
 }

@@ -24,7 +24,7 @@ class Compiler {
   protected function getCurrentInstallationName() {
     foreach ($this->project->getInstallations() as $installation) {
       if ($installation->isCurrent()) {
-        return $installation->getCanonicalName();
+        return $installation->getName();
       }
     }
     return NULL;
@@ -67,7 +67,7 @@ class Compiler {
 
     $server_setting_files = [];
     foreach ($this->project->getInstallations() as $installation_name => $installation) {
-      $canonical_installation_name = $installation->getCanonicalName();
+      $canonical_installation_name = $installation->getName();
       $php = new PhpFile();
       $php->addRawStatement('// Basic installation facts.');
       $this->addInstallationFacts($php, $installation);
