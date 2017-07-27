@@ -5,7 +5,7 @@ use machbarmacher\localsettings\Commands\Commands;
 use machbarmacher\localsettings\Compiler;
 use machbarmacher\localsettings\CompilerFactory;
 use machbarmacher\localsettings\Project;
-use machbarmacher\localsettings\Scaffolder;
+use machbarmacher\localsettings\CompileMisc;
 
 /**
  * Implements hook_drush_command().

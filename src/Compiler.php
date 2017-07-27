@@ -104,24 +104,9 @@ class Compiler {
     $commands->add(new WriteFile("../localsettings/settings.generated-common.php", $php));
   }
 
-  public function letInstallationsAlterHtaccess(Commands $commands) {
-    $original_file = !drush_get_option('simulate')
-      // Not simulated? Look at the correct location.
-      ? '.htaccess.original'
-      // Simulated ? Look at the previous location.
-      : '.htaccess';
-    foreach ($this->project->getInstallations() as $installation) {
-      $installation_name = $installation->getName();
-      $commands->add(new AlterFile($original_file, ".htaccess.$installation_name",
-        function ($content) use ($installation) {
-          return $installation->alterHtaccess($content);
-        }));
-    }
-  }
-
   public static function prepare(Commands $commands) {
     // Step 1
-    Scaffolder::writeProject($commands);
+    CompileMisc::writeProject($commands);
     // Step 2 is compiling
   }
 
@@ -172,12 +157,12 @@ class Compiler {
       $commands->add(new WriteFile("../localsettings/settings.custom.$installation_name.php", new PhpFile()));
     }
 
-    Scaffolder::writeSettings($commands, $drupal_major_version);
+    CompileMisc::writeSettings($commands, $drupal_major_version);
 
     // @todo Delegate to server.
-    Scaffolder::writeBoxfile($commands);
+    CompileMisc::writeBoxfile($commands);
 
-    Scaffolder::writeGitignoreForComposer($commands);
+    CompileMisc::writeGitignoreForComposer($commands);
 
     $this->postClone($commands);
     $this->postUpdate($commands);
@@ -186,17 +171,17 @@ class Compiler {
   public static function preUpdate(Commands $commands) {
     // Prepare update and scaffold of docroot.
     // Make htacces a file again, not a symlink.
-    Scaffolder::moveBackHtaccess($commands);
+    CompileMisc::moveBackHtaccess($commands);
   }
 
   public function postUpdate(Commands $commands) {
     // A docroot update brought upstream versions:
     // Use our gitignore; Alter and symlink htaccess.
-    Scaffolder::writeGitignoreForDrupal($commands);
+    CompileMisc::writeGitignoreForDrupal($commands);
     if (file_exists('.htaccess') && !is_link('.htaccess')) {
-      Scaffolder::moveAwayHtaccess($commands);
-      $this->letInstallationsAlterHtaccess($commands);
-      Scaffolder::symlinkHtaccess($commands, $this->getCurrentInstallationName());
+      CompileMisc::moveAwayHtaccess($commands);
+      CompileMisc::letInstallationsAlterHtaccess($commands, $this->project);
+      CompileMisc::symlinkHtaccess($commands, $this->getCurrentInstallationName());
     }
 
     return $commands;
@@ -209,15 +194,15 @@ class Compiler {
     $commands->add(new EnsureDirectory('../tmp'));
     $commands->add(new EnsureDirectory('../logs'));
 
-    Scaffolder::symlinkSettingsLocal($commands, $this->getCurrentInstallationName());
-    Scaffolder::symlinkHtaccess($commands, $this->getCurrentInstallationName());
+    CompileMisc::symlinkSettingsLocal($commands, $this->getCurrentInstallationName());
+    CompileMisc::symlinkHtaccess($commands, $this->getCurrentInstallationName());
 
     return $commands;
   }
 
   public static function activateSite(Commands $commands, $site) {
     // Step 4
-    Scaffolder::delegateSettings($commands, $site);
+    CompileMisc::delegateSettings($commands, $site);
   }
 
 }

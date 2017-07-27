@@ -4,13 +4,30 @@
 namespace machbarmacher\localsettings;
 
 
+use machbarmacher\localsettings\Commands\AlterFile;
 use machbarmacher\localsettings\Commands\Commands;
 use machbarmacher\localsettings\Commands\DeleteFile;
 use machbarmacher\localsettings\Commands\MoveFile;
 use machbarmacher\localsettings\Commands\Symlink;
 use machbarmacher\localsettings\Commands\WriteFile;
 
-class Scaffolder {
+class CompileMisc {
+
+  public static function letInstallationsAlterHtaccess(Commands $commands, Project $project) {
+    $original_file = !drush_get_option('simulate')
+      // Not simulated? Look at the correct location.
+      ? '.htaccess.original'
+      // Simulated ? Look at the previous location.
+      : '.htaccess';
+    foreach ($project->getInstallations() as $installation) {
+      $installation_name = $installation->getName();
+      $commands->add(new AlterFile($original_file, ".htaccess.$installation_name",
+        function ($content) use ($installation) {
+          return $installation->alterHtaccess($content);
+        }));
+    }
+  }
+
   // @fixme Fix composer scaffolding:
   //"pre-drupal-scaffold-cmd": [
   //"ddrush mbbu --force"
