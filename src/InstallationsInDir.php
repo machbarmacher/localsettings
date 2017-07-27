@@ -12,7 +12,7 @@ use machbarmacher\localsettings\RenderPhp\PhpFile;
  * (if local) returns installations. It is responsible for aliases (as dynamic
  * code is involved) though.
  */
-class InstallationCluster extends InstallationBase {
+class InstallationsInDir extends InstallationBase {
   /** @var string */
   protected $raw_name;
 

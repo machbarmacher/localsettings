@@ -110,6 +110,7 @@ abstract class InstallationBase implements InstallationInterface {
       $credential_pattern = DbCredentialTools::getDbCredentialsFromDbUrl($credential_pattern);
     }
     foreach ($this->site_uris as $site => $_) {
+      // @fixme Consider replacing with $foo syntax.
       $replacements = ['{{installation}}' => $this->name, '{{site}}' => $site, '{{dirname}}' => '$dirname'];
       $this->db_credentials[$site] = DbCredentialTools::substituteInDbCredentials($credential_pattern, $replacements);
     }
