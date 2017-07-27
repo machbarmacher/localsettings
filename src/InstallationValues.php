@@ -185,9 +185,7 @@ class InstallationValues {
   public function compileDbCredentials(PhpFile $php) {
     foreach ($this->db_credentials as $site => $db_credential) {
       foreach ($db_credential as $key => $value) {
-        // We assume $ always denotes a variable.
-        $value_quoted = (strpos($value, '$') !== FALSE) ? '"$value"' : "'$value'";
-        $php->addRawStatement("\$databases['default']['default']['$key'] = $value_quoted;");
+        $php->addRawStatement("\$databases['default']['default']['$key'] = \"$value\";");
       }
     }
   }
