@@ -44,6 +44,20 @@ class Project {
   }
 
   /**
+   * @param string $name
+   * @param ServerInterface $server
+   * @return InstallationInterface
+   */
+  public function addInstallationsInDir($name, ServerInterface $server) {
+    if (isset($this->installations[$name])) {
+      throw new \UnexpectedValueException(sprintf('Duplicate installation: %s', $name));
+    }
+    $installation = new InstallationsInDir($name, $server, $this);
+    $this->installations[$name] = $installation;
+    return $installation;
+  }
+
+  /**
    * @return int
    */
   public function getDrupalMajorVersion() {

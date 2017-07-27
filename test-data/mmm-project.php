@@ -10,14 +10,10 @@ use machbarmacher\localsettings\ServerType\UberspaceServer;
 
 $project = new Project(7);
 
-$project->addInstallation('dev', new UberspaceServer('norma', 'jenn'))
-  ->addSite('http://shop.swinginfreiburg.de', 'default')
-  ->addSite('http://www.swinginfreiburg.de', 'live')
-  ->addUri('http://fsds.dance', 'live')
-  ->addSite('http://dev.swinginfreiburg.de', 'dev')
-  ->addSite('http://test.swinginfreiburg.de', 'test')
-  ->setDocroot('/var/www/virtual/jenn/installations/swif-live/docroot')
-  ->setDbCredentialPattern('jenn_{{site}}');
+$project->addInstallationsInDir('dev', new UberspaceServer('rasalhague', 'clsys'))
+  ->addSite('http://dev.clsys.rasalhague.uberspace.de', 'default')
+  ->setDocroot('/var/www/virtual/clsys/installations/*/docroot')
+  ->setDbCredentialPattern('{{installation}}');
 
 // FSB: Default docroot, single database.
 $project->addInstallation('live', new FreistilboxServer('c145', 's1890'))
