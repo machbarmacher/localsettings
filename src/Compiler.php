@@ -70,7 +70,7 @@ class Compiler {
       $canonical_installation_name = $installation->getName();
       $php = new PhpFile();
       $php->addRawStatement('// Basic installation facts.');
-      $this->addInstallationFacts($php, $installation);
+      CompileSettings::addInstallationFacts($php, $this->project, $installation);
       $php->addRawStatement('');
       $php->addRawStatement('// Base URLs');
       $installation->compileBaseUrls($php);
@@ -96,79 +96,12 @@ class Compiler {
     }
 
     $php = new PhpFile();
-    $this->addBasicFacts($php);
+    CompileSettings::addBasicFacts($php, $this->project);
     $commands->add(new WriteFile("../localsettings/settings.generated-basic.php", $php));
 
     $php = new PhpFile();
-    $this->addGenericSettings($php);
+    CompileSettings::addGenericSettings($php, $this->project);
     $commands->add(new WriteFile("../localsettings/settings.generated-common.php", $php));
-  }
-
-  protected function addInstallationFacts(PhpFile $php, InstallationInterface $installation) {
-    $settings_variable = $this->project->getSettingsVariable();
-
-    $installation_name = $installation->getName();
-    $unique_site_name  = $installation->getUniqueSiteName('$site');
-
-    $php->addRawStatement(<<<EOD
-\$installation = {$settings_variable}['localsettings']['installation'] = '$installation_name';
-\$unique_site_name = {$settings_variable}['localsettings']['unique_site_name'] = "$unique_site_name";
-EOD
-    );
-  }
-
-  protected function addBasicFacts(PhpFile $php) {
-    $is_d7 = $this->project->isD7();
-    $settings_variable = $this->project->getSettingsVariable();
-    $conf_path = $is_d7 ? 'conf_path()' : '\Drupal::service(\'site.path\')->get()';
-
-    $php->addRawStatement(<<<EOD
-\$site = {$settings_variable}['localsettings']['site'] = basename($conf_path);
-\$dirname = {$settings_variable}['localsettings']['dirname'] = basename(dirname(getcwd()));
-EOD
-    );
-  }
-
-  protected function addGenericSettings(PhpFile $php) {
-    $is_d7 = $this->project->isD7();
-    $settings_variable = $this->project->getSettingsVariable();
-
-    $tmp_path_quoted = "\"../tmp/\$site\"";
-    $private_path_quoted = "\"../private/\$site\"";
-
-    $php->addRawStatement(<<<EOD
-{$settings_variable}['file_public_path'] = "sites/\$site/files";
-
-if (!file_exists({$private_path_quoted})) { mkdir({$private_path_quoted}); }    
-{$settings_variable}['file_private_path'] = {$private_path_quoted};
-
-if (!file_exists({$tmp_path_quoted})) { mkdir({$tmp_path_quoted}); }   
-EOD
-    );
-
-    // @fixme Add unique name method and tokens.
-    if ($is_d7) {
-      $php->addRawStatement(<<<EOD
-\$conf['file_temporary_path'] = {$tmp_path_quoted};
-
-\$conf['environment_indicator_overwrite'] = TRUE;
-\$conf['environment_indicator_overwritten_name'] = \$unique_site_name;
-\$conf['environment_indicator_overwritten_color'] = '#' . dechex(hexdec(substr(md5(\$conf['environment_indicator_overwritten_name']), 0, 6)) & 0x7f7f7f); // Only dark colors.
-\$conf['environment_indicator_overwritten_text_color'] = '#ffffff';
-EOD
-      );
-    }
-    else {
-      $php->addRawStatement(<<<EOD
-global \$config;
-\$config['system.file']['path']['temporary'] = {$tmp_path_quoted};
-
-global \$config_directories;
-\$config_directories[CONFIG_SYNC_DIRECTORY] = '../config-sync';
-EOD
-      );
-    }
-
   }
 
   public function letInstallationsAlterHtaccess(Commands $commands) {
