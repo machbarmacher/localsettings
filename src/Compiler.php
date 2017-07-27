@@ -104,7 +104,7 @@ class Compiler {
     $commands->add(new WriteFile("../localsettings/settings.generated-common.php", $php));
   }
 
-  protected function addInstallationFacts(PhpFile $php, Installation $installation) {
+  protected function addInstallationFacts(PhpFile $php, InstallationInterface $installation) {
     $settings_variable = $this->project->getSettingsVariable();
 
     $installation_name = $installation->getName();

@@ -21,13 +21,6 @@ class InstallationValues {
   /** @var string[] */
   protected $drush_environment_variables;
 
-  /**
-   * Installation constructor.
-   *
-   * @param string $name
-   * @param ServerInterface $server
-   * @param Project $project
-   */
   public function __construct($name, ServerInterface $server, Project $project) {
     $this->name = $name;
     $this->server = $server;
@@ -36,37 +29,22 @@ class InstallationValues {
     $this->docroot = $this->server->makeDocrootAbsolute($this->server->getDefaultDocroot());
   }
 
-  /**
-   * @return string
-   */
   public function getName() {
     return $this->name;
   }
 
-  /**
-   * @return \machbarmacher\localsettings\Project
-   */
   public function getProject() {
     return $this->project;
   }
 
-  /**
-   * @return \machbarmacher\localsettings\ServerInterface
-   */
   public function getServer() {
     return $this->server;
   }
 
-  /**
-   * @return string
-   */
   public function getDocroot() {
     return $this->docroot;
   }
 
-  /**
-   * @return \string[][]
-   */
   public function getSiteUris() {
     return $this->site_uris;
   }
@@ -83,9 +61,6 @@ class InstallationValues {
     return (bool)array_diff_key($this->site_uris, ['default' => TRUE]);
   }
 
-  /**
-   * @return $this
-   */
   public function validate() {
     if (!$this->site_uris) {
       throw new \UnexpectedValueException(sprintf('Installation %s needs site uris.', $this->getName()));
@@ -96,11 +71,6 @@ class InstallationValues {
     return $this;
   }
 
-  /**
-   * @param string $uri
-   * @param string $site
-   * @return $this
-   */
   public function addSite($uri, $site = 'default') {
     // @todo Validate uri.
     if (isset($this->site_uris[$site])) {
@@ -110,11 +80,6 @@ class InstallationValues {
     return $this;
   }
 
-  /**
-   * @param string $uri
-   * @param string $site
-   * @return $this
-   */
   public function addUri($uri, $site = 'default') {
     // @todo Validate uri.
     if (empty($this->site_uris[$site])) {
@@ -127,20 +92,11 @@ class InstallationValues {
     return $this;
   }
 
-  /**
-   * @param string $docroot
-   * @return $this
-   */
   public function setDocroot($docroot) {
     $this->docroot = $this->server->makeDocrootAbsolute($docroot);
     return $this;
   }
 
-  /**
-   * @param array|string $credentials
-   * @param string $site
-   * @return $this
-   */
   public function setDbCredential($credentials, $site = 'default') {
     if (is_string($credentials)) {
       $credentials = DbCredentialTools::getDbCredentialsFromDbUrl($credentials);
@@ -149,14 +105,6 @@ class InstallationValues {
     return $this;
   }
 
-  /**
-   * Set DB credentials that vary by
-   * - {{site}}: replaced instantly for all previously(!) defined sites
-   * - {{installation}}: installation name, replaced instantly, just convenience
-   * - {{dirname}}: installation directory name, replaced on runtime for cluster
-   * @param array|string $credential_pattern
-   * @return $this
-   */
   public function setDbCredentialPattern($credential_pattern) {
     if (is_string($credential_pattern)) {
       $credential_pattern = DbCredentialTools::getDbCredentialsFromDbUrl($credential_pattern);
@@ -168,16 +116,12 @@ class InstallationValues {
     return $this;
   }
 
-  /**
-   * @param string $name
-   * @param string $value
-   */
   public function setDrushEnvironmentVariable($name, $value) {
     $this->drush_environment_variables[$name] = $value;
   }
 
   /**
-   * @return mixed
+   * @return string
    */
   protected function getLocalServerCheck() {
     $host = $this->server->getHost();
@@ -186,10 +130,7 @@ class InstallationValues {
     return $is_local;
   }
 
-  /**
-   * @return bool
-   */
-  protected function isLocal() {
+  public function isLocal() {
     return eval($this->getLocalServerCheck());
   }
 

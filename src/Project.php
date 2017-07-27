@@ -14,7 +14,7 @@ namespace machbarmacher\localsettings;
 class Project {
   /** @var int */
   protected $drupal_major_version;
-  /** @var Installation[] */
+  /** @var InstallationInterface[] */
   protected $installations = [];
 
   /**
@@ -32,7 +32,7 @@ class Project {
   /**
    * @param string $name
    * @param ServerInterface $server
-   * @return Installation
+   * @return InstallationInterface
    */
   public function addInstallation($name, ServerInterface $server) {
     if (isset($this->installations[$name])) {
@@ -59,7 +59,7 @@ class Project {
   }
 
   /**
-   * @return Installation[]
+   * @return InstallationInterface[]
    */
   public function getInstallations() {
     return $this->installations;

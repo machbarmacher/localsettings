@@ -7,10 +7,7 @@ namespace machbarmacher\localsettings;
 
 use machbarmacher\localsettings\RenderPhp\PhpFile;
 
-class Installation extends InstallationValues {
-  /**
-   * @param \machbarmacher\localsettings\RenderPhp\PhpFile $php
-   */
+class Installation extends InstallationValues implements InstallationInterface {
   public function compileAliases(PhpFile $php) {
     $php->addRawStatement('');
     $php->addRawStatement("// Installation: $this->name");

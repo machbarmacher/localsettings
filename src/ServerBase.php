@@ -37,13 +37,13 @@ abstract class ServerBase implements ServerInterface {
     return $this->getUser() . '@' . $this->getShortHostName();
   }
 
-  public function getUniqueInstallationName(Installation $installation) {
+  public function getUniqueInstallationName(InstallationInterface $installation) {
     $account_name = $this->getUniqueAccountName();
     $docroot = $this->makeDocrootRelative($installation->getDocroot());
     return "$account_name:$docroot";
   }
 
-  public function addInstallationSpecificSettings(PhpFile $php, Installation $installation) {
+  public function addInstallationSpecificSettings(PhpFile $php, InstallationInterface $installation) {
     $settings_variable = $installation->getProject()->getSettingsVariable();
     // $site is a placeholder here that uses the variable defined in settings.
     $unique_site_name = $installation->getUniqueSiteName('$site');
