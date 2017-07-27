@@ -5,7 +5,7 @@ namespace machbarmacher\localsettings;
 use machbarmacher\localsettings\RenderPhp\PhpFile;
 use machbarmacher\localsettings\Tools\DbCredentialTools;
 
-abstract class InstallationValues implements InstallationInterface {
+abstract class InstallationBase implements InstallationInterface {
   /** @var string */
   protected $name;
   /** @var ServerInterface */
