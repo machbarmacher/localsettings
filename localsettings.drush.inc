@@ -90,7 +90,7 @@ function drush_localsettings_compile($include = NULL) {
   /** @var CompilerFactory $localsettings_compiler_factory */
   global $localsettings_compiler_factory;
   $compiler = $localsettings_compiler_factory->get();
-  $compiler->compile($commands);
+  $compiler->compileAll($commands);
   return _localsettings_process_commands($commands);
 }
 

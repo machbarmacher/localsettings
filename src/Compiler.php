@@ -45,7 +45,7 @@ class Compiler {
     return $this->project;
   }
 
-  public function compile(Commands $commands) {
+  public function compileAll(Commands $commands) {
     $php = new PhpFile();
     foreach ($this->project->getInstallations() as $installation_name => $installation) {
       if ($installation->isMultisite()) {
