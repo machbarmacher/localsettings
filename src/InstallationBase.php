@@ -111,7 +111,7 @@ abstract class InstallationBase implements InstallationInterface {
     }
     foreach ($this->site_uris as $site => $_) {
       // @fixme Consider replacing with $foo syntax.
-      $replacements = ['{{installation}}' => $this->name, '{{site}}' => $site, '{{dirname}}' => '$dirname'];
+      $replacements = ['{{site}}' => $site, '{{dirname}}' => '$dirname'];
       $this->db_credentials[$site] = DbCredentialTools::substituteInDbCredentials($credential_pattern, $replacements);
     }
     return $this;
@@ -159,6 +159,8 @@ abstract class InstallationBase implements InstallationInterface {
         $php->addRawStatement("if (\$site === '$site') {");
       }
       foreach ($uris as $uri) {
+        // @todo Make this elegant.
+        $uri = preg_replace('/{{installation}}/u', '$installation', $uri);
         if ($this->project->isD7()) {
           $php->addRawStatement("  // Drush?");
           $php->addRawStatement("  if(drupal_is_cli() && strpos(\$_SERVER['HTTP_HOST'], '.') === FALSE) {");
@@ -174,7 +176,7 @@ abstract class InstallationBase implements InstallationInterface {
         else {
           // D8 does not need base url anymore.
           $host = parse_url($uri, PHP_URL_HOST);
-          $php->addRawStatement("  \$settings['trusted_host_patterns'][] = '$host';");
+          $php->addRawStatement("\$settings['trusted_host_patterns'][] = \"$host\";");
         }
       }
       if ($this->isMultisite()) {
@@ -186,6 +188,8 @@ abstract class InstallationBase implements InstallationInterface {
   public function compileDbCredentials(PhpFile $php) {
     foreach ($this->db_credentials as $site => $db_credential) {
       foreach ($db_credential as $key => $value) {
+        // @todo Make this elegant.
+        $value = preg_replace('/{{installation}}/u', '$installation', $value);
         $php->addRawStatement("\$databases['default']['default']['$key'] = \"$value\";");
       }
     }

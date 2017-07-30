@@ -11,6 +11,9 @@ use machbarmacher\localsettings\RenderPhp\PhpFile;
  * An installation cluster discovers installations by directory globbing and
  * (if local) returns installations. It is responsible for aliases (as dynamic
  * code is involved) though.
+ *
+ * @todo Allow other discovery than globbing, maybe by subclass, maybe unify with Installation again.
+ * @todo Separate env and name.
  */
 class InstallationsInDir extends InstallationBase {
   /** @var string */
@@ -23,9 +26,27 @@ class InstallationsInDir extends InstallationBase {
     parent::__construct($name, $server, $project);
   }
 
-  protected function docrootGlobPattern() {
-    return preg_replace('/{{installation}}/u', '*', $this->docroot);
+  protected function docrootFor($installation_name, $preg_delimiter = NULL) {
+    return $this->stringForInstallation($this->docroot, $installation_name, $preg_delimiter);
   }
+
+  protected function stringForInstallation($string, $installation_name, $preg_delimiter = NULL) {
+    $placeholder = '{{installation}}';
+    if ($preg_delimiter) {
+      $placeholder = preg_quote($placeholder, $preg_delimiter);
+      $string = preg_quote($string, $preg_delimiter);
+    }
+    $replaced = preg_replace('/' . preg_quote($placeholder, '/') . '/u', $installation_name, $string);
+    return $replaced;
+  }
+
+  public function getUniqueSiteName($site) {
+    $uniqueSiteName = parent::getUniqueSiteName($site);
+    // @fixme Hardcoding $installation here is not very elegant.
+    $uniqueSiteName = $this->stringForInstallation($uniqueSiteName, '$installation');
+    return $uniqueSiteName;
+  }
+
 
   /**
    * @param \machbarmacher\localsettings\RenderPhp\PhpFile $php
@@ -34,15 +55,15 @@ class InstallationsInDir extends InstallationBase {
     $php->addRawStatement('');
     $php->addRawStatement("// Installation cluster: $this->raw_name");
 
-    // @todo Consider $installation instead of *.
     $is_local = $this->getLocalServerCheck();
-    // If nonlocal, add the canonical alias  docroot with '*' replaced by name.
-    $canonical_docroot = preg_replace('/([*])/u', $this->raw_name, $this->docroot);
+    // If nonlocal, add the canonical alias docroot.
+    $docroot_remote = $this->docrootFor($this->name);
+    $docroot_glob_pattern = $this->docrootFor('*');
     $php->addRawStatement("\$docroots = ($is_local) ?");
-    $php->addRawStatement("  glob('$this->docrootGlobPattern()') : ['$canonical_docroot'];");
+    $php->addRawStatement("  glob('$docroot_glob_pattern') : ['$docroot_remote'];");
     $php->addRawStatement('foreach ($docroots as $docroot) {');
     // First quote the docroot for later, then replace the quoted wildcard.
-    $docroot_pattern = '#' . preg_replace('/(\\\\\*)/u', '(.*)', preg_quote($this->docroot, '#')) . '#';
+    $docroot_pattern = '#' . $this->docrootFor('(.*)', '#') . '#';
     // Code to get the name from the docroot.
     $php->addRawStatement("  \$installation = preg_replace('$docroot_pattern', '\\1', \$docroot);");
     $installation_name_variable = '$installation';
@@ -51,9 +72,9 @@ class InstallationsInDir extends InstallationBase {
     $site_list= [];
     // Add single site aliases.
     foreach ($this->site_uris as $site => $uris) {
-      $unique_site_name = $this->getUniqueSiteName($site);
       $alias_name = $multisite ? $installation_name_variable . '.' . $site : $installation_name_variable;
-      $uri = $uris[0];
+      $uri = $this->stringForInstallation($uris[0], '$installation');
+      $unique_site_name = $this->getUniqueSiteName($site);
       $alias = [
         // Only use primary uri.
         'remote-user' => $this->server->getUser(),
@@ -83,7 +104,7 @@ class InstallationsInDir extends InstallationBase {
       return FALSE;
     }
     $drupal_root_realpath = realpath(DRUSH_DRUPAL_CORE);
-    $glob_pattern = $this->docrootGlobPattern();
+    $glob_pattern = $this->docrootFor('*');
     foreach (glob($glob_pattern) as $path) {
       if (realpath($path) == $drupal_root_realpath) {
         return TRUE;
