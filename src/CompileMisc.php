@@ -61,8 +61,8 @@ EOD
   }
 
   public static function symlinkSettingsLocal(Commands $commands, $environment_name) {
-    $commands->add(new Symlink('../localsettings/settings.custom.environment.THIS.php', "settings.custom.$environment_name.php"));
-    $commands->add(new Symlink('../localsettings/settings.generated.environment.THIS.php', "settings.generated.$environment_name.php"));
+    $commands->add(new Symlink('../localsettings/settings.custom.environment.THIS.php', "settings.custom.environment.$environment_name.php"));
+    $commands->add(new Symlink('../localsettings/settings.generated.environment.THIS.php', "settings.generated.environment.$environment_name.php"));
   }
 
   public static function symlinkHtaccess(Commands $commands, $environment_name) {
