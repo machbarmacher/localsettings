@@ -200,7 +200,7 @@ abstract class AbstractEnvironment implements IEnvironment {
     $environment_name = $this->getName();
     $unique_site_name  = $this->getUniqueSiteName('$site');
 
-    $installation_expression = $this->makeInstallationExpressionForSettings($environment_name);
+    $installation_expression = $this->makeInstallationExpressionForSettings();
     $php->addRawStatement(<<<EOD
 \$environment = {$settings_variable}['localsettings']['environment'] = '$environment_name';
 \$installation = {$settings_variable}['localsettings']['installation'] = $installation_expression;
