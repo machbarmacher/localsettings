@@ -58,6 +58,12 @@ require DRUPAL_ROOT . '/../localsettings/settings.php';
 
 EOD
     ));
+
+    $commands->add(new Symlink('../drush/aliases.drushrc.php', '../localsettings/aliases.drushrc.php'));
+
+    if (file_exists('../localsettings/sites.php')) {
+      $commands->add(new Symlink('sites/sites.php', '../../localsettings/sites.php'));
+    }
   }
 
   public static function symlinkSettingsLocal(Commands $commands, $environment_name) {
