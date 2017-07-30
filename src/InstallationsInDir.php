@@ -2,7 +2,9 @@
 
 namespace machbarmacher\localsettings;
 
+use machbarmacher\localsettings\Project;
 use machbarmacher\localsettings\RenderPhp\PhpFile;
+use machbarmacher\localsettings\ServerInterface;
 
 /**
  * Class InstallationCluster
@@ -16,6 +18,20 @@ use machbarmacher\localsettings\RenderPhp\PhpFile;
  * @todo Separate env and name.
  */
 class InstallationsInDir extends InstallationBase {
+  protected $default_installations;
+
+  public function __construct($name, ServerInterface $server, Project $project) {
+    parent::__construct($name, $server, $project);
+    $this->default_installations = [$name];
+  }
+
+  /**
+   * @param mixed $default_installations
+   */
+  public function defaultInstallations($default_installations) {
+    $this->default_installations = $default_installations;
+  }
+
   protected function docrootFor($installation_name, $preg_delimiter = NULL) {
     return $this->stringForInstallation($this->docroot, $installation_name, $preg_delimiter);
   }
@@ -46,11 +62,11 @@ class InstallationsInDir extends InstallationBase {
     $php->addRawStatement("// Installation cluster: $this->name");
 
     $is_local = $this->getLocalServerCheck();
-    // If nonlocal, add the canonical alias docroot.
-    $docroot_remote = $this->docrootFor($this->name);
+    // If nonlocal, add default installations.
+    $default_installations = $this->default_installations;
     $docroot_glob_pattern = $this->docrootFor('*');
     $php->addRawStatement("\$docroots = ($is_local) ?");
-    $php->addRawStatement("  glob('$docroot_glob_pattern') : ['$docroot_remote'];");
+    $php->addRawStatement("  glob('$docroot_glob_pattern') : $default_installations;");
     $php->addRawStatement('foreach ($docroots as $docroot) {');
     // First quote the docroot for later, then replace the quoted wildcard.
     $docroot_pattern = '#' . $this->docrootFor('(.*)', '#') . '#';
