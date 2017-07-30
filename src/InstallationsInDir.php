@@ -63,7 +63,7 @@ class InstallationsInDir extends InstallationBase {
       $php->addRawStatement("  \$aliases[\"$alias_name\"] = $alias_exported;");
       $php->addRawStatement("  \$aliases[\"$alias_name\"]['root'] = \$docroot;");
       $php->addRawStatement("  \$aliases[\"$alias_name\"]['uri'] = \"$uri\";");
-      $php->addRawStatement("  \$aliases[\"$alias_name\"]['#unique_site_name'] = \"$unique_site_name\");");
+      $php->addRawStatement("  \$aliases[\"$alias_name\"]['#unique_site_name'] = \"$unique_site_name\";");
       $site_list[] = "@$alias_name";
     }
     if ($multisite) {
