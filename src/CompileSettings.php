@@ -24,7 +24,7 @@ EOD
     );
   }
 
-  public static function addBasicFacts(PhpFile $php, Project $project) {
+  public static function addInitialSettings(PhpFile $php, Project $project) {
     $is_d7 = $project->isD7();
     $settings_variable = $project->getSettingsVariable();
     $conf_path = $is_d7 ? 'conf_path()' : '\Drupal::service(\'site.path\')->get()';
@@ -32,6 +32,7 @@ EOD
     $php->addRawStatement(<<<EOD
 \$site = {$settings_variable}['localsettings']['site'] = basename($conf_path);
 \$dirname = {$settings_variable}['localsettings']['dirname'] = basename(dirname(getcwd()));
+
 EOD
 
     );
@@ -71,7 +72,7 @@ EOD
     }
   }
 
-  public static function addGenericSettings(PhpFile $php, Project $project) {
+  public static function addAdditionalSettings(PhpFile $php, Project $project) {
     $is_d7 = $project->isD7();
     if ($is_d7) {
       $php->addRawStatement(<<<EOD

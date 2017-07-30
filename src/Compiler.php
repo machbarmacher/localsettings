@@ -96,11 +96,11 @@ class Compiler {
     }
 
     $php = new PhpFile();
-    CompileSettings::addBasicFacts($php, $this->project);
+    CompileSettings::addInitialSettings($php, $this->project);
     $commands->add(new WriteFile("../localsettings/settings.generated.initial.php", $php));
 
     $php = new PhpFile();
-    CompileSettings::addGenericSettings($php, $this->project);
+    CompileSettings::addAdditionalSettings($php, $this->project);
     $commands->add(new WriteFile("../localsettings/settings.generated.additional.php", $php));
   }
 
