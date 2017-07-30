@@ -18,9 +18,13 @@ class InstallationsInDir extends InstallationBase {
 
   public function __construct($name, ServerInterface $server, Project $project) {
     // $raw_name MUST contain {foo}, $name must not.
-    $raw_name = preg_match('/([{](.*)[}])/u', $name) ? $name : "{$name}";
-    $name = preg_replace('/[{}]/u', '', $raw_name);
+    $this->raw_name = preg_match('/([{](.*)[}])/u', $name) ? $name : "{$name}";
+    $name = preg_replace('/[{}]/u', '', $this->raw_name);
     parent::__construct($name, $server, $project);
+  }
+
+  protected function docrootGlobPattern() {
+    return preg_replace('/{{installation}}/u', '*', $this->docroot);
   }
 
   /**
@@ -35,7 +39,7 @@ class InstallationsInDir extends InstallationBase {
     // If nonlocal, add the canonical alias  docroot with '*' replaced by name.
     $canonical_docroot = preg_replace('/([*])/u', $this->raw_name, $this->docroot);
     $php->addRawStatement("\$docroots = ($is_local) ?");
-    $php->addRawStatement("  glob('$this->docroot') : ['$canonical_docroot'];");
+    $php->addRawStatement("  glob('$this->docrootGlobPattern()') : ['$canonical_docroot'];");
     $php->addRawStatement('foreach ($docroots as $docroot) {');
     // First quote the docroot for later, then replace the quoted wildcard.
     $docroot_pattern = '#' . preg_replace('/(\\\\\*)/u', '(.*)', preg_quote($this->docroot, '#')) . '#';
@@ -79,7 +83,8 @@ class InstallationsInDir extends InstallationBase {
       return FALSE;
     }
     $drupal_root_realpath = realpath(DRUSH_DRUPAL_CORE);
-    foreach (glob($this->docroot) as $path) {
+    $glob_pattern = $this->docrootGlobPattern();
+    foreach (glob($glob_pattern) as $path) {
       if (realpath($path) == $drupal_root_realpath) {
         return TRUE;
       }

@@ -132,7 +132,7 @@ abstract class InstallationBase implements InstallationInterface {
   }
 
   public function isLocal() {
-    return eval($this->getLocalServerCheck());
+    return eval('return ' . $this->getLocalServerCheck() . ';');
   }
 
   public function alterHtaccess($content) {

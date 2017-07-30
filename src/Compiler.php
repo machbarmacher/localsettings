@@ -27,7 +27,7 @@ class Compiler {
         return $installation->getName();
       }
     }
-    return NULL;
+    return 'NONE';
   }
 
   /**
