@@ -47,4 +47,8 @@ class Environment extends AbstractEnvironment implements IEnvironment {
     return $this->isLocal() && realpath($this->docroot) == realpath(DRUSH_DRUPAL_CORE);
   }
 
+  protected function makeInstallationExpressionForSettings() {
+    return "'$this->name'";
+  }
+
 }

@@ -55,6 +55,10 @@ class MultiEnvironment extends AbstractEnvironment {
     return parent::getUniqueInstallationName() . ":{{installation}}";
   }
 
+  protected function makeInstallationExpressionForSettings() {
+    // @todo Make more general when needed.
+    return 'basename(dirname(getcwd()))';
+  }
 
   /**
    * @param \machbarmacher\localsettings\RenderPhp\PhpFile $php

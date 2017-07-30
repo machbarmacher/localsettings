@@ -114,8 +114,7 @@ abstract class AbstractEnvironment implements IEnvironment {
       $credential_pattern = DbCredentialTools::getDbCredentialsFromDbUrl($credential_pattern);
     }
     foreach ($this->site_uris as $site => $_) {
-      // @fixme Consider replacing with $foo syntax.
-      $replacements = ['{{site}}' => $site, '{{dirname}}' => '$dirname'];
+      $replacements = ['{{site}}' => $site, '{{installation}}' => '$installation'];
       $this->db_credentials[$site] = DbCredentialTools::substituteInDbCredentials($credential_pattern, $replacements);
     }
     return $this;
@@ -198,5 +197,25 @@ abstract class AbstractEnvironment implements IEnvironment {
       }
     }
   }
+
+  public function compileEnvironmentInfo(PhpFile $php) {
+    $settings_variable = $this->project->getSettingsVariable();
+
+    $environment_name = $this->getName();
+    $unique_site_name  = $this->getUniqueSiteName('$site');
+
+    $installation_expression = $this->makeInstallationExpressionForSettings($environment_name);
+    $php->addRawStatement(<<<EOD
+\$environment = {$settings_variable}['localsettings']['environment'] = '$environment_name';
+\$installation = {$settings_variable}['localsettings']['installation'] = $installation_expression;
+\$unique_site_name = {$settings_variable}['localsettings']['unique_site_name'] = "$unique_site_name";
+EOD
+    );
+  }
+
+  /**
+   * @return string
+   */
+  abstract protected function makeInstallationExpressionForSettings();
 
 }

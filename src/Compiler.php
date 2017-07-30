@@ -69,8 +69,8 @@ class Compiler {
     foreach ($this->project->getEnvironments() as $environment_name => $environment) {
       $environment_name = $environment->getName();
       $php = new PhpFile();
-      $php->addRawStatement('// Basic installation facts.');
-      CompileSettings::addEnvironmentInfo($php, $this->project, $environment);
+      $php->addRawStatement('// Environment info.');
+      $environment->compileEnvironmentInfo($php);
       $php->addRawStatement('');
       $php->addRawStatement('// Base URLs');
       $environment->compileBaseUrls($php);

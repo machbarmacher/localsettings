@@ -90,7 +90,7 @@ interface IEnvironment {
   /**
    * Set DB credentials that vary by
    * - {{site}}: replaced instantly for all previously(!) defined sites
-   * - {{dirname}}: installation directory name, replaced on runtime for cluster
+   * - {{installation}}: installation name, replaced on runtime for MultiEnvironment
    * @param array|string $credential_pattern
    * @return $this
    */
@@ -114,4 +114,6 @@ interface IEnvironment {
   public function compileBaseUrls(PhpFile $php);
 
   public function compileDbCredentials(PhpFile $php);
+
+  public function compileEnvironmentInfo(PhpFile $php);
 }
