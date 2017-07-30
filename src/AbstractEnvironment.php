@@ -5,10 +5,10 @@ namespace machbarmacher\localsettings;
 use machbarmacher\localsettings\RenderPhp\PhpFile;
 use machbarmacher\localsettings\Tools\DbCredentialTools;
 
-abstract class InstallationBase implements InstallationInterface {
+abstract class AbstractEnvironment implements IEnvironment {
   /** @var string */
   protected $name;
-  /** @var ServerInterface */
+  /** @var IServer */
   protected $server;
   /** @var Project */
   protected $project;
@@ -21,7 +21,7 @@ abstract class InstallationBase implements InstallationInterface {
   /** @var string[] */
   protected $drush_environment_variables;
 
-  public function __construct($name, ServerInterface $server, Project $project) {
+  public function __construct($name, IServer $server, Project $project) {
     $this->name = $name;
     $this->server = $server;
     $this->project = $project;

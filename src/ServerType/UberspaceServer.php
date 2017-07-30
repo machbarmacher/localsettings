@@ -6,13 +6,13 @@
 namespace machbarmacher\localsettings\ServerType;
 
 
-use machbarmacher\localsettings\Installation;
+use machbarmacher\localsettings\Environment;
 use machbarmacher\localsettings\Project;
 use machbarmacher\localsettings\RenderPhp\PhpFile;
 use machbarmacher\localsettings\ServerBase;
-use machbarmacher\localsettings\ServerInterface;
+use machbarmacher\localsettings\IServer;
 
-class UberspaceServer extends ServerBase implements ServerInterface {
+class UberspaceServer extends ServerBase implements IServer {
   /** @var string */
   protected $host;
   /** @var string */

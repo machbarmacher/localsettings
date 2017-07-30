@@ -6,12 +6,12 @@
 namespace machbarmacher\localsettings\ServerType;
 
 
-use machbarmacher\localsettings\Installation;
-use machbarmacher\localsettings\InstallationInterface;
+use machbarmacher\localsettings\Environment;
+use machbarmacher\localsettings\IEnvironment;
 use machbarmacher\localsettings\Project;
 use machbarmacher\localsettings\RenderPhp\PhpFile;
 use machbarmacher\localsettings\ServerBase;
-use machbarmacher\localsettings\ServerInterface;
+use machbarmacher\localsettings\IServer;
 
 /**
  * Class Freistilbox
@@ -20,7 +20,7 @@ use machbarmacher\localsettings\ServerInterface;
  * @todo Implement repository branch & url & environment
  * repository url = ssh://{{site-handle}}@repo.freistilbox.net/~/site
  */
-class FreistilboxServer extends ServerBase implements ServerInterface {
+class FreistilboxServer extends ServerBase implements IServer {
   /** @var string */
   protected $cluster;
   /** @var string */
@@ -65,7 +65,7 @@ class FreistilboxServer extends ServerBase implements ServerInterface {
     return $this->getTypeName();
   }
 
-  public function getUniqueInstallationName(InstallationInterface $installation) {
+  public function getUniqueInstallationName(IEnvironment $installation) {
     // Highlander: There's only one.
     return $this->getUniqueAccountName();
   }

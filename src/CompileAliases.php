@@ -10,7 +10,7 @@ class CompileAliases {
 
   /**
    * @param \machbarmacher\localsettings\RenderPhp\PhpFile $php
-   * @param \machbarmacher\localsettings\InstallationInterface[] $installations
+   * @param \machbarmacher\localsettings\IEnvironment[] $installations
    */
   public static function addAliasAlterCode(PhpFile $php, $installations) {
     $local_server_checks = [];

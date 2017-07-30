@@ -14,7 +14,7 @@ namespace machbarmacher\localsettings;
 class Project {
   /** @var int */
   protected $drupal_major_version;
-  /** @var InstallationInterface[] */
+  /** @var IEnvironment[] */
   protected $installations = [];
 
   /**
@@ -31,28 +31,28 @@ class Project {
 
   /**
    * @param string $name
-   * @param ServerInterface $server
-   * @return InstallationInterface
+   * @param IServer $server
+   * @return IEnvironment
    */
-  public function addInstallation($name, ServerInterface $server) {
+  public function addEnvironment($name, IServer $server) {
     if (isset($this->installations[$name])) {
       throw new \UnexpectedValueException(sprintf('Duplicate installation: %s', $name));
     }
-    $installation = new Installation($name, $server, $this);
+    $installation = new Environment($name, $server, $this);
     $this->installations[$name] = $installation;
     return $installation;
   }
 
   /**
    * @param string $name
-   * @param ServerInterface $server
-   * @return InstallationInterface
+   * @param IServer $server
+   * @return IEnvironment
    */
-  public function addInstallationsInDir($name, ServerInterface $server) {
+  public function addMultiEnvironment($name, IServer $server) {
     if (isset($this->installations[$name])) {
       throw new \UnexpectedValueException(sprintf('Duplicate installation: %s', $name));
     }
-    $installation = new InstallationsInDir($name, $server, $this);
+    $installation = new MultiEnvironment($name, $server, $this);
     $this->installations[$name] = $installation;
     return $installation;
   }
@@ -73,7 +73,7 @@ class Project {
   }
 
   /**
-   * @return InstallationInterface[]
+   * @return IEnvironment[]
    */
   public function getInstallations() {
     return $this->installations;

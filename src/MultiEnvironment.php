@@ -5,7 +5,7 @@ namespace machbarmacher\localsettings;
 use machbarmacher\localsettings\Project;
 use machbarmacher\localsettings\RenderPhp\PhpArray;
 use machbarmacher\localsettings\RenderPhp\PhpFile;
-use machbarmacher\localsettings\ServerInterface;
+use machbarmacher\localsettings\IServer;
 
 /**
  * Class InstallationCluster
@@ -18,10 +18,10 @@ use machbarmacher\localsettings\ServerInterface;
  * @todo Allow other discovery than globbing, maybe by subclass, maybe unify with Installation again.
  * @todo Separate env and name.
  */
-class InstallationsInDir extends InstallationBase {
+class MultiEnvironment extends AbstractEnvironment {
   protected $default_installations;
 
-  public function __construct($name, ServerInterface $server, Project $project) {
+  public function __construct($name, IServer $server, Project $project) {
     parent::__construct($name, $server, $project);
     $this->default_installations = [$name];
   }

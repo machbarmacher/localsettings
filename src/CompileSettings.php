@@ -9,9 +9,9 @@ class CompileSettings {
   /**
    * @param \machbarmacher\localsettings\RenderPhp\PhpFile $php
    * @param \machbarmacher\localsettings\Project $project
-   * @param \machbarmacher\localsettings\InstallationInterface $installation
+   * @param \machbarmacher\localsettings\IEnvironment $installation
    */
-  public static function addInstallationFacts(PhpFile $php, Project $project, InstallationInterface $installation) {
+  public static function addInstallationFacts(PhpFile $php, Project $project, IEnvironment $installation) {
     $settings_variable = $project->getSettingsVariable();
 
     $installation_name = $installation->getName();

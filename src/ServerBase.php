@@ -8,7 +8,7 @@ namespace machbarmacher\localsettings;
 
 use machbarmacher\localsettings\RenderPhp\PhpFile;
 
-abstract class ServerBase implements ServerInterface {
+abstract class ServerBase implements IServer {
   public function makeDocrootAbsolute($docroot) {
     if (substr($docroot, 0, 1) !== '/') {
       $docroot = $this->getWebHome() . '/' . $docroot;
@@ -37,13 +37,13 @@ abstract class ServerBase implements ServerInterface {
     return $this->getUser() . '@' . $this->getShortHostName();
   }
 
-  public function getUniqueInstallationName(InstallationInterface $installation) {
+  public function getUniqueInstallationName(IEnvironment $installation) {
     $account_name = $this->getUniqueAccountName();
     $docroot = $this->makeDocrootRelative($installation->getDocroot());
     return "$account_name:$docroot";
   }
 
-  public function addInstallationSpecificSettings(PhpFile $php, InstallationInterface $installation) {
+  public function addInstallationSpecificSettings(PhpFile $php, IEnvironment $installation) {
     $settings_variable = $installation->getProject()->getSettingsVariable();
     // $site is a placeholder here that uses the variable defined in settings.
     $unique_site_name = $installation->getUniqueSiteName('$site');

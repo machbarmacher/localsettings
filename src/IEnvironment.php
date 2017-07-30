@@ -7,7 +7,7 @@ namespace machbarmacher\localsettings;
 
 use machbarmacher\localsettings\RenderPhp\PhpFile;
 
-interface InstallationInterface {
+interface IEnvironment {
   /**
    * @param \machbarmacher\localsettings\RenderPhp\PhpFile $php
    */
@@ -19,10 +19,10 @@ interface InstallationInterface {
    * Installation constructor.
    *
    * @param string $name
-   * @param ServerInterface $server
+   * @param IServer $server
    * @param Project $project
    */
-  public function __construct($name, ServerInterface $server, Project $project);
+  public function __construct($name, IServer $server, Project $project);
 
   /**
    * @return string
@@ -35,7 +35,7 @@ interface InstallationInterface {
   public function getProject();
 
   /**
-   * @return \machbarmacher\localsettings\ServerInterface
+   * @return \machbarmacher\localsettings\IServer
    */
   public function getServer();
 
