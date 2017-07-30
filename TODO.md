@@ -1,6 +1,8 @@
 localsettings Todo
 ==================
 
+**Mostly outdated.**
+
 * write aliases and sites in our dir and include them
 
 * Make file wrinting more foolproof: Include existing content, prompt overwrite for some files.
