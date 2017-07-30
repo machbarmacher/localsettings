@@ -50,15 +50,11 @@ abstract class AbstractEnvironment implements IEnvironment {
   }
 
   public function getUniqueSiteName($site) {
-    $name = $this->getUniqueInstallationName();
+    $name = $this->server->getUniqueInstallationName($this);
     if ($this->isMultisite()) {
       $name .= "#$site";
     }
     return $name;
-  }
-
-  public function getUniqueInstallationName() {
-    return $this->server->getUniqueInstallationName($this);
   }
 
   public function isMultisite() {

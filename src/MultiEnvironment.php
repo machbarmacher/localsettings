@@ -51,10 +51,6 @@ class MultiEnvironment extends AbstractEnvironment {
     return $uniqueSiteName;
   }
 
-  public function getUniqueInstallationName() {
-    return parent::getUniqueInstallationName() . ":{{installation}}";
-  }
-
   protected function makeInstallationExpressionForSettings() {
     // @todo Make more general when needed.
     return 'basename(dirname(getcwd()))';

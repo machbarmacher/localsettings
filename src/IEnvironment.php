@@ -51,8 +51,6 @@ interface IEnvironment {
 
   public function getUniqueSiteName($site);
 
-  public function getUniqueInstallationName();
-
   public function isMultisite();
 
   /**
