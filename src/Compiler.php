@@ -87,21 +87,21 @@ class Compiler {
       if (!isset($server_setting_files[$server_name])) {
         $server_php = new PhpFile();
         $server->addServerSpecificSettings($server_php, $this->project);
-        $server_setting_file = "settings.server.$server_name.php";
+        $server_setting_file = "settings.generated.server.$server_name.php";
         $server_setting_files[$server_name] = $server_setting_file;
         $commands->add(new WriteFile("../localsettings/$server_setting_file", $server_php));
       }
       $php->addRawStatement("include '../localsettings/{$server_setting_files[$server_name]}';");
-      $commands->add(new WriteFile("../localsettings/settings.generated.{$environment_name}.php", $php));
+      $commands->add(new WriteFile("../localsettings/settings.generated.environment.{$environment_name}.php", $php));
     }
 
     $php = new PhpFile();
     CompileSettings::addBasicFacts($php, $this->project);
-    $commands->add(new WriteFile("../localsettings/settings.generated-basic.php", $php));
+    $commands->add(new WriteFile("../localsettings/settings.generated.initial.php", $php));
 
     $php = new PhpFile();
     CompileSettings::addGenericSettings($php, $this->project);
-    $commands->add(new WriteFile("../localsettings/settings.generated-common.php", $php));
+    $commands->add(new WriteFile("../localsettings/settings.generated.additional.php", $php));
   }
 
   public static function prepare(Commands $commands) {
@@ -131,9 +131,9 @@ class Compiler {
       $commands->add(new WriteFile('../config-sync/.gitkeep', ''));
     }
 
-    // Write settings.custom-common.php
+    // Write settings.custom.initial.php
     // This is not idempotent, and will break due to recursion if done twice.
-    if (!file_exists('../localsettings/settings.custom-common.php')) {
+    if (!file_exists('../localsettings/settings.custom.initial.php')) {
       $php = new PhpFile();
       // Transfer hash salt.
       foreach ($current_environment->getSiteUris() as $site => $_) {
@@ -146,15 +146,17 @@ class Compiler {
           $php->addStatement($add_hash_salt);
         }
       }
-      $commands->add(new WriteFile('../localsettings/settings.custom-common.php', $php));
+      $commands->add(new WriteFile('../localsettings/settings.custom.initial.php', $php));
     }
+
+    $commands->add(new WriteFile('../localsettings/settings.custom.additional.php', new PhpFile()));
 
     // Write aliases.drushrc.php alias
     $commands->add(new Symlink('../drush/aliases.drushrc.php', '../localsettings/aliases.drushrc.php'));
 
     // Write settings.custom.*.php
     foreach ($environments as $environment_name => $_) {
-      $commands->add(new WriteFile("../localsettings/settings.custom.$environment_name.php", new PhpFile()));
+      $commands->add(new WriteFile("../localsettings/settings.custom.environment.$environment_name.php", new PhpFile()));
     }
 
     CompileMisc::writeSettings($commands, $drupal_major_version);

@@ -61,8 +61,8 @@ EOD
   }
 
   public static function symlinkSettingsLocal(Commands $commands, $environment_name) {
-    $commands->add(new Symlink('../localsettings/settings.custom._this-environment.php', "settings.custom.$environment_name.php"));
-    $commands->add(new Symlink('../localsettings/settings.generated._this-environment.php', "settings.generated.$environment_name.php"));
+    $commands->add(new Symlink('../localsettings/settings.custom.environment.THIS.php', "settings.custom.$environment_name.php"));
+    $commands->add(new Symlink('../localsettings/settings.generated.environment.THIS.php', "settings.generated.$environment_name.php"));
   }
 
   public static function symlinkHtaccess(Commands $commands, $environment_name) {
@@ -72,11 +72,12 @@ EOD
   public static function writeSettings(Commands $commands, $drupal_major_version) {
     $commands->add(new WriteFile('../localsettings/settings.php', <<<EOD
 <?php
-require '../localsettings/settings.generated-basic.php';
-require '../localsettings/settings.generated._this-environment.php';
-require '../localsettings/settings.generated-common.php';
-include '../localsettings/settings.custom._this-environment.php';
-include '../localsettings/settings.custom-common.php';
+require '../localsettings/settings.generated.initial.php';
+require '../localsettings/settings.generated.environment.THIS.php';
+require '../localsettings/settings.generated.additonal.php';
+include '../localsettings/settings.custom.initial.php';
+include '../localsettings/settings.custom.environment.THIS.php';
+include '../localsettings/settings.custom.additional.php';
 
 EOD
     ));
@@ -94,9 +95,9 @@ env_specific_files:
   docroot/.htaccess:
     live: .htaccess.live
     test: .htaccess.test
-  localsettings/settings.generated.php:
-    live: settings.generated.live.php
-    test: settings.generated.test.php
+  localsettings/settings.generated.environment.THIS.php:
+    live: settings.generated.environment.live.php
+    test: settings.generated.environment.test.php
 
 EOD
       // @fixme Allow more than live and test.
@@ -107,8 +108,8 @@ EOD
     $commands->add(new WriteFile('../.gitignore', <<<EOD
 .git
 # Ignore paths that are symlinked per environment.
-/localsettings/settings.generated._this-environment.php
-/localsettings/settings.custom._this-environment.php
+/localsettings/settings.generated.environment.THIS.php
+/localsettings/settings.custom.environment.THIS.php
 # Ignore server content.
 /config
 /tmp
