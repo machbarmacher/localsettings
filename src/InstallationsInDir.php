@@ -34,8 +34,8 @@ class InstallationsInDir extends InstallationBase {
     $is_local = $this->getLocalServerCheck();
     // If nonlocal, add the canonical alias  docroot with '*' replaced by name.
     $canonical_docroot = preg_replace('/([*])/u', $this->raw_name, $this->docroot);
-    $php->addRawStatement("\$docroots = !($is_local) ?");
-    $php->addRawStatement("  ['$canonical_docroot'] : glob('$this->docroot') :");
+    $php->addRawStatement("\$docroots = ($is_local) ?");
+    $php->addRawStatement("  glob('$this->docroot') : ['$canonical_docroot'];");
     $php->addRawStatement('foreach ($docroots as $docroot) {');
     // First quote the docroot for later, then replace the quoted wildcard.
     $docroot_pattern = '#' . preg_replace('/(\\\\\*)/u', '(.*)', preg_quote($this->docroot, '#')) . '#';
