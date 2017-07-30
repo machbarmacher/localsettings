@@ -2,20 +2,20 @@
 
 namespace machbarmacher\localsettings\RenderPhp;
 
-use machbarmacher\localsettings\RenderPhp\PhpExpressionInterface;
+use machbarmacher\localsettings\RenderPhp\IPhpExpression;
 
-class PhpKeyValue implements PhpRenderableInterface {
-  /** @var PhpExpressionInterface|null */
+class PhpKeyValue implements IPhpRenderable {
+  /** @var IPhpExpression|null */
   protected $key;
-  /** @var PhpExpressionInterface */
+  /** @var IPhpExpression */
   protected $value;
 
   /**
    * PhpKeyValue constructor.
-   * @param PhpExpressionInterface $value
-   * @param PhpExpressionInterface $key
+   * @param IPhpExpression $value
+   * @param IPhpExpression $key
    */
-  public function __construct(PhpExpressionInterface $value, PhpExpressionInterface $key = NULL) {
+  public function __construct(IPhpExpression $value, IPhpExpression $key = NULL) {
     $this->value = $value;
     $this->key = $key;
   }

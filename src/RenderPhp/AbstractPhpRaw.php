@@ -2,7 +2,7 @@
 
 namespace machbarmacher\localsettings\RenderPhp;
 
-abstract class PhpRawBase implements PhpRenderableInterface {
+abstract class AbstractPhpRaw implements IPhpRenderable {
   /** @var string */
   protected $string;
 

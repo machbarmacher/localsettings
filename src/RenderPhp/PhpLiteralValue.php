@@ -2,7 +2,7 @@
 
 namespace machbarmacher\localsettings\RenderPhp;
 
-class PhpLiteralValue extends AbstractSingleValueExpressionBase implements PhpExpressionInterface {
+class PhpLiteralValue extends AbstractSingleValueExpression implements IPhpExpression {
 
   public function __toString() {
     // Typehint to calm the IDE.

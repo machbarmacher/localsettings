@@ -4,21 +4,21 @@ namespace machbarmacher\localsettings\RenderPhp;
 
 use Drupal\Component\PhpStorage\PhpStorageInterface;
 
-class PhpIf implements PhpStatementInterface {
-  /** @var PhpExpressionInterface|null */
+class PhpIf implements IPhpStatement {
+  /** @var IPhpExpression|null */
   protected $condition;
-  /** @var PhpStatementsInterface|null */
+  /** @var IPhpStatements|null */
   protected $then;
-  /** @var PhpStatementsInterface|null */
+  /** @var IPhpStatements|null */
   protected $else;
 
   /**
    * PhpIf constructor.
-   * @param PhpExpressionInterface $condition
-   * @param PhpStatementsInterface $then
-   * @param PhpStatementsInterface $else
+   * @param IPhpExpression $condition
+   * @param IPhpStatements $then
+   * @param IPhpStatements $else
    */
-  public function __construct(PhpExpressionInterface $condition = NULL, PhpStatementsInterface $then = NULL, PhpStatementsInterface $else = NULL) {
+  public function __construct(IPhpExpression $condition = NULL, IPhpStatements $then = NULL, IPhpStatements $else = NULL) {
     $this->condition = $condition;
     $this->then = $then;
     $this->else = $else;

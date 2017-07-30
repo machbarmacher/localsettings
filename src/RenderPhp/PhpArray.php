@@ -4,7 +4,7 @@ namespace machbarmacher\localsettings\RenderPhp;
 
 use machbarmacher\localsettings\RenderPhp\PhpKeyValue;
 
-class PhpArray implements PhpExpressionInterface {
+class PhpArray implements IPhpExpression {
   /** @var PhpKeyValue[] */
   protected $items;
   /** @var int */
@@ -12,7 +12,7 @@ class PhpArray implements PhpExpressionInterface {
   /** @var bool */
   protected $multiline = TRUE;
 
-  public function addItem(PhpExpressionInterface $value, PhpExpressionInterface $key = NULL) {
+  public function addItem(IPhpExpression $value, IPhpExpression $key = NULL) {
     // Do some magick to omit consecutive integer keys.
     if ($key instanceof PhpLiteralValue) {
       $key_value = $key->getValue();

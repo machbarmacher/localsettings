@@ -2,7 +2,7 @@
 
 namespace machbarmacher\localsettings\RenderPhp;
 
-abstract class AbstractSingleValueExpressionBase implements PhpExpressionInterface {
+abstract class AbstractSingleValueExpression implements IPhpExpression {
   protected $value;
 
   /**

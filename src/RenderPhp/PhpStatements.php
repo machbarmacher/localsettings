@@ -3,8 +3,8 @@
 
 namespace machbarmacher\localsettings\RenderPhp;
 
-class PhpStatements implements PhpStatementsInterface {
-  /** @var PhpStatementInterface[] */
+class PhpStatements implements IPhpStatements {
+  /** @var IPhpStatement[] */
   protected $statements = [];
 
   /**
@@ -14,16 +14,16 @@ class PhpStatements implements PhpStatementsInterface {
   }
 
   /**
-   * @param \machbarmacher\localsettings\RenderPhp\PhpStatementInterface $statement
+   * @param \machbarmacher\localsettings\RenderPhp\IPhpStatement $statement
    * @return $this
    */
-  public function addStatement(PhpStatementInterface $statement) {
+  public function addStatement(IPhpStatement $statement) {
     $this->statements[] = $statement;
     return $this;
   }
 
   /**
-   * @return \machbarmacher\localsettings\RenderPhp\PhpStatementInterface[]
+   * @return \machbarmacher\localsettings\RenderPhp\IPhpStatement[]
    */
   public function getStatements() {
     return $this->statements;

@@ -2,6 +2,6 @@
 
 namespace machbarmacher\localsettings\RenderPhp;
 
-class PhpRawExpression extends PhpRawBase implements PhpExpressionInterface {
+class PhpRawExpression extends AbstractPhpRaw implements IPhpExpression {
 
 }

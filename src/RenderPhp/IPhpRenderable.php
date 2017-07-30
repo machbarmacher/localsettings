@@ -4,6 +4,6 @@
 namespace machbarmacher\localsettings\RenderPhp;
 
 
-interface PhpRenderableInterface {
+interface IPhpRenderable {
   public function __toString();
 }

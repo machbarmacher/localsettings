@@ -32,10 +32,10 @@ class PhpFile {
   }
 
   /**
-   * @param \machbarmacher\localsettings\RenderPhp\PhpStatementInterface $statement
+   * @param \machbarmacher\localsettings\RenderPhp\IPhpStatement $statement
    * @return $this
    */
-  public function addStatement(PhpStatementInterface $statement) {
+  public function addStatement(IPhpStatement $statement) {
     $this->statements->addStatement($statement);
     return $this;
   }
