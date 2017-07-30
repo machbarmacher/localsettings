@@ -61,8 +61,8 @@ EOD
   }
 
   public static function symlinkSettingsLocal(Commands $commands, $environment_name) {
-    $commands->add(new Symlink('../localsettings/settings.custom.INSTALLATION.php', "settings.custom.$environment_name.php"));
-    $commands->add(new Symlink('../localsettings/settings.generated.INSTALLATION.php', "settings.generated.$environment_name.php"));
+    $commands->add(new Symlink('../localsettings/settings.custom._this-environment.php', "settings.custom.$environment_name.php"));
+    $commands->add(new Symlink('../localsettings/settings.generated._this-environment.php', "settings.generated.$environment_name.php"));
   }
 
   public static function symlinkHtaccess(Commands $commands, $environment_name) {
@@ -73,9 +73,9 @@ EOD
     $commands->add(new WriteFile('../localsettings/settings.php', <<<EOD
 <?php
 require '../localsettings/settings.generated-basic.php';
-require '../localsettings/settings.generated.INSTALLATION.php';
+require '../localsettings/settings.generated._this-environment.php';
 require '../localsettings/settings.generated-common.php';
-include '../localsettings/settings.custom.INSTALLATION.php';
+include '../localsettings/settings.custom._this-environment.php';
 include '../localsettings/settings.custom-common.php';
 
 EOD
@@ -107,8 +107,8 @@ EOD
     $commands->add(new WriteFile('../.gitignore', <<<EOD
 .git
 # Ignore paths that are symlinked per environment.
-/localsettings/settings.generated.INSTALLATION.php
-/localsettings/settings.custom.INSTALLATION.php
+/localsettings/settings.generated._this-environment.php
+/localsettings/settings.custom._this-environment.php
 # Ignore server content.
 /config
 /tmp
