@@ -21,7 +21,7 @@ class CompileAliases {
     $local_server_check_statements = new PhpStatements();
     foreach ($local_server_checks as $local_server_check) {
       $local_server_check_statements->addStatement(new PhpRawStatement(
-        "  \$is_local = \$is_local || $local_server_check;"
+        "  \$is_local = \$is_local || ($local_server_check);"
       ));
     }
 

@@ -61,7 +61,7 @@ EOD
   }
 
   public function getLocalServerCheck($host_expression, $user_expression) {
-    return "($host_expression == gethostname()) && ($user_expression == get_current_user())";
+    return "gethostname() == $host_expression && get_current_user() == $user_expression";
   }
 
 }
