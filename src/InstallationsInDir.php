@@ -16,16 +16,6 @@ use machbarmacher\localsettings\RenderPhp\PhpFile;
  * @todo Separate env and name.
  */
 class InstallationsInDir extends InstallationBase {
-  /** @var string */
-  protected $raw_name;
-
-  public function __construct($name, ServerInterface $server, Project $project) {
-    // $raw_name MUST contain {foo}, $name must not.
-    $this->raw_name = preg_match('/([{](.*)[}])/u', $name) ? $name : "{$name}";
-    $name = preg_replace('/[{}]/u', '', $this->raw_name);
-    parent::__construct($name, $server, $project);
-  }
-
   protected function docrootFor($installation_name, $preg_delimiter = NULL) {
     return $this->stringForInstallation($this->docroot, $installation_name, $preg_delimiter);
   }
@@ -53,7 +43,7 @@ class InstallationsInDir extends InstallationBase {
    */
   public function compileAliases(PhpFile $php) {
     $php->addRawStatement('');
-    $php->addRawStatement("// Installation cluster: $this->raw_name");
+    $php->addRawStatement("// Installation cluster: $this->name");
 
     $is_local = $this->getLocalServerCheck();
     // If nonlocal, add the canonical alias docroot.
