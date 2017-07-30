@@ -46,7 +46,11 @@ class PhpArray implements PhpExpressionInterface {
     foreach ($this->items as $item) {
       $results[] = (string) $item;
     }
-    return implode("\n", $results);
+    $glue = $this->multiline ? ",\n" : ', ';
+    $items = implode($glue, array_merge($results));
+    $glue = $this->multiline ? "\n" : '';
+    $items = implode($glue, ['[', $items, ']']);
+    return $items;
   }
 
   /**
