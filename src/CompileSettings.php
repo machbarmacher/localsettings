@@ -33,10 +33,9 @@ EOD
 \$site = {$settings_variable}['localsettings']['site'] = basename($conf_path);
 \$dirname = {$settings_variable}['localsettings']['dirname'] = basename(dirname(getcwd()));
 EOD
-    );
-  }
 
-  public static function addGenericSettings(PhpFile $php, Project $project) {
+    );
+
     $is_d7 = $project->isD7();
     $settings_variable = $project->getSettingsVariable();
 
@@ -57,11 +56,6 @@ EOD
     if ($is_d7) {
       $php->addRawStatement(<<<EOD
 \$conf['file_temporary_path'] = {$tmp_path_quoted};
-
-\$conf['environment_indicator_overwrite'] = TRUE;
-\$conf['environment_indicator_overwritten_name'] = \$unique_site_name;
-\$conf['environment_indicator_overwritten_color'] = '#' . dechex(hexdec(substr(md5(\$conf['environment_indicator_overwritten_name']), 0, 6)) & 0x7f7f7f); // Only dark colors.
-\$conf['environment_indicator_overwritten_text_color'] = '#ffffff';
 EOD
       );
     }
@@ -75,7 +69,19 @@ global \$config_directories;
 EOD
       );
     }
+  }
 
+  public static function addGenericSettings(PhpFile $php, Project $project) {
+    $is_d7 = $project->isD7();
+    if ($is_d7) {
+      $php->addRawStatement(<<<EOD
+\$conf['environment_indicator_overwrite'] = TRUE;
+\$conf['environment_indicator_overwritten_name'] = \$unique_site_name;
+\$conf['environment_indicator_overwritten_color'] = '#' . dechex(hexdec(substr(md5(\$conf['environment_indicator_overwritten_name']), 0, 6)) & 0x7f7f7f); // Only dark colors.
+\$conf['environment_indicator_overwritten_text_color'] = '#ffffff';
+EOD
+      );
+    }
   }
 
 }
