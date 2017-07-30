@@ -10,12 +10,12 @@ class CompileAliases {
 
   /**
    * @param \machbarmacher\localsettings\RenderPhp\PhpFile $php
-   * @param \machbarmacher\localsettings\IEnvironment[] $installations
+   * @param \machbarmacher\localsettings\IEnvironment[] $environments
    */
-  public static function addAliasAlterCode(PhpFile $php, $installations) {
+  public static function addAliasAlterCode(PhpFile $php, $environments) {
     $local_server_checks = [];
-    foreach ($installations as $installation_name => $installation) {
-      $check = $installation->getServer()->getLocalServerCheck("\$alias['remote-host']", "\$alias['remote-user']");
+    foreach ($environments as $environment_name => $environment) {
+      $check = $environment->getServer()->getLocalServerCheck("\$alias['remote-host']", "\$alias['remote-user']");
       $local_server_checks[$check] = $check;
     }
     $local_server_check_statements = new PhpStatements();

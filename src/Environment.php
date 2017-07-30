@@ -1,6 +1,6 @@
 <?php
 /**
- * @file Installation.php
+ * @file Environment.php
  */
 
 namespace machbarmacher\localsettings;
@@ -15,7 +15,7 @@ class Environment extends AbstractEnvironment implements IEnvironment {
     $multisite = count($this->site_uris) !== 1;
     $site_list= [];
 
-    $installation_name_expression = $this->name;
+    $environment_name_expression = $this->name;
     // Add single site aliases.
     foreach ($this->site_uris as $site => $uris) {
       $alias_name = $multisite ? $this->name . '.' . $site : $this->name;
@@ -37,9 +37,9 @@ class Environment extends AbstractEnvironment implements IEnvironment {
       $site_list[] = "@$alias_name";
     }
     if ($multisite) {
-      // Add site-list installation alias.
+      // Add site-list alias.
       $site_list_exported = var_export(['site-list' => $site_list], TRUE);
-      $php->addRawStatement("\$aliases['$installation_name_expression'] = $site_list_exported;");
+      $php->addRawStatement("\$aliases['$environment_name_expression'] = $site_list_exported;");
     }
   }
 

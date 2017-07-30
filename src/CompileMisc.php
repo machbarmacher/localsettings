@@ -13,17 +13,17 @@ use machbarmacher\localsettings\Commands\WriteFile;
 
 class CompileMisc {
 
-  public static function letInstallationsAlterHtaccess(Commands $commands, Project $project) {
+  public static function letEnvironmentsAlterHtaccess(Commands $commands, Project $project) {
     $original_file = !drush_get_option('simulate')
       // Not simulated? Look at the correct location.
       ? '.htaccess.original'
       // Simulated ? Look at the previous location.
       : '.htaccess';
-    foreach ($project->getInstallations() as $installation) {
-      $installation_name = $installation->getName();
-      $commands->add(new AlterFile($original_file, ".htaccess.$installation_name",
-        function ($content) use ($installation) {
-          return $installation->alterHtaccess($content);
+    foreach ($project->getEnvironments() as $environment) {
+      $environment_name = $environment->getName();
+      $commands->add(new AlterFile($original_file, ".htaccess.$environment_name",
+        function ($content) use ($environment) {
+          return $environment->alterHtaccess($content);
         }));
     }
   }
@@ -60,13 +60,13 @@ EOD
     ));
   }
 
-  public static function symlinkSettingsLocal(Commands $commands, $installation_name) {
-    $commands->add(new Symlink('../localsettings/settings.custom.INSTALLATION.php', "settings.custom.$installation_name.php"));
-    $commands->add(new Symlink('../localsettings/settings.generated.INSTALLATION.php', "settings.generated.$installation_name.php"));
+  public static function symlinkSettingsLocal(Commands $commands, $environment_name) {
+    $commands->add(new Symlink('../localsettings/settings.custom.INSTALLATION.php', "settings.custom.$environment_name.php"));
+    $commands->add(new Symlink('../localsettings/settings.generated.INSTALLATION.php', "settings.generated.$environment_name.php"));
   }
 
-  public static function symlinkHtaccess(Commands $commands, $installation_name) {
-    $commands->add(new Symlink('.htaccess', ".htaccess.$installation_name"));
+  public static function symlinkHtaccess(Commands $commands, $environment_name) {
+    $commands->add(new Symlink('.htaccess', ".htaccess.$environment_name"));
   }
 
   public static function writeSettings(Commands $commands, $drupal_major_version) {

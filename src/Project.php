@@ -15,7 +15,7 @@ class Project {
   /** @var int */
   protected $drupal_major_version;
   /** @var IEnvironment[] */
-  protected $installations = [];
+  protected $environments = [];
 
   /**
    * Project constructor.
@@ -35,12 +35,12 @@ class Project {
    * @return IEnvironment
    */
   public function addEnvironment($name, IServer $server) {
-    if (isset($this->installations[$name])) {
-      throw new \UnexpectedValueException(sprintf('Duplicate installation: %s', $name));
+    if (isset($this->environments[$name])) {
+      throw new \UnexpectedValueException(sprintf('Duplicate environment: %s', $name));
     }
-    $installation = new Environment($name, $server, $this);
-    $this->installations[$name] = $installation;
-    return $installation;
+    $environment = new Environment($name, $server, $this);
+    $this->environments[$name] = $environment;
+    return $environment;
   }
 
   /**
@@ -49,12 +49,12 @@ class Project {
    * @return IEnvironment
    */
   public function addMultiEnvironment($name, IServer $server) {
-    if (isset($this->installations[$name])) {
-      throw new \UnexpectedValueException(sprintf('Duplicate installation: %s', $name));
+    if (isset($this->environments[$name])) {
+      throw new \UnexpectedValueException(sprintf('Duplicate environment: %s', $name));
     }
-    $installation = new MultiEnvironment($name, $server, $this);
-    $this->installations[$name] = $installation;
-    return $installation;
+    $environment = new MultiEnvironment($name, $server, $this);
+    $this->environments[$name] = $environment;
+    return $environment;
   }
 
   /**
@@ -75,8 +75,8 @@ class Project {
   /**
    * @return IEnvironment[]
    */
-  public function getInstallations() {
-    return $this->installations;
+  public function getEnvironments() {
+    return $this->environments;
   }
 
 }

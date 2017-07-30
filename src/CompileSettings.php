@@ -9,16 +9,16 @@ class CompileSettings {
   /**
    * @param \machbarmacher\localsettings\RenderPhp\PhpFile $php
    * @param \machbarmacher\localsettings\Project $project
-   * @param \machbarmacher\localsettings\IEnvironment $installation
+   * @param \machbarmacher\localsettings\IEnvironment $environment
    */
-  public static function addInstallationFacts(PhpFile $php, Project $project, IEnvironment $installation) {
+  public static function addEnvironmentInfo(PhpFile $php, Project $project, IEnvironment $environment) {
     $settings_variable = $project->getSettingsVariable();
 
-    $installation_name = $installation->getName();
-    $unique_site_name  = $installation->getUniqueSiteName('$site');
+    $environment_name = $environment->getName();
+    $unique_site_name  = $environment->getUniqueSiteName('$site');
 
     $php->addRawStatement(<<<EOD
-\$installation = {$settings_variable}['localsettings']['installation'] = '$installation_name';
+\$installation = {$settings_variable}['localsettings']['installation'] = '$environment_name';
 \$unique_site_name = {$settings_variable}['localsettings']['unique_site_name'] = "$unique_site_name";
 EOD
     );

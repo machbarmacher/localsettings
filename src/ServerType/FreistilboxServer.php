@@ -65,7 +65,7 @@ class FreistilboxServer extends ServerBase implements IServer {
     return $this->getTypeName();
   }
 
-  public function getUniqueInstallationName(IEnvironment $installation) {
+  public function getUniqueInstallationName(IEnvironment $environment) {
     // Highlander: There's only one.
     return $this->getUniqueAccountName();
   }

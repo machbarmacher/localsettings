@@ -1,6 +1,6 @@
 <?php
 /**
- * @file InstallationInterface.php
+ * @file IEnvironment.php
  */
 
 namespace machbarmacher\localsettings;
@@ -16,7 +16,7 @@ interface IEnvironment {
   public function isCurrent();
 
   /**
-   * Installation constructor.
+   * Environment constructor.
    *
    * @param string $name
    * @param IServer $server
@@ -50,6 +50,8 @@ interface IEnvironment {
   public function getSiteUris();
 
   public function getUniqueSiteName($site);
+
+  public function getUniqueInstallationName();
 
   public function isMultisite();
 
@@ -88,7 +90,6 @@ interface IEnvironment {
   /**
    * Set DB credentials that vary by
    * - {{site}}: replaced instantly for all previously(!) defined sites
-   * - {{installation}}: installation name, replaced instantly, just convenience
    * - {{dirname}}: installation directory name, replaced on runtime for cluster
    * @param array|string $credential_pattern
    * @return $this

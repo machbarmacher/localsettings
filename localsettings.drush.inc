@@ -107,12 +107,12 @@ function drush_localsettings_scaffold_validate($include = NULL) {
 }
 
 
-function drush_localsettings_scaffold($installation_name = 'dev', $include = NULL) {
+function drush_localsettings_scaffold($environment_name = 'dev', $include = NULL) {
   $commands = new Commands();
   global $localsettings_compiler_factory;
   /** @var CompilerFactory $localsettings_compiler_factory */
   $compiler = $localsettings_compiler_factory->get();
-  $compiler->scaffold($commands, $installation_name);
+  $compiler->scaffold($commands, $environment_name);
   return _localsettings_process_commands($commands);
 }
 

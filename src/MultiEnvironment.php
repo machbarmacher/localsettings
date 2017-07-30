@@ -8,15 +8,12 @@ use machbarmacher\localsettings\RenderPhp\PhpFile;
 use machbarmacher\localsettings\IServer;
 
 /**
- * Class InstallationCluster
+ * Class MultiEnvironment
  * @package machbarmacher\localsettings
  *
- * An installation cluster discovers installations by directory globbing and
+ * A MultiEnvironment discovers installations by directory globbing and
  * (if local) returns installations. It is responsible for aliases (as dynamic
  * code is involved) though.
- *
- * @todo Allow other discovery than globbing, maybe by subclass, maybe unify with Installation again.
- * @todo Separate env and name.
  */
 class MultiEnvironment extends AbstractEnvironment {
   protected $default_installations;
@@ -33,7 +30,7 @@ class MultiEnvironment extends AbstractEnvironment {
     $this->default_installations = $default_installations;
   }
 
-  protected function docrootFor($installation_name, $preg_delimiter = NULL) {
+  protected function docrootForInstallation($installation_name, $preg_delimiter = NULL) {
     return $this->stringForInstallation($this->docroot, $installation_name, $preg_delimiter);
   }
 
@@ -49,9 +46,13 @@ class MultiEnvironment extends AbstractEnvironment {
 
   public function getUniqueSiteName($site) {
     $uniqueSiteName = parent::getUniqueSiteName($site);
-    // @fixme Hardcoding $installation here is not very elegant.
+    // @todo Hardcoding $installation here is not very elegant.
     $uniqueSiteName = $this->stringForInstallation($uniqueSiteName, '$installation');
     return $uniqueSiteName;
+  }
+
+  public function getUniqueInstallationName() {
+    return parent::getUniqueInstallationName() . ":{{installation}}";
   }
 
 
@@ -66,12 +67,12 @@ class MultiEnvironment extends AbstractEnvironment {
     // If nonlocal, add default installations.
     $default_installations = PhpArray::fromLiteral($this->default_installations);
     $default_installations->setMultiline(FALSE);
-    $docroot_glob_pattern = $this->docrootFor('*');
+    $docroot_glob_pattern = $this->docrootForInstallation('*');
     $php->addRawStatement("\$docroots = ($is_local) ?");
     $php->addRawStatement("  glob('$docroot_glob_pattern') : $default_installations;");
     $php->addRawStatement('foreach ($docroots as $docroot) {');
     // First quote the docroot for later, then replace the quoted wildcard.
-    $docroot_pattern = '#' . $this->docrootFor('(.*)', '#') . '#';
+    $docroot_pattern = '#' . $this->docrootForInstallation('(.*)', '#') . '#';
     // Code to get the name from the docroot.
     $php->addRawStatement("  \$installation = preg_replace('$docroot_pattern', '\\1', \$docroot);");
     $installation_name_variable = '$installation';
@@ -100,11 +101,11 @@ class MultiEnvironment extends AbstractEnvironment {
       $site_list[] = "@$alias_name";
     }
     if ($multisite) {
-      // Add site-list installation alias.
+      // Add site-list alias.
       $site_list_exported = var_export(['site-list' => $site_list], TRUE);
       $php->addRawStatement("  \$aliases['$installation_name_variable'] = $site_list_exported;");
     }
-    $php->addRawStatement("} // of foreach()");
+    $php->addRawStatement("}");
   }
 
   public function isCurrent() {
@@ -112,7 +113,7 @@ class MultiEnvironment extends AbstractEnvironment {
       return FALSE;
     }
     $drupal_root_realpath = realpath(DRUSH_DRUPAL_CORE);
-    $glob_pattern = $this->docrootFor('*');
+    $glob_pattern = $this->docrootForInstallation('*');
     foreach (glob($glob_pattern) as $path) {
       if (realpath($path) == $drupal_root_realpath) {
         return TRUE;

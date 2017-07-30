@@ -21,10 +21,10 @@ class Compiler {
   /** @var Project */
   protected $project;
 
-  protected function getCurrentInstallationName() {
-    foreach ($this->project->getInstallations() as $installation) {
-      if ($installation->isCurrent()) {
-        return $installation->getName();
+  protected function getCurrentEnvironmentName() {
+    foreach ($this->project->getEnvironments() as $environment) {
+      if ($environment->isCurrent()) {
+        return $environment->getName();
       }
     }
     return 'NONE';
@@ -47,9 +47,9 @@ class Compiler {
 
   public function compileAll(Commands $commands) {
     $php = new PhpFile();
-    foreach ($this->project->getInstallations() as $installation_name => $installation) {
-      if ($installation->isMultisite()) {
-        $installation->compileSitesPhp($php);
+    foreach ($this->project->getEnvironments() as $environment_name => $environment) {
+      if ($environment->isMultisite()) {
+        $environment->compileSitesPhp($php);
       }
     }
     // Only write if we have a multisite.
@@ -59,30 +59,30 @@ class Compiler {
     }
 
     $php = new PhpFile();
-    foreach ($this->project->getInstallations() as $installation_name => $installation) {
-      $installation->compileAliases($php);
+    foreach ($this->project->getEnvironments() as $environment_name => $environment) {
+      $environment->compileAliases($php);
     }
-    CompileAliases::addAliasAlterCode($php, $this->project->getInstallations());
+    CompileAliases::addAliasAlterCode($php, $this->project->getEnvironments());
     $commands->add(new WriteFile("../localsettings/aliases.drushrc.php", $php));
 
     $server_setting_files = [];
-    foreach ($this->project->getInstallations() as $installation_name => $installation) {
-      $canonical_installation_name = $installation->getName();
+    foreach ($this->project->getEnvironments() as $environment_name => $environment) {
+      $environment_name = $environment->getName();
       $php = new PhpFile();
       $php->addRawStatement('// Basic installation facts.');
-      CompileSettings::addInstallationFacts($php, $this->project, $installation);
+      CompileSettings::addEnvironmentInfo($php, $this->project, $environment);
       $php->addRawStatement('');
       $php->addRawStatement('// Base URLs');
-      $installation->compileBaseUrls($php);
+      $environment->compileBaseUrls($php);
       $php->addRawStatement('');
       $php->addRawStatement('// DB Credentials');
-      $installation->compileDbCredentials($php);
+      $environment->compileDbCredentials($php);
       $php->addRawStatement('');
-      $php->addRawStatement('// Installation specific');
-      $installation->getServer()->addInstallationSpecificSettings($php, $installation);
+      $php->addRawStatement('// Environment specific');
+      $environment->getServer()->addEnvironmentSpecificSettings($php, $environment);
       $php->addRawStatement('');
       $php->addRawStatement('// Server specific');
-      $server = $installation->getServer();
+      $server = $environment->getServer();
       $server_name = $server->getTypeName();
       if (!isset($server_setting_files[$server_name])) {
         $server_php = new PhpFile();
@@ -92,7 +92,7 @@ class Compiler {
         $commands->add(new WriteFile("../localsettings/$server_setting_file", $server_php));
       }
       $php->addRawStatement("include '../localsettings/{$server_setting_files[$server_name]}';");
-      $commands->add(new WriteFile("../localsettings/settings.generated.{$canonical_installation_name}.php", $php));
+      $commands->add(new WriteFile("../localsettings/settings.generated.{$environment_name}.php", $php));
     }
 
     $php = new PhpFile();
@@ -110,14 +110,14 @@ class Compiler {
     // Step 2 is compiling
   }
 
-  public function scaffold(Commands $commands, $current_installation_name) {
+  public function scaffold(Commands $commands, $current_environment_name) {
     // Step 3
     $drupal_major_version = $this->getProject()->getDrupalMajorVersion();
-    $installations = $this->project->getInstallations();
-    $current_installation = $installations[$current_installation_name];
+    $environments = $this->project->getEnvironments();
+    $current_environment = $environments[$current_environment_name];
 
-    foreach ($installations as $installation_name => $_) {
-      $commands->add(new EnsureDirectory("../localsettings/crontab.d/$installation_name"));
+    foreach ($environments as $environment_name => $_) {
+      $commands->add(new EnsureDirectory("../localsettings/crontab.d/$environment_name"));
     }
     $commands->add(new EnsureDirectory("../localsettings/crontab.d/common"));
     $commands->add(new WriteFile("../localsettings/crontab.d/common/50-cron",
@@ -136,11 +136,11 @@ class Compiler {
     if (!file_exists('../localsettings/settings.custom-common.php')) {
       $php = new PhpFile();
       // Transfer hash salt.
-      foreach ($current_installation->getSiteUris() as $site => $_) {
+      foreach ($current_environment->getSiteUris() as $site => $_) {
         $settings = IncludeTool::getVariables("sites/$site/settings.php");
         if (!empty($settings['drupal_hash_salt'])) {
           $add_hash_salt = new PhpAssignment('$drupal_hash_salt', $settings['drupal_hash_salt']);
-          if ($current_installation->isMultisite()) {
+          if ($current_environment->isMultisite()) {
             $add_hash_salt = new PhpIf('', $add_hash_salt);
           }
           $php->addStatement($add_hash_salt);
@@ -153,8 +153,8 @@ class Compiler {
     $commands->add(new Symlink('../drush/aliases.drushrc.php', '../localsettings/aliases.drushrc.php'));
 
     // Write settings.custom.*.php
-    foreach ($installations as $installation_name => $_) {
-      $commands->add(new WriteFile("../localsettings/settings.custom.$installation_name.php", new PhpFile()));
+    foreach ($environments as $environment_name => $_) {
+      $commands->add(new WriteFile("../localsettings/settings.custom.$environment_name.php", new PhpFile()));
     }
 
     CompileMisc::writeSettings($commands, $drupal_major_version);
@@ -180,8 +180,8 @@ class Compiler {
     CompileMisc::writeGitignoreForDrupal($commands);
     if (file_exists('.htaccess') && !is_link('.htaccess')) {
       CompileMisc::moveAwayHtaccess($commands);
-      CompileMisc::letInstallationsAlterHtaccess($commands, $this->project);
-      CompileMisc::symlinkHtaccess($commands, $this->getCurrentInstallationName());
+      CompileMisc::letEnvironmentsAlterHtaccess($commands, $this->project);
+      CompileMisc::symlinkHtaccess($commands, $this->getCurrentEnvironmentName());
     }
 
     return $commands;
@@ -194,8 +194,8 @@ class Compiler {
     $commands->add(new EnsureDirectory('../tmp'));
     $commands->add(new EnsureDirectory('../logs'));
 
-    CompileMisc::symlinkSettingsLocal($commands, $this->getCurrentInstallationName());
-    CompileMisc::symlinkHtaccess($commands, $this->getCurrentInstallationName());
+    CompileMisc::symlinkSettingsLocal($commands, $this->getCurrentEnvironmentName());
+    CompileMisc::symlinkHtaccess($commands, $this->getCurrentEnvironmentName());
 
     return $commands;
   }
