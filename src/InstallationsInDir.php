@@ -3,6 +3,7 @@
 namespace machbarmacher\localsettings;
 
 use machbarmacher\localsettings\Project;
+use machbarmacher\localsettings\RenderPhp\PhpArray;
 use machbarmacher\localsettings\RenderPhp\PhpFile;
 use machbarmacher\localsettings\ServerInterface;
 
@@ -63,7 +64,8 @@ class InstallationsInDir extends InstallationBase {
 
     $is_local = $this->getLocalServerCheck();
     // If nonlocal, add default installations.
-    $default_installations = $this->default_installations;
+    $default_installations = PhpArray::fromLiteral($this->default_installations);
+    $default_installations->setMultiline(FALSE);
     $docroot_glob_pattern = $this->docrootFor('*');
     $php->addRawStatement("\$docroots = ($is_local) ?");
     $php->addRawStatement("  glob('$docroot_glob_pattern') : $default_installations;");
