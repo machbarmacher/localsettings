@@ -28,7 +28,7 @@ class CompileAliases {
     $php->addRawStatement(<<<EOD
 
 // Alter local aliases and add @this-installation here as the drush alter hook is broken. 
-\$current_sites = [];
+\$current_sites = \$local_sites = [];
 foreach (\$aliases as \$alias_name => &\$alias) {
   if (!isset(\$alias['remote-host']) || !isset(\$alias['remote-user'])) {
     continue;
@@ -50,6 +50,12 @@ if (count(\$current_sites) == 1) {
 }
 else {
   \$aliases['this-installation'] = ['site-list' => array_keys(\$current_sites)];
+}
+if (count(\$local_sites) == 1) {
+  \$aliases['local-installations'] = reset(\$local_sites);
+}
+else {
+  \$aliases['local-installations'] = ['site-list' => array_keys(\$local_sites)];
 }
 
 EOD
