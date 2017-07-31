@@ -212,6 +212,9 @@ abstract class AbstractEnvironment implements IEnvironment {
 \$unique_site_name = {$settings_variable}['localsettings']['unique_site_name'] = "$unique_site_name";
 EOD
     );
+    if ($this->project->isD7()) {
+      $php->addRawStatement("\$conf['master_current_scope'] = '$this->name';");
+    }
   }
 
   /**
