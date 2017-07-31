@@ -80,7 +80,7 @@ class MultiEnvironment extends AbstractEnvironment {
     $site_list= [];
     // Add single site aliases.
     foreach ($this->site_uris as $site => $uris) {
-      $alias_name = $multisite ? "\$installation.$site" : '$installation';
+      $alias_name = $multisite ? "$this->name.\$installation.$site" : "$this->name.\$installation";
       $uri = $this->stringForInstallation($uris[0], '$installation');
       $unique_site_name = $this->getUniqueSiteName($site);
       $alias = [
@@ -106,7 +106,7 @@ class MultiEnvironment extends AbstractEnvironment {
     }
     $php->addRawStatement('  $environment_sites["@$installation"] = TRUE;');
     $php->addRawStatement("}");
-    $php->addRawStatement("\$aliases['environment:$this->name'] = ['site-list' => array_keys(\$environment_sites)];");
+    $php->addRawStatement("\$aliases['$this->name'] = ['site-list' => array_keys(\$environment_sites)];");
   }
 
   public function isCurrent() {

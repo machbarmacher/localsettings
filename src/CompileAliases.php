@@ -38,6 +38,7 @@ $local_server_check_statements
   if (\$is_local) {
     unset(\$alias['remote-host']);
     unset(\$alias['remote-user']);
+    \$local_sites["@\$alias_name"] = \$alias;
   }
 
   \$is_current = \$is_local && realpath(\$alias['root']) == realpath(DRUSH_DRUPAL_CORE);
@@ -52,10 +53,10 @@ else {
   \$aliases['this-installation'] = ['site-list' => array_keys(\$current_sites)];
 }
 if (count(\$local_sites) == 1) {
-  \$aliases['local-installations'] = reset(\$local_sites);
+  \$aliases['this-server'] = reset(\$local_sites);
 }
 else {
-  \$aliases['local-installations'] = ['site-list' => array_keys(\$local_sites)];
+  \$aliases['this-server'] = ['site-list' => array_keys(\$local_sites)];
 }
 
 EOD
