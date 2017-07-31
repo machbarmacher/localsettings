@@ -152,7 +152,14 @@ class Compiler {
     $commands->add(new WriteFile('../localsettings/settings.custom.additional.php', new PhpFile()));
 
     // Write aliases.drushrc.php alias
-    $commands->add(new Symlink('../drush/aliases.drushrc.php', '../localsettings/aliases.drushrc.php'));
+    $aliases_file_location = $current_environment->getProject()->isD7() ?
+      'sites/all/drush/aliases.drushrc.php' : '../drush/aliases.drushrc.php';
+    $commands->add(new Symlink($aliases_file_location, '../localsettings/aliases.drushrc.php'));
+
+    // Write sites.php alias if needed.
+    if (file_exists('../localsettings/sites.php')) {
+      $commands->add(new Symlink('sites/sites.php', '../../localsettings/sites.php'));
+    }
 
     // Write settings.custom.*.php
     foreach ($environments as $environment_name => $_) {
