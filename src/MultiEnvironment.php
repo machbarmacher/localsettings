@@ -76,13 +76,11 @@ class MultiEnvironment extends AbstractEnvironment {
     $docroot_pattern = '#' . $this->docrootForInstallation('(.*)', '#') . '#';
     // Code to get the name from the docroot.
     $php->addRawStatement("  \$installation = preg_replace('$docroot_pattern', '\\1', \$docroot);");
-    $installation_name_variable = '$installation';
-
     $multisite = count($this->site_uris) !== 1;
     $site_list= [];
     // Add single site aliases.
     foreach ($this->site_uris as $site => $uris) {
-      $alias_name = $multisite ? $installation_name_variable . '.' . $site : $installation_name_variable;
+      $alias_name = $multisite ? "\$installation.$site" : '$installation';
       $uri = $this->stringForInstallation($uris[0], '$installation');
       $unique_site_name = $this->getUniqueSiteName($site);
       $alias = [
@@ -104,9 +102,9 @@ class MultiEnvironment extends AbstractEnvironment {
     if ($multisite) {
       // Add site-list alias.
       $site_list_exported = var_export(['site-list' => $site_list], TRUE);
-      $php->addRawStatement("  \$aliases['$installation_name_variable'] = $site_list_exported;");
+      $php->addRawStatement('  $aliases[\'$installation\'] = $site_list_exported;');
     }
-    $php->addRawStatement("  \$environment_sites[\"@$installation_name_variable\"] = TRUE;");
+    $php->addRawStatement('  $environment_sites["@$installation"] = TRUE;');
     $php->addRawStatement("}");
     $php->addRawStatement("\$aliases['environment:$this->name'] = ['site-list' => array_keys(\$environment_sites)]");
   }
