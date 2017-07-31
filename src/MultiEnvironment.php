@@ -71,6 +71,7 @@ class MultiEnvironment extends AbstractEnvironment {
     $php->addRawStatement("\$docroots = ($is_local) ?");
     $php->addRawStatement("  glob('$docroot_glob_pattern') : $default_installations;");
     $php->addRawStatement('foreach ($docroots as $docroot) {');
+    $php->addRawStatement('  $environment_sites = [];');
     // First quote the docroot for later, then replace the quoted wildcard.
     $docroot_pattern = '#' . $this->docrootForInstallation('(.*)', '#') . '#';
     // Code to get the name from the docroot.
@@ -105,7 +106,9 @@ class MultiEnvironment extends AbstractEnvironment {
       $site_list_exported = var_export(['site-list' => $site_list], TRUE);
       $php->addRawStatement("  \$aliases['$installation_name_variable'] = $site_list_exported;");
     }
+    $php->addRawStatement("  \$environment_sites[\"@$installation_name_variable\"] = TRUE;");
     $php->addRawStatement("}");
+    $php->addRawStatement("\$aliases['environment:$this->name'] = ['site-list' => array_keys(\$environment_sites)]");
   }
 
   public function isCurrent() {
