@@ -98,6 +98,9 @@ env_specific_files:
   localsettings/settings.generated.environment.THIS.php:
     live: settings.generated.environment.live.php
     test: settings.generated.environment.test.php
+  localsettings/settings.custom.environment.THIS.php:
+    live: settings.custom.environment.live.php
+    test: settings.custom.environment.test.php
 
 EOD
       // @fixme Allow more than live and test.
