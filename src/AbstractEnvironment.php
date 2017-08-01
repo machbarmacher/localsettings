@@ -162,12 +162,12 @@ abstract class AbstractEnvironment implements IEnvironment {
         $uri = preg_replace('/{{installation}}/u', '$installation', $uri);
         if ($this->project->isD7()) {
           if (count($uris) == 1) {
-            $php->addRawStatement("  \$base_url = '$uri';");
+            $php->addRawStatement("  \$base_url = \"$uri\";");
           }
           else {
             $php->addRawStatement("  // Drush dirname? Use the first URI.");
             $php->addRawStatement("  if(drupal_is_cli() && strpos(\$_SERVER['HTTP_HOST'], '.') === FALSE) {");
-            $php->addRawStatement("    \$base_url = '$uri';");
+            $php->addRawStatement("    \$base_url = \"$uri\";");
             $php->addRawStatement("  }");
             $php->addRawStatement("  else {");
             $php->addRawStatement("    // Recognize any URI as this site has multiple. Assume no subdir install.");
@@ -192,9 +192,11 @@ abstract class AbstractEnvironment implements IEnvironment {
   public function compileDbCredentials(PhpFile $php) {
     foreach ($this->db_credentials as $site => $db_credential) {
       foreach ($db_credential as $key => $value) {
-        // @todo Make this elegant.
-        $value = preg_replace('/{{installation}}/u', '$installation', $value);
-        $php->addRawStatement("\$databases['default']['default']['$key'] = \"$value\";");
+        if ($value) {
+          // @todo Make this elegant.
+          $value = preg_replace('/{{installation}}/u', '$installation', $value);
+          $php->addRawStatement("\$databases['default']['default']['$key'] = \"$value\";");
+        }
       }
     }
   }

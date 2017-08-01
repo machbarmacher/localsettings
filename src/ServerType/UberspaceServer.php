@@ -80,7 +80,7 @@ EOD
     $port = $is_d7 ? 3306 : 3307;
     $mysql_ini_file = $is_d7 ? '.my.cnf' : '.my.mariadb.cnf';
     $php->addRawStatement(<<<EOD
-\$databases['default']['default'] += [
+\$databases['default']['default'] =  array_filter(\$databases['default']['default']) + [
   'driver' => 'mysql',
   'username' => '$user',
   'password' => parse_ini_string(
