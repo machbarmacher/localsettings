@@ -74,7 +74,7 @@ EOD
 <?php
 require '../localsettings/settings.generated.initial.php';
 require '../localsettings/settings.generated.environment.THIS.php';
-require '../localsettings/settings.generated.additonal.php';
+require '../localsettings/settings.generated.additional.php';
 include '../localsettings/settings.custom.initial.php';
 include '../localsettings/settings.custom.environment.THIS.php';
 include '../localsettings/settings.custom.additional.php';
