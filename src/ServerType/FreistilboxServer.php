@@ -133,6 +133,7 @@ EOD
 
   public function alterAlias(array &$alias) {
     parent::alterAlias($alias);
+    $alias['git-deployment-uri'] = "ssh://$this->site_handle@repo.freistilbox.net/~/site";
   }
 
   public function getLocalServerCheck($host_expression, $user_expression) {
