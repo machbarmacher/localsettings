@@ -60,7 +60,7 @@ class UberspaceServer extends ServerBase implements IServer {
   }
 
   public function alterHtaccess($content) {
-    $content = preg_replace('#Options +FollowSymLinks\n#u', 'Options +SymLinksIfOwnerMatch\n', $content);
+    $content = preg_replace('#\s*Options\s+\+FollowSymLinks\s*\n#ui', 'Options +SymLinksIfOwnerMatch\n', $content);
     return <<<EOD
 # START Uberspace
 RewriteBase /

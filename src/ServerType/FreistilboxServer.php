@@ -71,6 +71,7 @@ class FreistilboxServer extends ServerBase implements IServer {
   }
 
   public function alterHtaccess($content) {
+    $content = preg_replace('#\s*Options\s+\+SymLinksIfOwnerMatch\s*\n#ui', 'Options +FollowSymLinks\n', $content);
     return <<<EOD
 # START Freistilbox
 RewriteBase /
