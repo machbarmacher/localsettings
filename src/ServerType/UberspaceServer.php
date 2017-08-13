@@ -95,4 +95,9 @@ EOD
     );
   }
 
+  public function alterAlias(array &$alias) {
+    parent::alterAlias($alias);
+    $alias['cname'] = $this->host;
+  }
+
 }
