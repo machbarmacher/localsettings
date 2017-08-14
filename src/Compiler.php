@@ -48,7 +48,7 @@ class Compiler {
   public function compileAll(Commands $commands) {
     $php = new PhpFile();
     foreach ($this->project->getDeclarations() as $declaration) {
-      if ($declaration->isMultisite()) {
+      if ($declaration->hasNonDefaultSite()) {
         $declaration->compileSitesPhp($php);
       }
     }
@@ -145,7 +145,7 @@ class Compiler {
         $settings = IncludeTool::getVariables("sites/$site/settings.php");
         if (!empty($settings['drupal_hash_salt'])) {
           $add_hash_salt = new PhpAssignment('$drupal_hash_salt', $settings['drupal_hash_salt']);
-          if ($current_environment->isMultisite()) {
+          if ($current_declaration->hasNonDefaultSite()) {
             // @fixme Looks like unfinished.
             $add_hash_salt = new PhpIf('', $add_hash_salt);
           }

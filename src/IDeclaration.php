@@ -56,7 +56,7 @@ interface IDeclaration {
 
   public function getUniqueSiteName($site);
 
-  public function isMultisite();
+  public function hasNonDefaultSite();
 
   /**
    * @return $this

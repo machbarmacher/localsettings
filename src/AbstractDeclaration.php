@@ -58,13 +58,13 @@ abstract class AbstractDeclaration implements IDeclaration {
 
   public function getUniqueSiteName($site) {
     $name = $this->server->getUniqueInstallationName($this);
-    if ($this->isMultisite()) {
+    if ($this->hasNonDefaultSite()) {
       $name .= "#$site";
     }
     return $name;
   }
 
-  public function isMultisite() {
+  public function hasNonDefaultSite() {
     return (bool)array_diff_key($this->site_uris, ['default' => TRUE]);
   }
 
@@ -161,7 +161,7 @@ abstract class AbstractDeclaration implements IDeclaration {
 
   public function compileBaseUrls(PhpFile $php) {
     foreach ($this->site_uris as $site => $uris) {
-      if ($this->isMultisite()) {
+      if ($this->hasNonDefaultSite()) {
         $php->addRawStatement("if (\$site === '$site') {");
       }
       foreach ($uris as $uri) {
@@ -190,7 +190,7 @@ abstract class AbstractDeclaration implements IDeclaration {
           $php->addRawStatement("\$settings['trusted_host_patterns'][] = \"$host\";");
         }
       }
-      if ($this->isMultisite()) {
+      if ($this->hasNonDefaultSite()) {
         $php->addRawStatement('}');
       }
     }
