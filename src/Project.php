@@ -79,4 +79,22 @@ class Project {
     return $this->declarations;
   }
 
+  public function getDeclaration($declaration_name) {
+    if (isset($this->declarations[$declaration_name])) {
+      return $this->declarations[$declaration_name];
+    }
+    else {
+      throw new \Exception(sprintf('Unknown declaration: %s', $declaration_name));
+    }
+  }
+
+  public function getEnvironmentNames() {
+    $environment_names = [];
+    foreach ($this->declarations as $declaration) {
+      $environment_name = $declaration->getEnvironmentName();
+      $environment_names[$environment_name] = $environment_name;
+    }
+    return $environment_names;
+  }
+
 }

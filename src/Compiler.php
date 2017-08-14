@@ -112,14 +112,12 @@ class Compiler {
     // Step 2 is compiling
   }
 
-  public function scaffold(Commands $commands, $current_environment_name) {
+  public function scaffold(Commands $commands, $current_declaration_name) {
     // Step 3
     $drupal_major_version = $this->getProject()->getDrupalMajorVersion();
-    $declarations = $this->project->getDeclarations();
-    // @fixme This is now a declaration name.
-    $current_environment = $declarations[$current_environment_name];
+    $current_declaration = $this->project->getDeclaration($current_declaration_name);
 
-    foreach ($declarations as $environment_name => $_) {
+    foreach ($this->project->getEnvironmentNames() as $environment_name) {
       $commands->add(new EnsureDirectory("../localsettings/crontab.d/$environment_name"));
     }
     $commands->add(new EnsureDirectory("../localsettings/crontab.d/common"));
@@ -141,7 +139,7 @@ class Compiler {
       $php = new PhpFile();
       // Transfer hash salt.
       // @todo Consider making sites a project setting.
-      foreach ($current_environment->getSiteUris() as $site => $_) {
+      foreach ($current_declaration->getSiteUris() as $site => $_) {
         $settings = IncludeTool::getVariables("sites/$site/settings.php");
         if (!empty($settings['drupal_hash_salt'])) {
           $add_hash_salt = new PhpAssignment('$drupal_hash_salt', $settings['drupal_hash_salt']);
@@ -158,7 +156,7 @@ class Compiler {
     $commands->add(new WriteFile('../localsettings/settings.custom.additional.php', new PhpFile()));
 
     // Write aliases.drushrc.php alias
-    $aliases_file_location = $current_environment->getProject()->isD7() ?
+    $aliases_file_location = $this->project->isD7() ?
       'sites/all/drush/aliases.drushrc.php' : '../drush/aliases.drushrc.php';
     $commands->add(new Symlink($aliases_file_location, '../localsettings/aliases.drushrc.php'));
 
@@ -168,7 +166,7 @@ class Compiler {
     }
 
     // Write settings.custom.environment.*.php
-    foreach ($declarations as $environment_name => $_) {
+    foreach ($this->project->getEnvironmentNames() as $environment_name) {
       $commands->add(new WriteFile("../localsettings/settings.custom.environment.$environment_name.php", new PhpFile()));
     }
 
@@ -196,7 +194,7 @@ class Compiler {
     if (file_exists('.htaccess') && !is_link('.htaccess')) {
       CompileMisc::moveAwayHtaccess($commands);
       CompileMisc::letDeclarationsAlterHtaccess($commands, $this->project);
-      CompileMisc::symlinkHtaccessPerEnvironment($commands, $this->getCurrentDeclaration());
+      CompileMisc::symlinkHtaccessPerEnvironment($commands, $this->getCurrentDeclaration()->getEnvironmentName());
     }
 
     return $commands;
