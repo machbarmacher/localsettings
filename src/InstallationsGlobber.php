@@ -70,7 +70,7 @@ class InstallationsGlobber extends AbstractDeclaration {
     $docroot_glob_pattern = $this->docrootForInstallation('*');
     $php->addRawStatement("\$docroots = ($is_local) ?");
     $php->addRawStatement("  glob('$docroot_glob_pattern') : $default_installations;");
-    $php->addRawStatement("\$aliases += ['$this->environment_name' => ['site-list' => []];");
+    $php->addRawStatement("\$aliases += ['$this->environment_name' => ['site-list' => []]];");
     $php->addRawStatement('foreach ($docroots as $docroot) {');
     // First quote the docroot for later, then replace the quoted wildcard.
     $docroot_pattern = '#' . $this->docrootForInstallation('(.*)', '#') . '#';
@@ -104,7 +104,7 @@ class InstallationsGlobber extends AbstractDeclaration {
       $site_list_exported = var_export(['site-list' => $site_list], TRUE);
       $php->addRawStatement('  $aliases[\'$installation\'] = $site_list_exported;');
     }
-    $php->addRawStatement("  \$aliases['$this->environment_name']['site-list'][] = \"@\$installation\"");
+    $php->addRawStatement("  \$aliases['$this->environment_name']['site-list'][] = \"@$this->declaration_name-\$installation\";");
     $php->addRawStatement("}");
   }
 
