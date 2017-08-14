@@ -89,6 +89,16 @@ class Project {
     }
   }
 
+  public function getCurrentDeclaration() {
+    foreach ($this->getDeclarations() as $declaration) {
+      if ($declaration->isCurrent()) {
+        return $declaration;
+      }
+    }
+    throw new \Exception('Can not recognize current declaration.');
+  }
+
+
   public function getEnvironmentNames() {
     $environment_names = [];
     foreach ($this->declarations as $declaration) {

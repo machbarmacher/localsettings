@@ -21,15 +21,6 @@ class Compiler {
   /** @var Project */
   protected $project;
 
-  protected function getCurrentDeclaration() {
-    foreach ($this->project->getDeclarations() as $declaration) {
-      if ($declaration->isCurrent()) {
-        return $declaration;
-      }
-    }
-    throw new \Exception('Can not recognize current declaration.');
-  }
-
   /**
    * Compiler constructor.
    * @param Project $project
@@ -195,7 +186,7 @@ class Compiler {
     if (file_exists('.htaccess') && !is_link('.htaccess')) {
       CompileMisc::moveAwayHtaccess($commands);
       CompileMisc::letDeclarationsAlterHtaccess($commands, $this->project);
-      CompileMisc::symlinkHtaccessPerEnvironment($commands, $this->getCurrentDeclaration()->getEnvironmentName());
+      CompileMisc::symlinkHtaccessPerEnvironment($commands, $this->project->getCurrentDeclaration()->getEnvironmentName());
     }
 
     return $commands;
@@ -208,7 +199,7 @@ class Compiler {
     $commands->add(new EnsureDirectory('../tmp'));
     $commands->add(new EnsureDirectory('../logs'));
 
-    $current_declaration = $this->getCurrentDeclaration();
+    $current_declaration = $this->project->getCurrentDeclaration();
     CompileMisc::symlinkSettingsGeneratedPerDeclaration($commands, $current_declaration->getDeclarationName());
     CompileMisc::symlinkSettingsCustomPerEnvironment($commands, $current_declaration->getEnvironmentName());
     CompileMisc::symlinkHtaccessPerEnvironment($commands, $current_declaration->getEnvironmentName());
