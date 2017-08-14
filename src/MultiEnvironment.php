@@ -80,7 +80,7 @@ class MultiEnvironment extends AbstractEnvironment {
     $site_list= [];
     // Add single site aliases.
     foreach ($this->site_uris as $site => $uris) {
-      $alias_name = $multisite ? "$this->name.\$installation.$site" : "$this->name.\$installation";
+      $alias_name = $multisite ? "$this->name-\$installation.$site" : "$this->name-\$installation";
       $uri = $this->stringForInstallation($uris[0], '$installation');
       $unique_site_name = $this->getUniqueSiteName($site);
       $alias = [
