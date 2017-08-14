@@ -8,6 +8,8 @@ use machbarmacher\localsettings\Tools\DbCredentialTools;
 abstract class AbstractEnvironment implements IEnvironment {
   /** @var string */
   protected $name;
+  /** @var string */
+  protected $environment_name;
   /** @var IServer */
   protected $server;
   /** @var Project */
@@ -23,6 +25,7 @@ abstract class AbstractEnvironment implements IEnvironment {
 
   public function __construct($name, IServer $server, Project $project) {
     $this->name = $name;
+    list($this->environment_name) = explode('-', $name);
     $this->server = $server;
     $this->project = $project;
 
@@ -31,6 +34,10 @@ abstract class AbstractEnvironment implements IEnvironment {
 
   public function getName() {
     return $this->name;
+  }
+
+  public function getEnvironmentName() {
+    return $this->environment_name;
   }
 
   public function getProject() {
@@ -204,7 +211,7 @@ abstract class AbstractEnvironment implements IEnvironment {
   public function compileEnvironmentInfo(PhpFile $php) {
     $settings_variable = $this->project->getSettingsVariable();
 
-    $environment_name = $this->getName();
+    $environment_name = $this->getEnvironmentName();
     $unique_site_name  = $this->getUniqueSiteName('$site');
 
     $installation_expression = $this->makeInstallationExpressionForSettings();

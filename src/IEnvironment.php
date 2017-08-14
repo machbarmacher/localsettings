@@ -30,6 +30,11 @@ interface IEnvironment {
   public function getName();
 
   /**
+   * @return string
+   */
+  public function getEnvironmentName();
+
+  /**
    * @return \machbarmacher\localsettings\Project
    */
   public function getProject();

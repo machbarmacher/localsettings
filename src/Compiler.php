@@ -24,7 +24,7 @@ class Compiler {
   protected function getCurrentEnvironmentName() {
     foreach ($this->project->getEnvironments() as $environment) {
       if ($environment->isCurrent()) {
-        return $environment->getName();
+        return $environment->getEnvironmentName();
       }
     }
     return 'NONE';
@@ -67,7 +67,7 @@ class Compiler {
 
     $server_setting_files = [];
     foreach ($this->project->getEnvironments() as $environment_name => $environment) {
-      $environment_name = $environment->getName();
+      $environment_name = $environment->getEnvironmentName();
       $php = new PhpFile();
       $php->addRawStatement('// Environment info.');
       $environment->compileEnvironmentInfo($php);

@@ -14,7 +14,7 @@ class CompileSettings {
   public static function addEnvironmentInfo(PhpFile $php, Project $project, IEnvironment $environment) {
     $settings_variable = $project->getSettingsVariable();
 
-    $environment_name = $environment->getName();
+    $environment_name = $environment->getEnvironmentName();
     $unique_site_name  = $environment->getUniqueSiteName('$site');
 
     $php->addRawStatement(<<<EOD

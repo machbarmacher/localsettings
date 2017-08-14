@@ -20,7 +20,7 @@ class CompileMisc {
       // Simulated ? Look at the previous location.
       : '.htaccess';
     foreach ($project->getEnvironments() as $environment) {
-      $environment_name = $environment->getName();
+      $environment_name = $environment->getEnvironmentName();
       $commands->add(new AlterFile($original_file, ".htaccess.$environment_name",
         function ($content) use ($environment) {
           return $environment->alterHtaccess($content);
