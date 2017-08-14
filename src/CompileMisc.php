@@ -13,17 +13,17 @@ use machbarmacher\localsettings\Commands\WriteFile;
 
 class CompileMisc {
 
-  public static function letEnvironmentsAlterHtaccess(Commands $commands, Project $project) {
+  public static function letDeclarationsAlterHtaccess(Commands $commands, Project $project) {
     $original_file = !drush_get_option('simulate')
       // Not simulated? Look at the correct location.
       ? '.htaccess.original'
       // Simulated ? Look at the previous location.
       : '.htaccess';
-    foreach ($project->getEnvironments() as $environment) {
-      $environment_name = $environment->getEnvironmentName();
+    foreach ($project->getDeclarations() as $declaration) {
+      $environment_name = $declaration->getEnvironmentName();
       $commands->add(new AlterFile($original_file, ".htaccess.$environment_name",
-        function ($content) use ($environment) {
-          return $environment->alterHtaccess($content);
+        function ($content) use ($declaration) {
+          return $declaration->alterHtaccess($content);
         }));
     }
   }
@@ -153,16 +153,20 @@ use machbarmacher\localsettings\ServerType\UberspaceServer;
 
 $project = new Project(8);
 
-$project->addInstallation('dev', new UberspaceServer('HOST', 'USER'))
+// Add all installations that match a docroot pattern.
+$project->globInstallations('dev', new UberspaceServer('HOST', 'USER'))
   ->addSite('http://dev.USER.HOST.uberspace.de')
-  ->setDocroot('/var/www/virtual/USER/installations/dev/docroot')
+  ->setDocroot('/var/www/virtual/USER/installations/{{installation}}/docroot')
   ->setDbCredentialPattern('USER_{{installation}}_{{site}}');
 
-$project->addInstallation('live', new FreistilboxServer('c145', 's2222'))
+$project->addInstallation('live', new FreistilboxServer('c145', 'sXXXX'))
   ->addSite('http://example.com');
 
-$project->addInstallation('test', new FreistilboxServer('c145', 's2323'))
+// Note that all installations test-foo have environment test.
+$project->addInstallation('test-1', new FreistilboxServer('c145', 'sXXXX'))
   ->addSite('http://test.example.com');
+$project->addInstallation('test-2', new FreistilboxServer('c145', 'sXXXX'))
+  ->addSite('http://test2.example.com');
 
 // Do not forget!
 return $project;

@@ -37,16 +37,16 @@ abstract class ServerBase implements IServer {
     return $this->getUser() . '@' . $this->getShortHostName();
   }
 
-  public function getUniqueInstallationName(IEnvironment $environment) {
+  public function getUniqueInstallationName(IDeclaration $declaration) {
     $account_name = $this->getUniqueAccountName();
-    $docroot = $this->makeDocrootRelative($environment->getDocroot());
+    $docroot = $this->makeDocrootRelative($declaration->getDocroot());
     return "$account_name:$docroot";
   }
 
-  public function addEnvironmentSpecificSettings(PhpFile $php, IEnvironment $environment) {
-    $settings_variable = $environment->getProject()->getSettingsVariable();
+  public function addEnvironmentSpecificSettings(PhpFile $php, IDeclaration $declaration) {
+    $settings_variable = $declaration->getProject()->getSettingsVariable();
     // $site is a placeholder here that uses the variable defined in settings.
-    $unique_site_name = $environment->getUniqueSiteName('$site');
+    $unique_site_name = $declaration->getUniqueSiteName('$site');
 
     $php->addRawStatement(<<<EOD
 {$settings_variable}['cache_prefix']['default'] = "$unique_site_name";

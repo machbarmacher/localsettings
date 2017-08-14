@@ -5,7 +5,7 @@ namespace machbarmacher\localsettings;
 use machbarmacher\localsettings\RenderPhp\PhpFile;
 use machbarmacher\localsettings\Tools\DbCredentialTools;
 
-abstract class AbstractEnvironment implements IEnvironment {
+abstract class AbstractDeclaration implements IDeclaration {
   /** @var string */
   protected $declaration_name;
   /** @var string */

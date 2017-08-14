@@ -1,21 +1,19 @@
 <?php
 /**
- * @file Environment.php
+ * @file Installation.php
  */
 
 namespace machbarmacher\localsettings;
 
 use machbarmacher\localsettings\RenderPhp\PhpFile;
 
-class Environment extends AbstractEnvironment implements IEnvironment {
+class Installation extends AbstractDeclaration implements IDeclaration {
   public function compileAliases(PhpFile $php) {
     $php->addRawStatement('');
     $php->addRawStatement("// Installation: $this->declaration_name");
-    // Name in curly braces? Then glob docroot.
     $multisite = count($this->site_uris) !== 1;
     $site_list= [];
 
-    $environment_name_expression = $this->declaration_name;
     // Add single site aliases.
     foreach ($this->site_uris as $site => $uris) {
       $alias_name = $multisite ? $this->declaration_name . '.' . $site : $this->declaration_name;
@@ -39,7 +37,7 @@ class Environment extends AbstractEnvironment implements IEnvironment {
     if ($multisite) {
       // Add site-list alias.
       $site_list_exported = var_export(['site-list' => $site_list], TRUE);
-      $php->addRawStatement("\$aliases['$environment_name_expression'] = $site_list_exported;");
+      $php->addRawStatement("\$aliases['$this->declaration_name'] = $site_list_exported;");
     }
   }
 

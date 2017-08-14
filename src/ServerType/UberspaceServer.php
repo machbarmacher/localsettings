@@ -6,7 +6,7 @@
 namespace machbarmacher\localsettings\ServerType;
 
 
-use machbarmacher\localsettings\Environment;
+use machbarmacher\localsettings\Installation;
 use machbarmacher\localsettings\Project;
 use machbarmacher\localsettings\RenderPhp\PhpFile;
 use machbarmacher\localsettings\ServerBase;

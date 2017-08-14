@@ -13,14 +13,14 @@ interface IServer {
   public function getTypeName();
   public function getShortHostName();
   public function getUniqueAccountName();
-  public function getUniqueInstallationName(IEnvironment $environment);
+  public function getUniqueInstallationName(IDeclaration $declaration);
   public function getDefaultDocroot();
   public function makeDocrootAbsolute($docroot);
   public function makeDocrootRelative($docroot);
   public function getUserHome();
   public function getWebHome();
   public function alterHtaccess($content);
-  public function addEnvironmentSpecificSettings(PhpFile $php, IEnvironment $environment);
+  public function addEnvironmentSpecificSettings(PhpFile $php, IDeclaration $declaration);
   public function addServerSpecificSettings(PhpFile $php, Project $project);
   public function alterAlias(array &$alias);
   public function getLocalServerCheck($host_expression, $user_expression);

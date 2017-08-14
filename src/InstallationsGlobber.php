@@ -8,14 +8,14 @@ use machbarmacher\localsettings\RenderPhp\PhpFile;
 use machbarmacher\localsettings\IServer;
 
 /**
- * Class MultiEnvironment
+ * Class InstallationGlobber
  * @package machbarmacher\localsettings
  *
- * A MultiEnvironment discovers installations by directory globbing and
+ * A InstallationGlobber discovers installations by directory globbing and
  * (if local) returns installations. It is responsible for aliases (as dynamic
  * code is involved) though.
  */
-class MultiEnvironment extends AbstractEnvironment {
+class InstallationsGlobber extends AbstractDeclaration {
   protected $default_installations;
 
   public function __construct($declaration_name, IServer $server, Project $project) {
@@ -61,7 +61,7 @@ class MultiEnvironment extends AbstractEnvironment {
    */
   public function compileAliases(PhpFile $php) {
     $php->addRawStatement('');
-    $php->addRawStatement("// Installation cluster: $this->declaration_name");
+    $php->addRawStatement("// Installation globber: $this->declaration_name");
 
     $is_local = $this->getLocalServerCheck();
     // If nonlocal, add default installations.

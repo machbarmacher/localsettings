@@ -22,9 +22,9 @@ class Compiler {
   protected $project;
 
   protected function getCurrentEnvironmentName() {
-    foreach ($this->project->getEnvironments() as $environment) {
-      if ($environment->isCurrent()) {
-        return $environment->getEnvironmentName();
+    foreach ($this->project->getDeclarations() as $declaration) {
+      if ($declaration->isCurrent()) {
+        return $declaration->getEnvironmentName();
       }
     }
     return 'NONE';
@@ -47,9 +47,9 @@ class Compiler {
 
   public function compileAll(Commands $commands) {
     $php = new PhpFile();
-    foreach ($this->project->getEnvironments() as $environment_name => $environment) {
-      if ($environment->isMultisite()) {
-        $environment->compileSitesPhp($php);
+    foreach ($this->project->getDeclarations() as $declaration) {
+      if ($declaration->isMultisite()) {
+        $declaration->compileSitesPhp($php);
       }
     }
     // Only write if we have a multisite.
@@ -59,30 +59,31 @@ class Compiler {
     }
 
     $php = new PhpFile();
-    foreach ($this->project->getEnvironments() as $environment_name => $environment) {
-      $environment->compileAliases($php);
+    $php->addRawStatement('$aliases = [];');
+    foreach ($this->project->getDeclarations() as $declaration) {
+      $declaration->compileAliases($php);
     }
-    CompileAliases::addAliasAlterCode($php, $this->project->getEnvironments());
+    CompileAliases::addAliasAlterCode($php, $this->project->getDeclarations());
     $commands->add(new WriteFile("../localsettings/aliases.drushrc.php", $php));
 
     $server_setting_files = [];
-    foreach ($this->project->getEnvironments() as $environment_name => $environment) {
-      $environment_name = $environment->getEnvironmentName();
+    foreach ($this->project->getDeclarations() as $declaration) {
+      $environment_name = $declaration->getEnvironmentName();
       $php = new PhpFile();
       $php->addRawStatement('// Environment info.');
-      $environment->compileEnvironmentInfo($php);
+      $declaration->compileEnvironmentInfo($php);
       $php->addRawStatement('');
       $php->addRawStatement('// Base URLs');
-      $environment->compileBaseUrls($php);
+      $declaration->compileBaseUrls($php);
       $php->addRawStatement('');
       $php->addRawStatement('// DB Credentials');
-      $environment->compileDbCredentials($php);
+      $declaration->compileDbCredentials($php);
       $php->addRawStatement('');
       $php->addRawStatement('// Environment specific');
-      $environment->getServer()->addEnvironmentSpecificSettings($php, $environment);
+      $declaration->getServer()->addEnvironmentSpecificSettings($php, $declaration);
       $php->addRawStatement('');
       $php->addRawStatement('// Server specific');
-      $server = $environment->getServer();
+      $server = $declaration->getServer();
       $server_name = $server->getTypeName();
       if (!isset($server_setting_files[$server_name])) {
         $server_php = new PhpFile();
@@ -113,10 +114,11 @@ class Compiler {
   public function scaffold(Commands $commands, $current_environment_name) {
     // Step 3
     $drupal_major_version = $this->getProject()->getDrupalMajorVersion();
-    $environments = $this->project->getEnvironments();
-    $current_environment = $environments[$current_environment_name];
+    $declarations = $this->project->getDeclarations();
+    // @fixme This is now a declaration name.
+    $current_environment = $declarations[$current_environment_name];
 
-    foreach ($environments as $environment_name => $_) {
+    foreach ($declarations as $environment_name => $_) {
       $commands->add(new EnsureDirectory("../localsettings/crontab.d/$environment_name"));
     }
     $commands->add(new EnsureDirectory("../localsettings/crontab.d/common"));
@@ -133,14 +135,17 @@ class Compiler {
 
     // Write settings.custom.initial.php
     // This is not idempotent, and will break due to recursion if done twice.
+    // @todo Copy settings if not already done, but mask them with a return.
     if (!file_exists('../localsettings/settings.custom.initial.php')) {
       $php = new PhpFile();
       // Transfer hash salt.
+      // @todo Consider making sites a project setting.
       foreach ($current_environment->getSiteUris() as $site => $_) {
         $settings = IncludeTool::getVariables("sites/$site/settings.php");
         if (!empty($settings['drupal_hash_salt'])) {
           $add_hash_salt = new PhpAssignment('$drupal_hash_salt', $settings['drupal_hash_salt']);
           if ($current_environment->isMultisite()) {
+            // @fixme Looks like unfinished.
             $add_hash_salt = new PhpIf('', $add_hash_salt);
           }
           $php->addStatement($add_hash_salt);
@@ -162,7 +167,7 @@ class Compiler {
     }
 
     // Write settings.custom.*.php
-    foreach ($environments as $environment_name => $_) {
+    foreach ($declarations as $environment_name => $_) {
       $commands->add(new WriteFile("../localsettings/settings.custom.environment.$environment_name.php", new PhpFile()));
     }
 
@@ -189,7 +194,7 @@ class Compiler {
     CompileMisc::writeGitignoreForDrupal($commands);
     if (file_exists('.htaccess') && !is_link('.htaccess')) {
       CompileMisc::moveAwayHtaccess($commands);
-      CompileMisc::letEnvironmentsAlterHtaccess($commands, $this->project);
+      CompileMisc::letDeclarationsAlterHtaccess($commands, $this->project);
       CompileMisc::symlinkHtaccess($commands, $this->getCurrentEnvironmentName());
     }
 

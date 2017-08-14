@@ -14,8 +14,8 @@ namespace machbarmacher\localsettings;
 class Project {
   /** @var int */
   protected $drupal_major_version;
-  /** @var IEnvironment[] */
-  protected $environments = [];
+  /** @var IDeclaration[] */
+  protected $declarations = [];
 
   /**
    * Project constructor.
@@ -32,29 +32,29 @@ class Project {
   /**
    * @param string $name
    * @param IServer $server
-   * @return IEnvironment
+   * @return IDeclaration
    */
-  public function addEnvironment($name, IServer $server) {
-    if (isset($this->environments[$name])) {
-      throw new \UnexpectedValueException(sprintf('Duplicate environment: %s', $name));
+  public function addInstallation($name, IServer $server) {
+    if (isset($this->declarations[$name])) {
+      throw new \UnexpectedValueException(sprintf('Duplicate definition: %s', $name));
     }
-    $environment = new Environment($name, $server, $this);
-    $this->environments[$name] = $environment;
-    return $environment;
+    $declaration = new Installation($name, $server, $this);
+    $this->declarations[$name] = $declaration;
+    return $declaration;
   }
 
   /**
    * @param string $name
    * @param IServer $server
-   * @return IEnvironment
+   * @return IDeclaration
    */
-  public function addMultiEnvironment($name, IServer $server) {
-    if (isset($this->environments[$name])) {
-      throw new \UnexpectedValueException(sprintf('Duplicate environment: %s', $name));
+  public function globInstallations($name, IServer $server) {
+    if (isset($this->declarations[$name])) {
+      throw new \UnexpectedValueException(sprintf('Duplicate definition: %s', $name));
     }
-    $environment = new MultiEnvironment($name, $server, $this);
-    $this->environments[$name] = $environment;
-    return $environment;
+    $declaration = new InstallationsGlobber($name, $server, $this);
+    $this->declarations[$name] = $declaration;
+    return $declaration;
   }
 
   /**
@@ -73,10 +73,10 @@ class Project {
   }
 
   /**
-   * @return IEnvironment[]
+   * @return IDeclaration[]
    */
-  public function getEnvironments() {
-    return $this->environments;
+  public function getDeclarations() {
+    return $this->declarations;
   }
 
 }

@@ -6,8 +6,8 @@
 namespace machbarmacher\localsettings\ServerType;
 
 
-use machbarmacher\localsettings\Environment;
-use machbarmacher\localsettings\IEnvironment;
+use machbarmacher\localsettings\Installation;
+use machbarmacher\localsettings\IDeclaration;
 use machbarmacher\localsettings\Project;
 use machbarmacher\localsettings\RenderPhp\PhpFile;
 use machbarmacher\localsettings\ServerBase;
@@ -65,7 +65,7 @@ class FreistilboxServer extends ServerBase implements IServer {
     return $this->getTypeName();
   }
 
-  public function getUniqueInstallationName(IEnvironment $environment) {
+  public function getUniqueInstallationName(IDeclaration $declaration) {
     // Highlander: There's only one.
     return $this->getUniqueAccountName();
   }

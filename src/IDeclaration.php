@@ -1,13 +1,13 @@
 <?php
 /**
- * @file IEnvironment.php
+ * @file IDeclaration.php
  */
 
 namespace machbarmacher\localsettings;
 
 use machbarmacher\localsettings\RenderPhp\PhpFile;
 
-interface IEnvironment {
+interface IDeclaration {
   /**
    * @param \machbarmacher\localsettings\RenderPhp\PhpFile $php
    */
@@ -16,7 +16,7 @@ interface IEnvironment {
   public function isCurrent();
 
   /**
-   * Environment constructor.
+   * Declaration constructor.
    *
    * @param string $declaration_name
    * @param IServer $server
@@ -93,7 +93,7 @@ interface IEnvironment {
   /**
    * Set DB credentials that vary by
    * - {{site}}: replaced instantly for all previously(!) defined sites
-   * - {{installation}}: installation name, replaced on runtime for MultiEnvironment
+   * - {{installation}}: installation name, replaced on runtime for InstallationGlobber
    * @param array|string $credential_pattern
    * @return $this
    */
