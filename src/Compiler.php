@@ -75,7 +75,6 @@ class Compiler {
       $php->addRawStatement('');
       $php->addRawStatement('// Server specific');
       $server = $declaration->getServer();
-      // @fixme Collect and do afterwards.
       $server_name = $server->getTypeName();
       if (!isset($server_setting_files[$server_name])) {
         $server_php = new PhpFile();
