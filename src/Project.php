@@ -10,6 +10,7 @@ namespace machbarmacher\localsettings;
  * @package machbarmacher\localsettings
  *
  * @todo Add docroot relative to gitroot setting.
+ * @todo Consider making sites a project setting.
  */
 class Project {
   /** @var int */

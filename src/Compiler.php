@@ -132,22 +132,23 @@ class Compiler {
       $commands->add(new WriteFile('../config-sync/.gitkeep', ''));
     }
 
-    // Write settings.custom.initial.php
-    // This is not idempotent, and will break due to recursion if done twice.
-    // @todo Copy settings if not already done, but mask them with a return.
+    // Write copy s/*/m/settings.php to settings.custom.initial.php
     if (!file_exists('../localsettings/settings.custom.initial.php')) {
       $php = new PhpFile();
-      // Transfer hash salt.
-      // @todo Consider making sites a project setting.
-      foreach ($current_declaration->getSiteUris() as $site => $_) {
-        $settings = IncludeTool::getVariables("sites/$site/settings.php");
-        if (!empty($settings['drupal_hash_salt'])) {
-          $add_hash_salt = new PhpAssignment('$drupal_hash_salt', $settings['drupal_hash_salt']);
-          if ($current_declaration->hasNonDefaultSite()) {
-            // @fixme Looks like unfinished.
-            $add_hash_salt = new PhpIf('', $add_hash_salt);
-          }
-          $php->addStatement($add_hash_salt);
+      // Copy settings if not already done, but mask them with a return.
+      $php->addRawStatement('return; // TODO: Clean up and remove this.');
+      $php->addRawStatement('');
+      $siteUris = $current_declaration->getSiteUris();
+      $multisite = count($siteUris) > 1;
+      foreach ($siteUris as $site => $_) {
+        $settings_php = file_get_contents("sites/$site/settings.php");
+        $settings_php = preg_replace("/<?php\s*/\n", '', $settings_php);
+        if ($multisite) {
+          $php->addRawStatement("if (\$site === '$site') {");
+        }
+        $php->addRawStatement($settings_php);
+        if ($multisite) {
+          $php->addRawStatement("}");
         }
       }
       $commands->add(new WriteFile('../localsettings/settings.custom.initial.php', $php));
