@@ -7,7 +7,7 @@ use machbarmacher\localsettings\Tools\DbCredentialTools;
 
 abstract class AbstractEnvironment implements IEnvironment {
   /** @var string */
-  protected $name;
+  protected $declaration_name;
   /** @var string */
   protected $environment_name;
   /** @var IServer */
@@ -23,17 +23,17 @@ abstract class AbstractEnvironment implements IEnvironment {
   /** @var string[] */
   protected $drush_environment_variables;
 
-  public function __construct($name, IServer $server, Project $project) {
-    $this->name = $name;
-    list($this->environment_name) = explode('-', $name);
+  public function __construct($declaration_name, IServer $server, Project $project) {
+    $this->declaration_name = $declaration_name;
+    list($this->environment_name) = explode('-', $declaration_name);
     $this->server = $server;
     $this->project = $project;
 
     $this->docroot = $this->server->makeDocrootAbsolute($this->server->getDefaultDocroot());
   }
 
-  public function getName() {
-    return $this->name;
+  public function getDeclarationName() {
+    return $this->declaration_name;
   }
 
   public function getEnvironmentName() {
@@ -70,10 +70,10 @@ abstract class AbstractEnvironment implements IEnvironment {
 
   public function validate() {
     if (!$this->site_uris) {
-      throw new \UnexpectedValueException(sprintf('Installation %s needs site uris.', $this->getName()));
+      throw new \UnexpectedValueException(sprintf('Installation %s needs site uris.', $this->getDeclarationName()));
     }
     if (!$this->docroot) {
-      throw new \UnexpectedValueException(sprintf('Installation %s needs docroot.', $this->getName()));
+      throw new \UnexpectedValueException(sprintf('Installation %s needs docroot.', $this->getDeclarationName()));
     }
     return $this;
   }
@@ -81,7 +81,7 @@ abstract class AbstractEnvironment implements IEnvironment {
   public function addSite($uri, $site = 'default') {
     // @todo Validate uri.
     if (isset($this->site_uris[$site])) {
-      throw new \UnexpectedValueException(sprintf('Site %s double-defined in installation %s.', $site, $this->getName()));
+      throw new \UnexpectedValueException(sprintf('Site %s double-defined in installation %s.', $site, $this->getDeclarationName()));
     }
     $this->site_uris[$site] = [$uri];
     return $this;
@@ -90,10 +90,10 @@ abstract class AbstractEnvironment implements IEnvironment {
   public function addUri($uri, $site = 'default') {
     // @todo Validate uri.
     if (empty($this->site_uris[$site])) {
-      throw new \UnexpectedValueException(sprintf('Additional uri %s defined for missing site %s in installation %s.', $uri, $site, $this->getName()));
+      throw new \UnexpectedValueException(sprintf('Additional uri %s defined for missing site %s in installation %s.', $uri, $site, $this->getDeclarationName()));
     }
     if (in_array($uri, $this->site_uris[$site])) {
-      throw new \UnexpectedValueException(sprintf('Additional uri %s duplicates already defined one in installation %s.', $uri, $this->getName()));
+      throw new \UnexpectedValueException(sprintf('Additional uri %s duplicates already defined one in installation %s.', $uri, $this->getDeclarationName()));
     }
     $this->site_uris[$site][] = $uri;
     return $this;
@@ -147,7 +147,7 @@ abstract class AbstractEnvironment implements IEnvironment {
 
   public function compileSitesPhp(PhpFile $php) {
     $php->addRawStatement('');
-    $php->addRawStatement("// Installation: $this->name");
+    $php->addRawStatement("// Installation: $this->declaration_name");
     foreach ($this->site_uris as $site => $uris) {
       foreach ($uris as $uri) {
         // @todo Care for port when needed.
@@ -222,7 +222,7 @@ abstract class AbstractEnvironment implements IEnvironment {
 EOD
     );
     if ($this->project->isD7()) {
-      $php->addRawStatement("\$conf['master_current_scope'] = '$this->name';");
+      $php->addRawStatement("\$conf['master_current_scope'] = '$this->declaration_name';");
     }
   }
 

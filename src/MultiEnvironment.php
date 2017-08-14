@@ -18,9 +18,9 @@ use machbarmacher\localsettings\IServer;
 class MultiEnvironment extends AbstractEnvironment {
   protected $default_installations;
 
-  public function __construct($name, IServer $server, Project $project) {
-    parent::__construct($name, $server, $project);
-    $this->default_installations = [$name];
+  public function __construct($declaration_name, IServer $server, Project $project) {
+    parent::__construct($declaration_name, $server, $project);
+    $this->default_installations = [$declaration_name];
   }
 
   /**
@@ -53,7 +53,7 @@ class MultiEnvironment extends AbstractEnvironment {
 
   protected function makeInstallationExpressionForSettings() {
     // @todo Make more general when needed.
-    return "'$this->name-' . basename(dirname(getcwd()))";
+    return "'$this->declaration_name-' . basename(dirname(getcwd()))";
   }
 
   /**
@@ -61,7 +61,7 @@ class MultiEnvironment extends AbstractEnvironment {
    */
   public function compileAliases(PhpFile $php) {
     $php->addRawStatement('');
-    $php->addRawStatement("// Installation cluster: $this->name");
+    $php->addRawStatement("// Installation cluster: $this->declaration_name");
 
     $is_local = $this->getLocalServerCheck();
     // If nonlocal, add default installations.
@@ -80,7 +80,7 @@ class MultiEnvironment extends AbstractEnvironment {
     $site_list= [];
     // Add single site aliases.
     foreach ($this->site_uris as $site => $uris) {
-      $alias_name = $multisite ? "$this->name-\$installation.$site" : "$this->name-\$installation";
+      $alias_name = $multisite ? "$this->declaration_name-\$installation.$site" : "$this->declaration_name-\$installation";
       $uri = $this->stringForInstallation($uris[0], '$installation');
       $unique_site_name = $this->getUniqueSiteName($site);
       $alias = [
@@ -106,7 +106,7 @@ class MultiEnvironment extends AbstractEnvironment {
     }
     $php->addRawStatement('  $environment_sites["@$installation"] = TRUE;');
     $php->addRawStatement("}");
-    $php->addRawStatement("\$aliases['$this->name'] = ['site-list' => array_keys(\$environment_sites)];");
+    $php->addRawStatement("\$aliases['$this->declaration_name'] = ['site-list' => array_keys(\$environment_sites)];");
   }
 
   public function isCurrent() {

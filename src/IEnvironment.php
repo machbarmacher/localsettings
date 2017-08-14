@@ -18,16 +18,16 @@ interface IEnvironment {
   /**
    * Environment constructor.
    *
-   * @param string $name
+   * @param string $declaration_name
    * @param IServer $server
    * @param Project $project
    */
-  public function __construct($name, IServer $server, Project $project);
+  public function __construct($declaration_name, IServer $server, Project $project);
 
   /**
    * @return string
    */
-  public function getName();
+  public function getDeclarationName();
 
   /**
    * @return string
