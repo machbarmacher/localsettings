@@ -70,10 +70,10 @@ abstract class AbstractEnvironment implements IEnvironment {
 
   public function validate() {
     if (!$this->site_uris) {
-      throw new \UnexpectedValueException(sprintf('Installation %s needs site uris.', $this->getDeclarationName()));
+      throw new \UnexpectedValueException(sprintf('Declaration %s needs site uris.', $this->getDeclarationName()));
     }
     if (!$this->docroot) {
-      throw new \UnexpectedValueException(sprintf('Installation %s needs docroot.', $this->getDeclarationName()));
+      throw new \UnexpectedValueException(sprintf('Declaration %s needs docroot.', $this->getDeclarationName()));
     }
     return $this;
   }
@@ -81,7 +81,7 @@ abstract class AbstractEnvironment implements IEnvironment {
   public function addSite($uri, $site = 'default') {
     // @todo Validate uri.
     if (isset($this->site_uris[$site])) {
-      throw new \UnexpectedValueException(sprintf('Site %s double-defined in installation %s.', $site, $this->getDeclarationName()));
+      throw new \UnexpectedValueException(sprintf('Site %s double-defined in declaration %s.', $site, $this->getDeclarationName()));
     }
     $this->site_uris[$site] = [$uri];
     return $this;
@@ -90,10 +90,10 @@ abstract class AbstractEnvironment implements IEnvironment {
   public function addUri($uri, $site = 'default') {
     // @todo Validate uri.
     if (empty($this->site_uris[$site])) {
-      throw new \UnexpectedValueException(sprintf('Additional uri %s defined for missing site %s in installation %s.', $uri, $site, $this->getDeclarationName()));
+      throw new \UnexpectedValueException(sprintf('Additional uri %s defined for missing site %s in declaration %s.', $uri, $site, $this->getDeclarationName()));
     }
     if (in_array($uri, $this->site_uris[$site])) {
-      throw new \UnexpectedValueException(sprintf('Additional uri %s duplicates already defined one in installation %s.', $uri, $this->getDeclarationName()));
+      throw new \UnexpectedValueException(sprintf('Additional uri %s duplicates already defined one in declaration %s.', $uri, $this->getDeclarationName()));
     }
     $this->site_uris[$site][] = $uri;
     return $this;
