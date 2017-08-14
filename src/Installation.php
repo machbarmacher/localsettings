@@ -53,4 +53,9 @@ class Installation extends AbstractDeclaration implements IDeclaration {
     return "'$this->declaration_name'";
   }
 
+  protected function makeInstallationSuffixExpressionForSettings() {
+    $suffix = substr($this->declaration_name, strlen($this->environment_name) + 1);
+    return "'$suffix'";
+  }
+
 }

@@ -56,6 +56,11 @@ class InstallationsGlobber extends AbstractDeclaration {
     return "'$this->declaration_name-' . basename(dirname(getcwd()))";
   }
 
+  protected function makeInstallationSuffixExpressionForSettings() {
+    // @todo Make more general when needed.
+    return "basename(dirname(getcwd()))";
+  }
+
   /**
    * @param \machbarmacher\localsettings\RenderPhp\PhpFile $php
    */

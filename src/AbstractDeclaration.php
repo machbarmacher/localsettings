@@ -202,6 +202,7 @@ abstract class AbstractDeclaration implements IDeclaration {
         if ($value) {
           // @todo Make this elegant.
           $value = preg_replace('/{{installation}}/u', '$installation', $value);
+          $value = preg_replace('/{{installation-suffix}}/u', '$installation_suffix', $value);
           $php->addRawStatement("\$databases['default']['default']['$key'] = \"$value\";");
         }
       }
@@ -215,9 +216,11 @@ abstract class AbstractDeclaration implements IDeclaration {
     $unique_site_name  = $this->getUniqueSiteName('$site');
 
     $installation_expression = $this->makeInstallationExpressionForSettings();
+    $installation_suffix_expression = $this->makeInstallationSuffixExpressionForSettings();
     $php->addRawStatement(<<<EOD
 \$environment = {$settings_variable}['localsettings']['environment'] = '$environment_name';
 \$installation = {$settings_variable}['localsettings']['installation'] = $installation_expression;
+\$installation_suffix = {$settings_variable}['localsettings']['installation'] = $installation_suffix_expression;
 \$unique_site_name = {$settings_variable}['localsettings']['unique_site_name'] = "$unique_site_name";
 EOD
     );
@@ -230,5 +233,10 @@ EOD
    * @return string
    */
   abstract protected function makeInstallationExpressionForSettings();
+
+  /**
+   * @return string
+   */
+  abstract protected function makeInstallationSuffixExpressionForSettings();
 
 }
