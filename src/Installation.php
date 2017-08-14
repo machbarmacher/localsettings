@@ -41,7 +41,7 @@ class Installation extends AbstractDeclaration implements IDeclaration {
     }
     if ($this->environment_name !== $this->declaration_name) {
       $php->addRawStatement("\$aliases += ['$this->environment_name' => ['site-list' => []]];");
-      $php->addRawStatement("\$aliases['$this->environment_name']['site-list'][] = '@$this->declaration_name'");
+      $php->addRawStatement("\$aliases['$this->environment_name']['site-list'][] = '@$this->declaration_name';");
     }
   }
 
