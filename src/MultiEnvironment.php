@@ -53,7 +53,7 @@ class MultiEnvironment extends AbstractEnvironment {
 
   protected function makeInstallationExpressionForSettings() {
     // @todo Make more general when needed.
-    return 'basename(dirname(getcwd()))';
+    return "'$this->name-' . basename(dirname(getcwd()))";
   }
 
   /**
