@@ -39,6 +39,10 @@ class Installation extends AbstractDeclaration implements IDeclaration {
       $site_list_exported = var_export(['site-list' => $site_list], TRUE);
       $php->addRawStatement("\$aliases['$this->declaration_name'] = $site_list_exported;");
     }
+    if ($this->environment_name !== $this->declaration_name) {
+      $php->addRawStatement("\$aliases += ['$this->environment_name' => ['site-list' => []];");
+      $php->addRawStatement("\$aliases['$this->environment_name']['site-list'][] = '@$this->declaration_name''");
+    }
   }
 
   public function isCurrent() {
