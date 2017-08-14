@@ -165,7 +165,7 @@ class Compiler {
     CompileMisc::writeSettings($commands, $drupal_major_version);
 
     // @todo Delegate to server.
-    CompileMisc::writeBoxfile($commands);
+    CompileMisc::writeBoxfile($commands, $this->project);
 
     CompileMisc::writeGitignoreForComposer($commands);
 

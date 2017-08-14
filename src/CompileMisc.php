@@ -10,6 +10,7 @@ use machbarmacher\localsettings\Commands\DeleteFile;
 use machbarmacher\localsettings\Commands\MoveFile;
 use machbarmacher\localsettings\Commands\Symlink;
 use machbarmacher\localsettings\Commands\WriteFile;
+use Symfony\Component\Yaml\Yaml;
 
 class CompileMisc {
 
@@ -21,7 +22,7 @@ class CompileMisc {
       : '.htaccess';
     foreach ($project->getDeclarations() as $declaration) {
       $environment_name = $declaration->getEnvironmentName();
-      $commands->add(new AlterFile($original_file, ".htaccess.$environment_name",
+      $commands->add(new AlterFile($original_file, ".htaccess.environment.$environment_name",
         function ($content) use ($declaration) {
           return $declaration->alterHtaccess($content);
         }));
@@ -69,7 +70,7 @@ EOD
   }
 
   public static function symlinkHtaccessPerEnvironment(Commands $commands, $environment_name) {
-    $commands->add(new Symlink('.htaccess', ".htaccess.$environment_name"));
+    $commands->add(new Symlink('.htaccess', ".htaccess.environment.$environment_name"));
   }
 
   public static function writeSettings(Commands $commands, $drupal_major_version) {
@@ -86,28 +87,32 @@ EOD
     ));
   }
 
-  public static function writeBoxfile(Commands $commands) {
+  public static function writeBoxfile(Commands $commands, Project $project) {
     // @fixme Iterate installations
     // @fixme Delegate to fsb server. Also the docroot->web symlink.
-    $commands->add(new WriteFile('../Boxfile', <<<EOD
-version: 2.0
-shared_folders:
-  - docroot/sites/default/files
-  - logs
-env_specific_files:
-  docroot/.htaccess:
-    live: .htaccess.live
-    test: .htaccess.test
-  localsettings/settings.generated.declaration.THIS.php:
-    live: settings.generated.declaration.live.php
-    test: settings.generated.declaration.test.php
-  localsettings/settings.custom.environment.THIS.php:
-    live: settings.custom.environment.live.php
-    test: settings.custom.environment.test.php
+    $shared_folders = ['logs'];
+    foreach ($project->getCurrentDeclaration()->getSiteUris() as $site => $_) {
+      $shared_folders[] = "docroot/sites/$site/files";
+    }
+    $env_specific_files = [];
+    foreach ($project->getDeclarations() as $declaration) {
+      // Generated settings go by declaration.
+      $declaration_name = $declaration->getDeclarationName();
+      $env_specific_files['localsettings/settings.generated.declaration.THIS.php']
+        [$declaration_name] = "settings.generated.declaration.$declaration_name.php";
+      // Custom settings and htaccess go by environment.
+      $environment_name = $declaration->getEnvironmentName();
+      $env_specific_files['docroot/.htaccess'][$environment_name] = ".htaccess.environment.$environment_name";
+      $env_specific_files['localsettings/settings.custom.environment.THIS.php']
+        [$declaration_name] = "settings.custom.environment.$environment_name.php";
+    }
 
-EOD
-      // @fixme Allow more than live and test.
-    ));
+    $boxfile = [];
+    $boxfile['version'] = '2.0';
+    $boxfile['shared_folders'] = $shared_folders;
+    $boxfile['env_specific_files'] = $env_specific_files;
+
+    $commands->add(new WriteFile('../Boxfile', Yaml::dump($boxfile, 9)));
   }
 
   public static function writeGitignoreForComposer(Commands $commands) {
