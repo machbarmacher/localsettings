@@ -48,6 +48,7 @@ function localsettings_drush_command() {
       // For --simulate we don't need a drupal root.
       'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
     ) + $common;
+  $items['localsettings-scaffold']['options']['declaration-name'] = 'Declaration to scaffold, defaults to dev.';
 
   $items['localsettings-activate'] = array(
       'description' => '4: Finally include settings dispatcher.',
@@ -107,12 +108,13 @@ function drush_localsettings_scaffold_validate($include = NULL) {
 }
 
 
-function drush_localsettings_scaffold($environment_name = 'dev', $include = NULL) {
+function drush_localsettings_scaffold($include = NULL) {
+  $declaration_name = drush_get_option('declaration-name', 'dev');
   $commands = new Commands();
   global $localsettings_compiler_factory;
   /** @var CompilerFactory $localsettings_compiler_factory */
   $compiler = $localsettings_compiler_factory->get();
-  $compiler->scaffold($commands, $environment_name);
+  $compiler->scaffold($commands, $declaration_name);
   return _localsettings_process_commands($commands);
 }
 
