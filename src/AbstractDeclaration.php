@@ -222,7 +222,7 @@ abstract class AbstractDeclaration implements IDeclaration {
 EOD
     );
     if ($this->project->isD7()) {
-      $php->addRawStatement("\$conf['master_current_scope'] = '$this->declaration_name';");
+      $php->addRawStatement("\$conf['master_current_scope'] = '$this->$environment_name';");
     }
   }
 
