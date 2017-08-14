@@ -60,12 +60,15 @@ EOD
     ));
   }
 
-  public static function symlinkSettingsLocal(Commands $commands, $environment_name) {
-    $commands->add(new Symlink('../localsettings/settings.custom.environment.THIS.php', "settings.custom.environment.$environment_name.php"));
-    $commands->add(new Symlink('../localsettings/settings.generated.environment.THIS.php', "settings.generated.environment.$environment_name.php"));
+  public static function symlinkSettingsGeneratedPerDeclaration(Commands $commands, $declaration_name) {
+    $commands->add(new Symlink('../localsettings/settings.generated.declaration.THIS.php', "settings.generated.declaration.$declaration_name.php"));
   }
 
-  public static function symlinkHtaccess(Commands $commands, $environment_name) {
+  public static function symlinkSettingsCustomPerEnvironment(Commands $commands, $environment_name) {
+    $commands->add(new Symlink('../localsettings/settings.custom.environment.THIS.php', "settings.custom.environment.$environment_name.php"));
+  }
+
+  public static function symlinkHtaccessPerEnvironment(Commands $commands, $environment_name) {
     $commands->add(new Symlink('.htaccess', ".htaccess.$environment_name"));
   }
 
@@ -73,7 +76,7 @@ EOD
     $commands->add(new WriteFile('../localsettings/settings.php', <<<EOD
 <?php
 require '../localsettings/settings.generated.initial.php';
-require '../localsettings/settings.generated.environment.THIS.php';
+require '../localsettings/settings.generated.declaration.THIS.php';
 require '../localsettings/settings.generated.additional.php';
 include '../localsettings/settings.custom.initial.php';
 include '../localsettings/settings.custom.environment.THIS.php';
@@ -95,9 +98,9 @@ env_specific_files:
   docroot/.htaccess:
     live: .htaccess.live
     test: .htaccess.test
-  localsettings/settings.generated.environment.THIS.php:
-    live: settings.generated.environment.live.php
-    test: settings.generated.environment.test.php
+  localsettings/settings.generated.declaration.THIS.php:
+    live: settings.generated.declaration.live.php
+    test: settings.generated.declaration.test.php
   localsettings/settings.custom.environment.THIS.php:
     live: settings.custom.environment.live.php
     test: settings.custom.environment.test.php
@@ -111,7 +114,7 @@ EOD
     $commands->add(new WriteFile('../.gitignore', <<<EOD
 .git
 # Ignore paths that are symlinked per environment.
-/localsettings/settings.generated.environment.THIS.php
+/localsettings/settings.generated.declaration.THIS.php
 /localsettings/settings.custom.environment.THIS.php
 # Ignore server content.
 /config
@@ -124,7 +127,7 @@ EOD
     ));
   }
 
-  public static function writeGitignoreForDrupal(Commands $commands) {
+  public static function writeGitignoreForDrupalRoot(Commands $commands) {
     $commands->add(new WriteFile('.gitignore', <<<EOD
 # Ignore application content.
 /sites/*/files

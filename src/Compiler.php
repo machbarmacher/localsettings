@@ -21,13 +21,13 @@ class Compiler {
   /** @var Project */
   protected $project;
 
-  protected function getCurrentEnvironmentName() {
+  protected function getCurrentDeclaration() {
     foreach ($this->project->getDeclarations() as $declaration) {
       if ($declaration->isCurrent()) {
-        return $declaration->getEnvironmentName();
+        return $declaration;
       }
     }
-    return 'NONE';
+    throw new \Exception('Can not recognize current declaration.');
   }
 
   /**
@@ -68,7 +68,7 @@ class Compiler {
 
     $server_setting_files = [];
     foreach ($this->project->getDeclarations() as $declaration) {
-      $environment_name = $declaration->getEnvironmentName();
+      $declaration_name = $declaration->getDeclarationName();
       $php = new PhpFile();
       $php->addRawStatement('// Environment info.');
       $declaration->compileEnvironmentInfo($php);
@@ -84,6 +84,7 @@ class Compiler {
       $php->addRawStatement('');
       $php->addRawStatement('// Server specific');
       $server = $declaration->getServer();
+      // @fixme Collect and do afterwards.
       $server_name = $server->getTypeName();
       if (!isset($server_setting_files[$server_name])) {
         $server_php = new PhpFile();
@@ -93,7 +94,7 @@ class Compiler {
         $commands->add(new WriteFile("../localsettings/$server_setting_file", $server_php));
       }
       $php->addRawStatement("include '../localsettings/{$server_setting_files[$server_name]}';");
-      $commands->add(new WriteFile("../localsettings/settings.generated.environment.{$environment_name}.php", $php));
+      $commands->add(new WriteFile("../localsettings/settings.generated.declaration.{$declaration_name}.php", $php));
     }
 
     $php = new PhpFile();
@@ -166,7 +167,7 @@ class Compiler {
       $commands->add(new Symlink('sites/sites.php', '../../localsettings/sites.php'));
     }
 
-    // Write settings.custom.*.php
+    // Write settings.custom.environment.*.php
     foreach ($declarations as $environment_name => $_) {
       $commands->add(new WriteFile("../localsettings/settings.custom.environment.$environment_name.php", new PhpFile()));
     }
@@ -191,11 +192,11 @@ class Compiler {
   public function postUpdate(Commands $commands) {
     // A docroot update brought upstream versions:
     // Use our gitignore; Alter and symlink htaccess.
-    CompileMisc::writeGitignoreForDrupal($commands);
+    CompileMisc::writeGitignoreForDrupalRoot($commands);
     if (file_exists('.htaccess') && !is_link('.htaccess')) {
       CompileMisc::moveAwayHtaccess($commands);
       CompileMisc::letDeclarationsAlterHtaccess($commands, $this->project);
-      CompileMisc::symlinkHtaccess($commands, $this->getCurrentEnvironmentName());
+      CompileMisc::symlinkHtaccessPerEnvironment($commands, $this->getCurrentDeclaration());
     }
 
     return $commands;
@@ -208,8 +209,10 @@ class Compiler {
     $commands->add(new EnsureDirectory('../tmp'));
     $commands->add(new EnsureDirectory('../logs'));
 
-    CompileMisc::symlinkSettingsLocal($commands, $this->getCurrentEnvironmentName());
-    CompileMisc::symlinkHtaccess($commands, $this->getCurrentEnvironmentName());
+    $current_declaration = $this->getCurrentDeclaration();
+    CompileMisc::symlinkSettingsGeneratedPerDeclaration($commands, $current_declaration->getDeclarationName());
+    CompileMisc::symlinkSettingsCustomPerEnvironment($commands, $current_declaration->getEnvironmentName());
+    CompileMisc::symlinkHtaccessPerEnvironment($commands, $current_declaration->getEnvironmentName());
 
     return $commands;
   }
