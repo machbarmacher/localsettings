@@ -9,7 +9,7 @@
         }
     ],
     "require": {
-        "symfony/yaml": "^3.1"
+        "symfony/yaml": "*"
     },
     "autoload": {
         "psr-4": { "machbarmacher\\localsettings\\": ["src/"] }
