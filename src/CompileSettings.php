@@ -61,7 +61,7 @@ EOD
     if ($is_d7) {
       $php->addRawStatement(<<<EOD
 \$conf['environment_indicator_overwrite'] = TRUE;
-\$conf['environment_indicator_overwritten_name'] = \$unique_site_name;
+\$conf['environment_indicator_overwritten_name'] = \$installation;
 \$conf['environment_indicator_overwritten_color'] = '#' . dechex(hexdec(substr(md5(\$conf['environment_indicator_overwritten_name']), 0, 6)) & 0x7f7f7f); // Only dark colors.
 \$conf['environment_indicator_overwritten_text_color'] = '#ffffff';
 EOD
