@@ -108,7 +108,7 @@ EOD
     }
 
     $boxfile = [];
-    $boxfile['version'] = '2.0';
+    $boxfile['version'] = 2; // No string! FSB is sooo picky here.
     $boxfile['shared_folders'] = $shared_folders;
     $boxfile['env_specific_files'] = $env_specific_files;
 
