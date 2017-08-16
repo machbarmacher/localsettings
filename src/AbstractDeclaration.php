@@ -223,17 +223,17 @@ abstract class AbstractDeclaration implements IDeclaration {
     $installationExpression = $this->makeInstallationExpressionForSettings();
     // Note: InstallationGlobber uses suffix in installation expression,
     // so order matters here.
+    $replacements->register('{{installation-suffix}}', '{$installation_suffix}');
+    $replacements->register('{{installation}}', '{$installation}');
+    $replacements->register('{{environment}}', '{$environment}');
+    $replacements->register('{{unique-site-name}}', '{$unique_site_name}');
     $php->addRawStatement(<<<EOD
-\$installation_suffix = {$settings_variable}['localsettings']['installation'] = $installationSuffixX;
+\$installation_suffix = {$settings_variable}['localsettings']['installation_suffix'] = $installationSuffixX;
 \$installation = {$settings_variable}['localsettings']['installation'] = $installationExpression;
 \$environment = {$settings_variable}['localsettings']['environment'] = $environmentNameX;
 \$unique_site_name = {$settings_variable}['localsettings']['unique_site_name'] = $uniqueSiteNameX;
 EOD
     );
-    $replacements->register('{{environment}}', '{$environment}');
-    $replacements->register('{{installation}}', '{$installation}');
-    $replacements->register('{{installation-suffix}}', '{$installation_suffix}');
-    $replacements->register('{{unique-site-name}}', '{$unique_site_name}');
     if ($this->project->isD7()) {
       $php->addRawStatement("\$conf['master_current_scope'] = $environmentNameX;");
     }
@@ -278,12 +278,12 @@ EOD
       $php->addRawStatement("  \$aliases[$aliasNameX]['#unique_site_name'] = $uniqueSiteNameX;");
       if ($multisite) {
         $atAliasNameX = new StringConcat(new StringSingleQuoted('@'), $aliasNameX);
-        $php->addRawStatement("\$aliases[\"$aliasBaseX\"]['site-list'][] = $atAliasNameX;");
+        $php->addRawStatement("  \$aliases[\"$aliasBaseX\"]['site-list'][] = $atAliasNameX;");
       }
     }
     if ($this->environment_name !== $aliasBaseX->getString()) {
       $atAliasX = new StringConcat(new StringSingleQuoted('@'), $aliasBaseX);
-      $php->addRawStatement("\$aliases['$this->environment_name']['site-list'][] = {$atAliasX};");
+      $php->addRawStatement("  \$aliases['$this->environment_name']['site-list'][] = {$atAliasX};");
     }
   }
 

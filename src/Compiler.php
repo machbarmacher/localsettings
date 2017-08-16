@@ -61,11 +61,11 @@ class Compiler {
     $commands->add(new WriteFile("../localsettings/aliases.drushrc.php", $php));
 
     // Carry replacements usable in settings.*.php
-    $replacements = new Replacements();
+    $replacementsInitial = new Replacements();
 
     // Generate settings.generated.initial.php
     $php = new PhpFile();
-    CompileSettings::addInitialSettings($php, $replacements, $this->project);
+    CompileSettings::addInitialSettings($php, $replacementsInitial, $this->project);
     $commands->add(new WriteFile("../localsettings/settings.generated.initial.php", $php));
 
     // Generate settings.generated.declaration.FOO.php
@@ -73,7 +73,7 @@ class Compiler {
     foreach ($this->project->getDeclarations() as $declaration) {
       $declaration_name = $declaration->getDeclarationName();
       $php = new PhpFile();
-      $replacements = new Replacements();
+      $replacements = clone $replacementsInitial;
       $php->addRawStatement('// Environment info.');
       $declaration->compileEnvironmentInfo($php, $replacements);
       $php->addRawStatement('');

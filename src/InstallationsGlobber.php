@@ -57,7 +57,8 @@ class InstallationsGlobber extends AbstractDeclaration {
   private function docrootPatternForPreg() {
     $delimiter = '#';
     $docroot = preg_quote($this->docroot, $delimiter);
-    $glob_pattern = (new Replacements())->register('{{installation-suffix}}', '(.*)')
+    $placeholder = preg_quote('{{installation-suffix}}', $delimiter);
+    $glob_pattern = (new Replacements())->register($placeholder, '(.*)')
       ->apply($docroot);
     return "{$delimiter}$glob_pattern{$delimiter}u";
   }
@@ -84,11 +85,11 @@ class InstallationsGlobber extends AbstractDeclaration {
     $docroot_preg_pattern = $this->docrootPatternForPreg();
     // Code to get the name from the docroot.
     $php->addRawStatement("  \$installation_suffix = preg_replace('$docroot_preg_pattern', '\\1', \$docroot);");
-    $php->addRawStatement("  \$installation = \"$this->environment_name-\$installation_suffix\"");
+    $php->addRawStatement("  \$installation = \"$this->environment_name-\$installation_suffix\";");
     $replacements->register('{{installation-suffix}}', '{$installation_suffix}');
     $replacements->register('{{installation}}', '{$installation}');
 
-    $aliasBaseX = new StringDoubleQuoted("{$this->declaration_name}-\$installation");
+    $aliasBaseX = new StringDoubleQuoted("{$this->declaration_name}-{{installation-suffix}}");
     $docrootX = new StringDoubleQuoted('$docroot');
 
     $this->compileAlias($php, $replacements, $aliasBaseX, $docrootX);

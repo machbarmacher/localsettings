@@ -11,9 +11,9 @@ use machbarmacher\localsettings\Tools\Replacements;
 
 class Installation extends AbstractDeclaration implements IDeclaration {
   public function compileAliases(PhpFile $php) {
-    $this->compileAlias($php, new Replacements(),
-      new StringSingleQuoted($this->declaration_name),
-      new StringSingleQuoted($this->docroot));
+    $aliasBaseX = new StringSingleQuoted($this->declaration_name);
+    $docrootX = new StringSingleQuoted($this->docroot);
+    $this->compileAlias($php, new Replacements(), $aliasBaseX, $docrootX);
   }
 
   public function isCurrent() {
