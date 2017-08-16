@@ -88,7 +88,7 @@ class InstallationsGlobber extends AbstractDeclaration {
     $replacements->register('{{installation-suffix}}', '{$installation_suffix}');
     $replacements->register('{{installation}}', '{$installation}');
 
-    $aliasBaseX = new StringDoubleQuoted("{{installation}}");
+    $aliasBaseX = new StringDoubleQuoted($replacements->apply("{{installation}}"));
     $docrootX = new StringDoubleQuoted('$docroot');
 
     $this->compileAlias($php, $replacements, $aliasBaseX, $docrootX);
