@@ -2,11 +2,9 @@
 
 namespace machbarmacher\localsettings;
 
-use machbarmacher\localsettings\Project;
 use machbarmacher\localsettings\RenderPhp\PhpArray;
+use machbarmacher\localsettings\RenderPhp\PhpDoubleQuotedString;
 use machbarmacher\localsettings\RenderPhp\PhpFile;
-use machbarmacher\localsettings\IServer;
-use machbarmacher\localsettings\RenderPhp\PhpRawExpression;
 use machbarmacher\localsettings\Tools\Replacements;
 
 /**
@@ -33,7 +31,7 @@ class InstallationsGlobber extends AbstractDeclaration {
   }
 
   protected function makeInstallationExpressionForSettings() {
-    return "\"$this->declaration_name-\$installation_suffix\"";
+    return new PhpDoubleQuotedString("$this->declaration_name-\$installation_suffix") ;
   }
 
   protected function makeInstallationSuffixExpressionForSettings() {
@@ -71,7 +69,7 @@ class InstallationsGlobber extends AbstractDeclaration {
     $replacements = new Replacements();
 
     $php->addRawStatement('');
-    $php->addRawStatement("// Installation globber: $this->declaration_name");
+    $php->addRawStatement("// Declaration: $this->declaration_name");
 
     $is_local = $this->getLocalServerCheck();
     // If nonlocal, add default installations.
@@ -90,35 +88,11 @@ class InstallationsGlobber extends AbstractDeclaration {
     $replacements->register('{{installation-suffix}}', '{$installation_suffix}');
     $replacements->register('{{installation}}', '{$installation}');
 
-    $multisite = count($this->site_uris) !== 1;
-    $site_list= [];
-    // Add single site aliases.
-    foreach ($this->site_uris as $site => $uris) {
-      $alias_name = $multisite ? "$this->declaration_name-\$installation.$site" : "$this->declaration_name-\$installation";
-      $unique_site_name = (new Replacements())->register('{{site}}',  $site)->apply($this->getUniqueSiteName());
-      $uri = $replacements->apply($uris[0]);
-      $alias = [
-        // Only use primary uri.
-        'remote-user' => $this->server->getUser(),
-        'remote-host' => $this->server->getHost(),
-      ];
-      if ($this->drush_environment_variables) {
-        $alias['#env-vars'] = $this->drush_environment_variables;
-      }
-      $this->server->alterAlias($alias);
-      $alias_exported = (new PhpRawExpression($alias));
-      $php->addRawStatement("  \$aliases[\"$alias_name\"] = $alias_exported;");
-      $php->addRawStatement("  \$aliases[\"$alias_name\"]['root'] = \$docroot;");
-      $php->addRawStatement("  \$aliases[\"$alias_name\"]['uri'] = \"$uri\";");
-      $php->addRawStatement("  \$aliases[\"$alias_name\"]['#unique_site_name'] = \"$unique_site_name\";");
-      $site_list[] = "@$alias_name";
-    }
-    if ($multisite) {
-      // Add site-list alias.
-      $site_list_exported = var_export(['site-list' => $site_list], TRUE);
-      $php->addRawStatement('  $aliases[\'$installation\'] = $site_list_exported;');
-    }
-    $php->addRawStatement("  \$aliases['$this->environment_name']['site-list'][] = \"@$this->declaration_name-\$installation\";");
+    $aliasBaseX = new PhpDoubleQuotedString("{$this->declaration_name}-\$installation");
+    $docrootX = new PhpDoubleQuotedString('$docroot');
+
+    $this->compileAlias($php, $replacements, $aliasBaseX, $docrootX);
+
     $php->addRawStatement("}");
   }
 

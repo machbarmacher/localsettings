@@ -47,7 +47,7 @@ abstract class ServerBase implements IServer {
   public function addEnvironmentSpecificSettings(PhpFile $php, Replacements $replacements, IDeclaration $declaration) {
     $settings_variable = $declaration->getProject()->getSettingsVariable();
     // $site is a placeholder here that uses the variable defined in settings.
-    $unique_site_name = $replacements->apply($declaration->getUniqueSiteName());
+    $unique_site_name = $replacements->apply($declaration->getUniqueSiteNameWithReplacements());
 
     $php->addRawStatement(<<<EOD
 {$settings_variable}['cache_prefix']['default'] = "$unique_site_name";

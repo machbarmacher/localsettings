@@ -2,7 +2,12 @@
 
 namespace machbarmacher\localsettings;
 
+use machbarmacher\localsettings\RenderPhp\IStringExpression;
+use machbarmacher\localsettings\RenderPhp\PhpConcat;
+use machbarmacher\localsettings\RenderPhp\PhpDoubleQuotedString;
 use machbarmacher\localsettings\RenderPhp\PhpFile;
+use machbarmacher\localsettings\RenderPhp\PhpLiteralValue;
+use machbarmacher\localsettings\RenderPhp\PhpSingleQuotedString;
 use machbarmacher\localsettings\Tools\DbCredentialTools;
 use machbarmacher\localsettings\Tools\Replacements;
 
@@ -57,7 +62,7 @@ abstract class AbstractDeclaration implements IDeclaration {
     return $this->site_uris;
   }
 
-  public function getUniqueSiteName() {
+  public function getUniqueSiteNameWithReplacements() {
     $name = $this->server->getUniqueInstallationName($this);
     if ($this->hasNonDefaultSite()) {
       $name .= "#{{site}}";
@@ -212,18 +217,17 @@ abstract class AbstractDeclaration implements IDeclaration {
   public function compileEnvironmentInfo(PhpFile $php, Replacements $replacements) {
     $settings_variable = $this->project->getSettingsVariable();
 
-    $environment_name = $this->getEnvironmentName();
-    $unique_site_name  = $this->getUniqueSiteName('$site');
-
-    $installation_suffix_expression = $this->makeInstallationSuffixExpressionForSettings();
-    $installation_expression = $this->makeInstallationExpressionForSettings();
+    $environmentNameX = new PhpSingleQuotedString($this->getEnvironmentName());
+    $uniqueSiteNameX = new PhpDoubleQuotedString($replacements->apply($this->getUniqueSiteNameWithReplacements()));
+    $installationSuffixX = $this->makeInstallationSuffixExpressionForSettings();
+    $installationExpression = $this->makeInstallationExpressionForSettings();
     // Note: InstallationGlobber uses suffix in installation expression,
     // so order matters here.
     $php->addRawStatement(<<<EOD
-\$installation_suffix = {$settings_variable}['localsettings']['installation'] = $installation_suffix_expression;
-\$installation = {$settings_variable}['localsettings']['installation'] = $installation_expression;
-\$environment = {$settings_variable}['localsettings']['environment'] = '$environment_name';
-\$unique_site_name = {$settings_variable}['localsettings']['unique_site_name'] = "$unique_site_name";
+\$installation_suffix = {$settings_variable}['localsettings']['installation'] = $installationSuffixX;
+\$installation = {$settings_variable}['localsettings']['installation'] = $installationExpression;
+\$environment = {$settings_variable}['localsettings']['environment'] = $environmentNameX;
+\$unique_site_name = {$settings_variable}['localsettings']['unique_site_name'] = $uniqueSiteNameX;
 EOD
     );
     $replacements->register('{{environment}}', '{$environment}');
@@ -231,12 +235,56 @@ EOD
     $replacements->register('{{installation-suffix}}', '{$installation_suffix}');
     $replacements->register('{{unique-site-name}}', '{$unique_site_name}');
     if ($this->project->isD7()) {
-      $php->addRawStatement("\$conf['master_current_scope'] = '$environment_name';");
+      $php->addRawStatement("\$conf['master_current_scope'] = $environmentNameX;");
     }
   }
 
   abstract protected function makeInstallationExpressionForSettings();
 
   abstract protected function makeInstallationSuffixExpressionForSettings();
+
+  /**
+   * @param \machbarmacher\localsettings\RenderPhp\PhpFile $php
+   * @param Replacements $replacements
+   * @param IStringExpression $aliasBaseX
+   * @param IStringExpression $docrootX
+   */
+  protected function compileAlias(PhpFile $php, Replacements $replacements, IStringExpression $aliasBaseX, IStringExpression $docrootX) {
+    $php->addRawStatement('');
+    $php->addRawStatement("// Declaration: $this->declaration_name");
+    $multisite = count($this->site_uris) !== 1;
+    // Add single site aliases.
+    foreach ($this->site_uris as $site => $uris) {
+      $alias = [];
+      $aliasNameX = $multisite ? new PhpConcat($aliasBaseX, new PhpSingleQuotedString(".$site")) : $aliasBaseX;
+      $replacements->register('{{site}}', $site);
+      // @todo DQ only if variable.
+      $uniqueSiteNameX = new PhpDoubleQuotedString($replacements->apply($this->getUniqueSiteNameWithReplacements()));
+      $uriX = new PhpDoubleQuotedString($replacements->apply($uris[0]));
+      if ($this->drush_environment_variables) {
+        $alias['#env-vars'] = $this->drush_environment_variables;
+      }
+      $this->server->alterAlias($alias);
+      if ($alias) {
+        $aliasExpression = new PhpLiteralValue($alias);
+        $php->addRawStatement("  \$aliases[$aliasNameX] = $aliasExpression;");
+      }
+      $php->addRawStatement("  \$aliases[$aliasNameX]['root'] = $docrootX;");
+      $php->addRawStatement("  \$aliases[$aliasNameX]['uri'] = $uriX;");
+      $hostX = new PhpSingleQuotedString($this->server->getHost());
+      $php->addRawStatement("  \$aliases[$aliasNameX]['remote-host'] = $hostX;");
+      $userX = new PhpSingleQuotedString($this->server->getUser());
+      $php->addRawStatement("  \$aliases[$aliasNameX]['remote-user'] = $userX;");
+      $php->addRawStatement("  \$aliases[$aliasNameX]['#unique_site_name'] = $uniqueSiteNameX;");
+      if ($multisite) {
+        $atAliasNameX = new PhpConcat(new PhpSingleQuotedString('@'), $aliasNameX);
+        $php->addRawStatement("\$aliases[\"$aliasBaseX\"]['site-list'][] = $atAliasNameX;");
+      }
+    }
+    if ($this->environment_name !== $aliasBaseX->getString()) {
+      $atAliasX = new PhpConcat(new PhpSingleQuotedString('@'), $aliasBaseX);
+      $php->addRawStatement("\$aliases['$this->environment_name']['site-list'][] = {$atAliasX};");
+    }
+  }
 
 }

@@ -18,6 +18,15 @@ class Replacements {
   }
 
   /**
+   * @param string $placeholder
+   * @return $this
+   */
+  public function unregister($placeholder) {
+    unset($this->replacements[$placeholder]);
+    return $this;
+  }
+
+  /**
    * @param $string
    * @return string
    */

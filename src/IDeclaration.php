@@ -55,7 +55,7 @@ interface IDeclaration {
    */
   public function getSiteUris();
 
-  public function getUniqueSiteName();
+  public function getUniqueSiteNameWithReplacements();
 
   public function hasNonDefaultSite();
 

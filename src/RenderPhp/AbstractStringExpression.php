@@ -2,12 +2,13 @@
 
 namespace machbarmacher\localsettings\RenderPhp;
 
-abstract class AbstractPhpRaw implements IPhpRenderable {
+abstract class AbstractStringExpression implements IStringExpression {
+
   /** @var string */
   protected $string;
 
   /**
-   * RawStatement constructor.
+   * PhpStringExpression constructor.
    * @param string $string
    */
   public function __construct($string) {
@@ -22,13 +23,11 @@ abstract class AbstractPhpRaw implements IPhpRenderable {
   }
 
   /**
-   * @param string $string
+   * @param $preg_replacements
+   * @return mixed
    */
-  public function setString($string) {
-    $this->string = $string;
+  protected function replacedString($preg_replacements) {
+    return preg_replace(array_keys($preg_replacements), $preg_replacements, $this->string);
   }
 
-  public function __toString() {
-    return $this->string;
-  }
 }
