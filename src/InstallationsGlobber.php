@@ -6,6 +6,8 @@ use machbarmacher\localsettings\Project;
 use machbarmacher\localsettings\RenderPhp\PhpArray;
 use machbarmacher\localsettings\RenderPhp\PhpFile;
 use machbarmacher\localsettings\IServer;
+use machbarmacher\localsettings\RenderPhp\PhpRawExpression;
+use machbarmacher\localsettings\Tools\Replacements;
 
 /**
  * Class InstallationGlobber
@@ -30,41 +32,44 @@ class InstallationsGlobber extends AbstractDeclaration {
     $this->default_installations = $default_installations;
   }
 
-  protected function docrootForInstallation($installation_name, $preg_delimiter = NULL) {
-    return $this->stringForInstallation($this->docroot, $installation_name, $preg_delimiter);
-  }
-
-  protected function stringForInstallation($string, $installation_name, $preg_delimiter = NULL) {
-    $placeholder = '{{installation}}';
-    if ($preg_delimiter) {
-      $placeholder = preg_quote($placeholder, $preg_delimiter);
-      $string = preg_quote($string, $preg_delimiter);
-    }
-    $replaced = preg_replace('/' . preg_quote($placeholder, '/') . '/u', $installation_name, $string);
-    return $replaced;
-  }
-
-  public function getUniqueSiteName($site) {
-    $uniqueSiteName = parent::getUniqueSiteName($site);
-    // @todo Hardcoding $installation here is not very elegant.
-    $uniqueSiteName = $this->stringForInstallation($uniqueSiteName, '$installation');
-    return $uniqueSiteName;
-  }
-
   protected function makeInstallationExpressionForSettings() {
-    // @todo Make more general when needed.
-    return "'$this->declaration_name-' . basename(dirname(getcwd()))";
+    return "\"$this->declaration_name-\$installation_suffix\"";
   }
 
   protected function makeInstallationSuffixExpressionForSettings() {
-    // @todo Make more general when needed.
     return "basename(dirname(getcwd()))";
+  }
+
+  /**
+   * Make a docroot pattern for glob like 'foo.bar/*'.'/baz'.
+   *
+   * @return string
+   */
+  private function docrootPatternForGlob() {
+    $glob_pattern = (new Replacements())->register('{{installation-suffix}}', '*')
+      ->apply($this->docroot);
+    return $glob_pattern;
+  }
+
+  /**
+   * Make a docroot pattern for preg like '#foo\.bar/(.*)/baz#u'.
+   *
+   * @return string
+   */
+  private function docrootPatternForPreg() {
+    $delimiter = '#';
+    $docroot = preg_quote($this->docroot, $delimiter);
+    $glob_pattern = (new Replacements())->register('{{installation-suffix}}', '(.*)')
+      ->apply($docroot);
+    return "{$delimiter}$glob_pattern{$delimiter}u";
   }
 
   /**
    * @param \machbarmacher\localsettings\RenderPhp\PhpFile $php
    */
   public function compileAliases(PhpFile $php) {
+    $replacements = new Replacements();
+
     $php->addRawStatement('');
     $php->addRawStatement("// Installation globber: $this->declaration_name");
 
@@ -72,22 +77,26 @@ class InstallationsGlobber extends AbstractDeclaration {
     // If nonlocal, add default installations.
     $default_installations = PhpArray::fromLiteral($this->default_installations);
     $default_installations->setMultiline(FALSE);
-    $docroot_glob_pattern = $this->docrootForInstallation('*');
+    $docroot_glob_pattern = $this->docrootPatternForGlob();
     $php->addRawStatement("\$docroots = ($is_local) ?");
     $php->addRawStatement("  glob('$docroot_glob_pattern') : $default_installations;");
     $php->addRawStatement("\$aliases += ['$this->environment_name' => ['site-list' => []]];");
     $php->addRawStatement('foreach ($docroots as $docroot) {');
     // First quote the docroot for later, then replace the quoted wildcard.
-    $docroot_pattern = '#' . $this->docrootForInstallation('(.*)', '#') . '#';
+    $docroot_preg_pattern = $this->docrootPatternForPreg();
     // Code to get the name from the docroot.
-    $php->addRawStatement("  \$installation = preg_replace('$docroot_pattern', '\\1', \$docroot);");
+    $php->addRawStatement("  \$installation_suffix = preg_replace('$docroot_preg_pattern', '\\1', \$docroot);");
+    $php->addRawStatement("  \$installation = \"$this->environment_name-\$installation_suffix\"");
+    $replacements->register('{{installation-suffix}}', '{$installation_suffix}');
+    $replacements->register('{{installation}}', '{$installation}');
+
     $multisite = count($this->site_uris) !== 1;
     $site_list= [];
     // Add single site aliases.
     foreach ($this->site_uris as $site => $uris) {
       $alias_name = $multisite ? "$this->declaration_name-\$installation.$site" : "$this->declaration_name-\$installation";
-      $uri = $this->stringForInstallation($uris[0], '$installation');
-      $unique_site_name = $this->getUniqueSiteName($site);
+      $unique_site_name = (new Replacements())->register('{{site}}',  $site)->apply($this->getUniqueSiteName());
+      $uri = $replacements->apply($uris[0]);
       $alias = [
         // Only use primary uri.
         'remote-user' => $this->server->getUser(),
@@ -97,7 +106,7 @@ class InstallationsGlobber extends AbstractDeclaration {
         $alias['#env-vars'] = $this->drush_environment_variables;
       }
       $this->server->alterAlias($alias);
-      $alias_exported = var_export($alias, TRUE);
+      $alias_exported = (new PhpRawExpression($alias));
       $php->addRawStatement("  \$aliases[\"$alias_name\"] = $alias_exported;");
       $php->addRawStatement("  \$aliases[\"$alias_name\"]['root'] = \$docroot;");
       $php->addRawStatement("  \$aliases[\"$alias_name\"]['uri'] = \"$uri\";");
@@ -118,8 +127,7 @@ class InstallationsGlobber extends AbstractDeclaration {
       return FALSE;
     }
     $drupal_root_realpath = realpath(DRUSH_DRUPAL_CORE);
-    $glob_pattern = $this->docrootForInstallation('*');
-    foreach (glob($glob_pattern) as $path) {
+    foreach (glob($this->docrootPatternForGlob()) as $path) {
       if (realpath($path) == $drupal_root_realpath) {
         return TRUE;
       }

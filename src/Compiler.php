@@ -16,6 +16,7 @@ use machbarmacher\localsettings\RenderPhp\PhpIf;
 use machbarmacher\localsettings\RenderPhp\PhpRawStatement;
 use machbarmacher\localsettings\RenderPhp\PhpStatements;
 use machbarmacher\localsettings\Tools\IncludeTool;
+use machbarmacher\localsettings\Tools\Replacements;
 
 class Compiler {
   /** @var Project */
@@ -37,6 +38,7 @@ class Compiler {
   }
 
   public function compileAll(Commands $commands) {
+    // Generate sites.php
     $php = new PhpFile();
     foreach ($this->project->getDeclarations() as $declaration) {
       if ($declaration->hasNonDefaultSite()) {
@@ -49,6 +51,7 @@ class Compiler {
       $commands->add(new Symlink('sites/sites.php', '../../localsettings/sites.php'));
     }
 
+    // Generate aliases.drushrc.php
     $php = new PhpFile();
     $php->addRawStatement('$aliases = [];');
     foreach ($this->project->getDeclarations() as $declaration) {
@@ -57,21 +60,31 @@ class Compiler {
     CompileAliases::addAliasAlterCode($php, $this->project->getDeclarations());
     $commands->add(new WriteFile("../localsettings/aliases.drushrc.php", $php));
 
+    // Carry replacements usable in settings.*.php
+    $replacements = new Replacements();
+
+    // Generate settings.generated.initial.php
+    $php = new PhpFile();
+    CompileSettings::addInitialSettings($php, $replacements, $this->project);
+    $commands->add(new WriteFile("../localsettings/settings.generated.initial.php", $php));
+
+    // Generate settings.generated.declaration.FOO.php
     $server_setting_files = [];
     foreach ($this->project->getDeclarations() as $declaration) {
       $declaration_name = $declaration->getDeclarationName();
       $php = new PhpFile();
+      $replacements = new Replacements();
       $php->addRawStatement('// Environment info.');
-      $declaration->compileEnvironmentInfo($php);
+      $declaration->compileEnvironmentInfo($php, $replacements);
       $php->addRawStatement('');
       $php->addRawStatement('// Base URLs');
-      $declaration->compileBaseUrls($php);
+      $declaration->compileBaseUrls($php, $replacements);
       $php->addRawStatement('');
       $php->addRawStatement('// DB Credentials');
-      $declaration->compileDbCredentials($php);
+      $declaration->compileDbCredentials($php, $replacements);
       $php->addRawStatement('');
       $php->addRawStatement('// Environment specific');
-      $declaration->getServer()->addEnvironmentSpecificSettings($php, $declaration);
+      $declaration->getServer()->addEnvironmentSpecificSettings($php, $replacements, $declaration);
       $php->addRawStatement('');
       $php->addRawStatement('// Server specific');
       $server = $declaration->getServer();
@@ -87,12 +100,9 @@ class Compiler {
       $commands->add(new WriteFile("../localsettings/settings.generated.declaration.{$declaration_name}.php", $php));
     }
 
+    // Generate settings.generated.additional.php
     $php = new PhpFile();
-    CompileSettings::addInitialSettings($php, $this->project);
-    $commands->add(new WriteFile("../localsettings/settings.generated.initial.php", $php));
-
-    $php = new PhpFile();
-    CompileSettings::addAdditionalSettings($php, $this->project);
+    CompileSettings::addAdditionalSettings($php, $replacements, $this->project);
     $commands->add(new WriteFile("../localsettings/settings.generated.additional.php", $php));
   }
 

@@ -6,6 +6,7 @@
 namespace machbarmacher\localsettings;
 
 use machbarmacher\localsettings\RenderPhp\PhpFile;
+use machbarmacher\localsettings\Tools\Replacements;
 
 interface IServer {
   public function getUser();
@@ -20,7 +21,7 @@ interface IServer {
   public function getUserHome();
   public function getWebHome();
   public function alterHtaccess($content);
-  public function addEnvironmentSpecificSettings(PhpFile $php, IDeclaration $declaration);
+  public function addEnvironmentSpecificSettings(PhpFile $php, Replacements $replacements, IDeclaration $declaration);
   public function addServerSpecificSettings(PhpFile $php, Project $project);
   public function alterAlias(array &$alias);
   public function getLocalServerCheck($host_expression, $user_expression);

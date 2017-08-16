@@ -6,6 +6,7 @@
 namespace machbarmacher\localsettings;
 
 use machbarmacher\localsettings\RenderPhp\PhpFile;
+use machbarmacher\localsettings\Tools\Replacements;
 
 class Installation extends AbstractDeclaration implements IDeclaration {
   public function compileAliases(PhpFile $php) {
@@ -18,13 +19,16 @@ class Installation extends AbstractDeclaration implements IDeclaration {
     foreach ($this->site_uris as $site => $uris) {
       $alias_name = $multisite ? $this->declaration_name . '.' . $site : $this->declaration_name;
       $uri = $uris[0];
+      $site_name_replacements = (new Replacements())->register('{{site}}', $site);
+      $unique_site_name = $site_name_replacements
+        ->apply($this->getUniqueSiteName());
       $alias = [
         // Only use primary uri.
         'remote-user' => $this->server->getUser(),
         'remote-host' => $this->server->getHost(),
         'root' => $this->docroot,
         'uri' => $uri,
-        '#unique_site_name' => $this->getUniqueSiteName($site),
+        '#unique_site_name' => $unique_site_name,
       ];
       if ($this->drush_environment_variables) {
         $alias['#env-vars'] = $this->drush_environment_variables;

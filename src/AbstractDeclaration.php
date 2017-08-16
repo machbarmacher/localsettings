@@ -4,6 +4,7 @@ namespace machbarmacher\localsettings;
 
 use machbarmacher\localsettings\RenderPhp\PhpFile;
 use machbarmacher\localsettings\Tools\DbCredentialTools;
+use machbarmacher\localsettings\Tools\Replacements;
 
 abstract class AbstractDeclaration implements IDeclaration {
   /** @var string */
@@ -56,15 +57,16 @@ abstract class AbstractDeclaration implements IDeclaration {
     return $this->site_uris;
   }
 
-  public function getUniqueSiteName($site) {
+  public function getUniqueSiteName() {
     $name = $this->server->getUniqueInstallationName($this);
     if ($this->hasNonDefaultSite()) {
-      $name .= "#$site";
+      $name .= "#{{site}}";
     }
     return $name;
   }
 
   public function hasNonDefaultSite() {
+    // @fixme Consider complementing this by hasMultipleSites
     return (bool)array_diff_key($this->site_uris, ['default' => TRUE]);
   }
 
@@ -159,14 +161,14 @@ abstract class AbstractDeclaration implements IDeclaration {
     }
   }
 
-  public function compileBaseUrls(PhpFile $php) {
+  public function compileBaseUrls(PhpFile $php, Replacements $replacements) {
     foreach ($this->site_uris as $site => $uris) {
       if ($this->hasNonDefaultSite()) {
         $php->addRawStatement("if (\$site === '$site') {");
       }
       foreach ($uris as $uri) {
         // @todo Make this elegant.
-        $uri = preg_replace('/{{installation}}/u', '$installation', $uri);
+        $uri = $replacements->apply($uri);
         if ($this->project->isD7()) {
           if (count($uris) == 1) {
             $php->addRawStatement("  \$base_url = \"$uri\";");
@@ -196,47 +198,45 @@ abstract class AbstractDeclaration implements IDeclaration {
     }
   }
 
-  public function compileDbCredentials(PhpFile $php) {
+  public function compileDbCredentials(PhpFile $php, Replacements $replacements) {
     foreach ($this->db_credentials as $site => $db_credential) {
       foreach ($db_credential as $key => $value) {
         if ($value) {
-          // @todo Make this elegant.
-          $value = preg_replace('/{{installation}}/u', '$installation', $value);
-          $value = preg_replace('/{{installation-suffix}}/u', '$installation_suffix', $value);
+          $value = $replacements->apply($value);
           $php->addRawStatement("\$databases['default']['default']['$key'] = \"$value\";");
         }
       }
     }
   }
 
-  public function compileEnvironmentInfo(PhpFile $php) {
+  public function compileEnvironmentInfo(PhpFile $php, Replacements $replacements) {
     $settings_variable = $this->project->getSettingsVariable();
 
     $environment_name = $this->getEnvironmentName();
     $unique_site_name  = $this->getUniqueSiteName('$site');
 
-    $installation_expression = $this->makeInstallationExpressionForSettings();
     $installation_suffix_expression = $this->makeInstallationSuffixExpressionForSettings();
+    $installation_expression = $this->makeInstallationExpressionForSettings();
+    // Note: InstallationGlobber uses suffix in installation expression,
+    // so order matters here.
     $php->addRawStatement(<<<EOD
-\$environment = {$settings_variable}['localsettings']['environment'] = '$environment_name';
-\$installation = {$settings_variable}['localsettings']['installation'] = $installation_expression;
 \$installation_suffix = {$settings_variable}['localsettings']['installation'] = $installation_suffix_expression;
+\$installation = {$settings_variable}['localsettings']['installation'] = $installation_expression;
+\$environment = {$settings_variable}['localsettings']['environment'] = '$environment_name';
 \$unique_site_name = {$settings_variable}['localsettings']['unique_site_name'] = "$unique_site_name";
 EOD
     );
+    $replacements->register('{{environment}}', '{$environment}');
+    $replacements->register('{{installation}}', '{$installation}');
+    $replacements->register('{{installation-suffix}}', '{$installation_suffix}');
+    $replacements->register('{{unique-site-name}}', '{$unique_site_name}');
     if ($this->project->isD7()) {
       $php->addRawStatement("\$conf['master_current_scope'] = '$environment_name';");
     }
   }
 
-  /**
-   * @return string
-   */
   abstract protected function makeInstallationExpressionForSettings();
 
-  /**
-   * @return string
-   */
   abstract protected function makeInstallationSuffixExpressionForSettings();
 
 }

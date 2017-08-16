@@ -6,6 +6,7 @@
 namespace machbarmacher\localsettings;
 
 use machbarmacher\localsettings\RenderPhp\PhpFile;
+use machbarmacher\localsettings\Tools\Replacements;
 
 interface IDeclaration {
   /**
@@ -54,7 +55,7 @@ interface IDeclaration {
    */
   public function getSiteUris();
 
-  public function getUniqueSiteName($site);
+  public function getUniqueSiteName();
 
   public function hasNonDefaultSite();
 
@@ -114,9 +115,9 @@ interface IDeclaration {
 
   public function compileSitesPhp(PhpFile $php);
 
-  public function compileBaseUrls(PhpFile $php);
+  public function compileBaseUrls(PhpFile $php, Replacements $replacements);
 
-  public function compileDbCredentials(PhpFile $php);
+  public function compileDbCredentials(PhpFile $php, Replacements $replacements);
 
-  public function compileEnvironmentInfo(PhpFile $php);
+  public function compileEnvironmentInfo(PhpFile $php, Replacements $replacements);
 }

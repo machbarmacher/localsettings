@@ -7,6 +7,7 @@ namespace machbarmacher\localsettings;
 
 
 use machbarmacher\localsettings\RenderPhp\PhpFile;
+use machbarmacher\localsettings\Tools\Replacements;
 
 abstract class ServerBase implements IServer {
   public function makeDocrootAbsolute($docroot) {
@@ -43,10 +44,10 @@ abstract class ServerBase implements IServer {
     return "$account_name:$docroot";
   }
 
-  public function addEnvironmentSpecificSettings(PhpFile $php, IDeclaration $declaration) {
+  public function addEnvironmentSpecificSettings(PhpFile $php, Replacements $replacements, IDeclaration $declaration) {
     $settings_variable = $declaration->getProject()->getSettingsVariable();
     // $site is a placeholder here that uses the variable defined in settings.
-    $unique_site_name = $declaration->getUniqueSiteName('$site');
+    $unique_site_name = $replacements->apply($declaration->getUniqueSiteName());
 
     $php->addRawStatement(<<<EOD
 {$settings_variable}['cache_prefix']['default'] = "$unique_site_name";

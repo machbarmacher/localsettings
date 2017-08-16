@@ -3,28 +3,11 @@
 namespace machbarmacher\localsettings;
 
 use machbarmacher\localsettings\RenderPhp\PhpFile;
+use machbarmacher\localsettings\Tools\Replacements;
 
 class CompileSettings {
 
-  /**
-   * @param \machbarmacher\localsettings\RenderPhp\PhpFile $php
-   * @param \machbarmacher\localsettings\Project $project
-   * @param \machbarmacher\localsettings\IDeclaration $declaration
-   */
-  public static function addEnvironmentInfo(PhpFile $php, Project $project, IDeclaration $declaration) {
-    $settings_variable = $project->getSettingsVariable();
-
-    $environment_name = $declaration->getEnvironmentName();
-    $unique_site_name  = $declaration->getUniqueSiteName('$site');
-
-    $php->addRawStatement(<<<EOD
-\$installation = {$settings_variable}['localsettings']['installation'] = '$environment_name';
-\$unique_site_name = {$settings_variable}['localsettings']['unique_site_name'] = "$unique_site_name";
-EOD
-    );
-  }
-
-  public static function addInitialSettings(PhpFile $php, Project $project) {
+  public static function addInitialSettings(PhpFile $php, Replacements $replacements, Project $project) {
     $is_d7 = $project->isD7();
     $settings_variable = $project->getSettingsVariable();
     $conf_path = $is_d7 ? 'conf_path()' : '\Drupal::service(\'site.path\')->get()';
@@ -34,8 +17,9 @@ EOD
 \$dirname = {$settings_variable}['localsettings']['dirname'] = basename(dirname(getcwd()));
 
 EOD
-
     );
+    $replacements->register('{{site}}', '{$site}');
+    $replacements->register('{{dirname}}', '{$dirname}');
 
     $is_d7 = $project->isD7();
     $settings_variable = $project->getSettingsVariable();
@@ -72,7 +56,7 @@ EOD
     }
   }
 
-  public static function addAdditionalSettings(PhpFile $php, Project $project) {
+  public static function addAdditionalSettings(PhpFile $php, Replacements $replacements, Project $project) {
     $is_d7 = $project->isD7();
     if ($is_d7) {
       $php->addRawStatement(<<<EOD
