@@ -79,17 +79,16 @@ class InstallationsGlobber extends AbstractDeclaration {
     $docroot_glob_pattern = $this->docrootPatternForGlob();
     $php->addRawStatement("\$docroots = ($is_local) ?");
     $php->addRawStatement("  glob('$docroot_glob_pattern') : $default_installations;");
-    $php->addRawStatement("\$aliases += ['$this->environment_name' => ['site-list' => []]];");
     $php->addRawStatement('foreach ($docroots as $docroot) {');
     // First quote the docroot for later, then replace the quoted wildcard.
     $docroot_preg_pattern = $this->docrootPatternForPreg();
     // Code to get the name from the docroot.
     $php->addRawStatement("  \$installation_suffix = preg_replace('$docroot_preg_pattern', '\\1', \$docroot);");
-    $php->addRawStatement("  \$installation = \"$this->environment_name-\$installation_suffix\";");
+    $php->addRawStatement("  \$installation = \"$this->declaration_name-\$installation_suffix\";");
     $replacements->register('{{installation-suffix}}', '{$installation_suffix}');
     $replacements->register('{{installation}}', '{$installation}');
 
-    $aliasBaseX = new StringDoubleQuoted("{$this->declaration_name}-{{installation-suffix}}");
+    $aliasBaseX = new StringDoubleQuoted("{{installation}}");
     $docrootX = new StringDoubleQuoted('$docroot');
 
     $this->compileAlias($php, $replacements, $aliasBaseX, $docrootX);

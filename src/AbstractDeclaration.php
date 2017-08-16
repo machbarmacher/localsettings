@@ -172,7 +172,6 @@ abstract class AbstractDeclaration implements IDeclaration {
         $php->addRawStatement("if (\$site === '$site') {");
       }
       foreach ($uris as $uri) {
-        // @todo Make this elegant.
         $uri = $replacements->apply($uri);
         if ($this->project->isD7()) {
           if (count($uris) == 1) {
@@ -217,16 +216,17 @@ abstract class AbstractDeclaration implements IDeclaration {
   public function compileEnvironmentInfo(PhpFile $php, Replacements $replacements) {
     $settings_variable = $this->project->getSettingsVariable();
 
+    $replacements->register('{{installation-suffix}}', '{$installation_suffix}');
+    $replacements->register('{{installation}}', '{$installation}');
+    $replacements->register('{{environment}}', '{$environment}');
+    $replacements->register('{{unique-site-name}}', '{$unique_site_name}');
+
     $environmentNameX = new StringSingleQuoted($this->getEnvironmentName());
     $uniqueSiteNameX = new StringDoubleQuoted($replacements->apply($this->getUniqueSiteNameWithReplacements()));
     $installationSuffixX = $this->makeInstallationSuffixExpressionForSettings();
     $installationExpression = $this->makeInstallationExpressionForSettings();
     // Note: InstallationGlobber uses suffix in installation expression,
     // so order matters here.
-    $replacements->register('{{installation-suffix}}', '{$installation_suffix}');
-    $replacements->register('{{installation}}', '{$installation}');
-    $replacements->register('{{environment}}', '{$environment}');
-    $replacements->register('{{unique-site-name}}', '{$unique_site_name}');
     $php->addRawStatement(<<<EOD
 \$installation_suffix = {$settings_variable}['localsettings']['installation_suffix'] = $installationSuffixX;
 \$installation = {$settings_variable}['localsettings']['installation'] = $installationExpression;
