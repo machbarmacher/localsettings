@@ -4,7 +4,7 @@ namespace machbarmacher\localsettings\RenderPhp;
 
 use machbarmacher\localsettings\RenderPhp\KeyValue;
 
-class PhpArray implements IExpression {
+class ArrayX implements IExpression {
   /** @var KeyValue[] */
   protected $items;
   /** @var int */

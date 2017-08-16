@@ -2,7 +2,7 @@
 
 namespace machbarmacher\localsettings;
 
-use machbarmacher\localsettings\RenderPhp\PhpArray;
+use machbarmacher\localsettings\RenderPhp\ArrayX;
 use machbarmacher\localsettings\RenderPhp\StringDoubleQuoted;
 use machbarmacher\localsettings\RenderPhp\PhpFile;
 use machbarmacher\localsettings\Tools\Replacements;
@@ -73,7 +73,7 @@ class InstallationsGlobber extends AbstractDeclaration {
 
     $is_local = $this->getLocalServerCheck();
     // If nonlocal, add default installations.
-    $default_installations = PhpArray::fromLiteral($this->default_installations);
+    $default_installations = ArrayX::fromLiteral($this->default_installations);
     $default_installations->setMultiline(FALSE);
     $docroot_glob_pattern = $this->docrootPatternForGlob();
     $php->addRawStatement("\$docroots = ($is_local) ?");
