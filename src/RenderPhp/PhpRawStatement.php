@@ -2,6 +2,6 @@
 
 namespace machbarmacher\localsettings\RenderPhp;
 
-class PhpRawStatement extends AbstractPhpRaw implements IPhpStatement {
+class PhpRawStatement extends AbstractPhpRaw implements IStatement {
 
 }

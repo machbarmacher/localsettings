@@ -3,11 +3,11 @@
 namespace machbarmacher\localsettings;
 
 use machbarmacher\localsettings\RenderPhp\IStringExpression;
-use machbarmacher\localsettings\RenderPhp\PhpConcat;
-use machbarmacher\localsettings\RenderPhp\PhpDoubleQuotedString;
+use machbarmacher\localsettings\RenderPhp\StringConcat;
+use machbarmacher\localsettings\RenderPhp\StringDoubleQuoted;
 use machbarmacher\localsettings\RenderPhp\PhpFile;
-use machbarmacher\localsettings\RenderPhp\PhpLiteralValue;
-use machbarmacher\localsettings\RenderPhp\PhpSingleQuotedString;
+use machbarmacher\localsettings\RenderPhp\LiteralValue;
+use machbarmacher\localsettings\RenderPhp\StringSingleQuoted;
 use machbarmacher\localsettings\Tools\DbCredentialTools;
 use machbarmacher\localsettings\Tools\Replacements;
 
@@ -217,8 +217,8 @@ abstract class AbstractDeclaration implements IDeclaration {
   public function compileEnvironmentInfo(PhpFile $php, Replacements $replacements) {
     $settings_variable = $this->project->getSettingsVariable();
 
-    $environmentNameX = new PhpSingleQuotedString($this->getEnvironmentName());
-    $uniqueSiteNameX = new PhpDoubleQuotedString($replacements->apply($this->getUniqueSiteNameWithReplacements()));
+    $environmentNameX = new StringSingleQuoted($this->getEnvironmentName());
+    $uniqueSiteNameX = new StringDoubleQuoted($replacements->apply($this->getUniqueSiteNameWithReplacements()));
     $installationSuffixX = $this->makeInstallationSuffixExpressionForSettings();
     $installationExpression = $this->makeInstallationExpressionForSettings();
     // Note: InstallationGlobber uses suffix in installation expression,
@@ -256,33 +256,33 @@ EOD
     // Add single site aliases.
     foreach ($this->site_uris as $site => $uris) {
       $alias = [];
-      $aliasNameX = $multisite ? new PhpConcat($aliasBaseX, new PhpSingleQuotedString(".$site")) : $aliasBaseX;
+      $aliasNameX = $multisite ? new StringConcat($aliasBaseX, new StringSingleQuoted(".$site")) : $aliasBaseX;
       $replacements->register('{{site}}', $site);
       // @todo DQ only if variable.
-      $uniqueSiteNameX = new PhpDoubleQuotedString($replacements->apply($this->getUniqueSiteNameWithReplacements()));
-      $uriX = new PhpDoubleQuotedString($replacements->apply($uris[0]));
+      $uniqueSiteNameX = new StringDoubleQuoted($replacements->apply($this->getUniqueSiteNameWithReplacements()));
+      $uriX = new StringDoubleQuoted($replacements->apply($uris[0]));
       if ($this->drush_environment_variables) {
         $alias['#env-vars'] = $this->drush_environment_variables;
       }
       $this->server->alterAlias($alias);
       if ($alias) {
-        $aliasExpression = new PhpLiteralValue($alias);
+        $aliasExpression = new LiteralValue($alias);
         $php->addRawStatement("  \$aliases[$aliasNameX] = $aliasExpression;");
       }
       $php->addRawStatement("  \$aliases[$aliasNameX]['root'] = $docrootX;");
       $php->addRawStatement("  \$aliases[$aliasNameX]['uri'] = $uriX;");
-      $hostX = new PhpSingleQuotedString($this->server->getHost());
+      $hostX = new StringSingleQuoted($this->server->getHost());
       $php->addRawStatement("  \$aliases[$aliasNameX]['remote-host'] = $hostX;");
-      $userX = new PhpSingleQuotedString($this->server->getUser());
+      $userX = new StringSingleQuoted($this->server->getUser());
       $php->addRawStatement("  \$aliases[$aliasNameX]['remote-user'] = $userX;");
       $php->addRawStatement("  \$aliases[$aliasNameX]['#unique_site_name'] = $uniqueSiteNameX;");
       if ($multisite) {
-        $atAliasNameX = new PhpConcat(new PhpSingleQuotedString('@'), $aliasNameX);
+        $atAliasNameX = new StringConcat(new StringSingleQuoted('@'), $aliasNameX);
         $php->addRawStatement("\$aliases[\"$aliasBaseX\"]['site-list'][] = $atAliasNameX;");
       }
     }
     if ($this->environment_name !== $aliasBaseX->getString()) {
-      $atAliasX = new PhpConcat(new PhpSingleQuotedString('@'), $aliasBaseX);
+      $atAliasX = new StringConcat(new StringSingleQuoted('@'), $aliasBaseX);
       $php->addRawStatement("\$aliases['$this->environment_name']['site-list'][] = {$atAliasX};");
     }
   }

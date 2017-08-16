@@ -4,7 +4,7 @@ namespace machbarmacher\localsettings;
 
 use machbarmacher\localsettings\RenderPhp\PhpFile;
 use machbarmacher\localsettings\RenderPhp\PhpRawStatement;
-use machbarmacher\localsettings\RenderPhp\PhpStatements;
+use machbarmacher\localsettings\RenderPhp\Statements;
 
 class CompileAliases {
 
@@ -18,7 +18,7 @@ class CompileAliases {
       $check = $declaration->getServer()->getLocalServerCheck("\$alias['remote-host']", "\$alias['remote-user']");
       $local_server_checks[$check] = $check;
     }
-    $local_server_check_statements = new PhpStatements();
+    $local_server_check_statements = new Statements();
     foreach ($local_server_checks as $local_server_check) {
       $local_server_check_statements->addStatement(new PhpRawStatement(
         "  \$is_local = \$is_local || ($local_server_check);"

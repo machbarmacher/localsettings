@@ -4,6 +4,6 @@
 namespace machbarmacher\localsettings\RenderPhp;
 
 
-interface IPhpExpression extends IPhpRenderable {
+interface IExpression extends IRenderable {
 
 }

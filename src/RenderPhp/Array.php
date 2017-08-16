@@ -2,19 +2,19 @@
 
 namespace machbarmacher\localsettings\RenderPhp;
 
-use machbarmacher\localsettings\RenderPhp\PhpKeyValue;
+use machbarmacher\localsettings\RenderPhp\KeyValue;
 
-class PhpArray implements IPhpExpression {
-  /** @var PhpKeyValue[] */
+class PhpArray implements IExpression {
+  /** @var KeyValue[] */
   protected $items;
   /** @var int */
   protected $autokey = 0;
   /** @var bool */
   protected $multiline = TRUE;
 
-  public function addItem(IPhpExpression $value, IPhpExpression $key = NULL) {
+  public function addItem(IExpression $value, IExpression $key = NULL) {
     // Do some magick to omit consecutive integer keys.
-    if ($key instanceof PhpLiteralValue) {
+    if ($key instanceof LiteralValue) {
       $key_value = $key->getValue();
       // Check if key is next_int or its string representation.
       if (is_numeric($key_value) && $key_value == $this->autokey) {
@@ -22,7 +22,7 @@ class PhpArray implements IPhpExpression {
         $this->autokey += 1;
       }
     }
-    $this->items[] = new PhpKeyValue($value, $key);
+    $this->items[] = new KeyValue($value, $key);
   }
 
   /**
@@ -30,7 +30,7 @@ class PhpArray implements IPhpExpression {
    * @param mixed $key
    */
   public function addLiteralItem($value, $key) {
-    $this->addItem(new PhpLiteralValue($value), new PhpLiteralValue($key));
+    $this->addItem(new LiteralValue($value), new LiteralValue($key));
   }
 
   public static function fromLiteral($array) {

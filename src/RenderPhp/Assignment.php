@@ -2,7 +2,7 @@
 
 namespace machbarmacher\localsettings\RenderPhp;
 
-class PhpAssignment implements IPhpStatement {
+class Assignment implements IStatement {
   /** @var string */
   protected $variable;
   /** @var mixed */

@@ -10,18 +10,18 @@ namespace machbarmacher\localsettings\RenderPhp;
  * @todo Consider using symfony AST generator or zend\code.
  */
 class PhpFile {
-  /** @var PhpStatements */
+  /** @var Statements */
   protected $statements;
 
   /**
    * PhpFile constructor.
    */
   public function __construct() {
-    $this->statements = new PhpStatements();
+    $this->statements = new Statements();
   }
 
   /**
-   * @return \machbarmacher\localsettings\RenderPhp\PhpStatements
+   * @return \machbarmacher\localsettings\RenderPhp\Statements
    */
   public function getLines() {
     return $this->statements;
@@ -32,10 +32,10 @@ class PhpFile {
   }
 
   /**
-   * @param \machbarmacher\localsettings\RenderPhp\IPhpStatement $statement
+   * @param \machbarmacher\localsettings\RenderPhp\IStatement $statement
    * @return $this
    */
-  public function addStatement(IPhpStatement $statement) {
+  public function addStatement(IStatement $statement) {
     $this->statements->addStatement($statement);
     return $this;
   }

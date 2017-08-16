@@ -6,14 +6,14 @@
 namespace machbarmacher\localsettings;
 
 use machbarmacher\localsettings\RenderPhp\PhpFile;
-use machbarmacher\localsettings\RenderPhp\PhpSingleQuotedString;
+use machbarmacher\localsettings\RenderPhp\StringSingleQuoted;
 use machbarmacher\localsettings\Tools\Replacements;
 
 class Installation extends AbstractDeclaration implements IDeclaration {
   public function compileAliases(PhpFile $php) {
     $this->compileAlias($php, new Replacements(),
-      new PhpSingleQuotedString($this->declaration_name),
-      new PhpSingleQuotedString($this->docroot));
+      new StringSingleQuoted($this->declaration_name),
+      new StringSingleQuoted($this->docroot));
   }
 
   public function isCurrent() {
@@ -21,12 +21,12 @@ class Installation extends AbstractDeclaration implements IDeclaration {
   }
 
   protected function makeInstallationExpressionForSettings() {
-    return new PhpSingleQuotedString($this->declaration_name);
+    return new StringSingleQuoted($this->declaration_name);
   }
 
   protected function makeInstallationSuffixExpressionForSettings() {
     $suffix = substr($this->declaration_name, strlen($this->environment_name) + 1);
-    return new PhpSingleQuotedString($suffix);
+    return new StringSingleQuoted($suffix);
   }
 
 }

@@ -23,11 +23,11 @@ abstract class AbstractStringExpression implements IStringExpression {
   }
 
   /**
-   * @param $preg_replacements
+   * @param $replacements
    * @return mixed
    */
-  protected function replacedString($preg_replacements) {
-    return preg_replace(array_keys($preg_replacements), $preg_replacements, $this->string);
+  protected function replacedString($replacements) {
+    return str_replace(array_keys($replacements), $replacements, $this->string);
   }
 
 }

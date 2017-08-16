@@ -4,6 +4,6 @@
 namespace machbarmacher\localsettings\RenderPhp;
 
 
-interface IPhpStatements extends IPhpStatement {
+interface IStatements extends IStatement {
   public function getStatements();
 }

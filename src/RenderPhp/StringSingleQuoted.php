@@ -2,7 +2,7 @@
 
 namespace machbarmacher\localsettings\RenderPhp;
 
-class PhpSingleQuotedString extends AbstractStringExpression {
+class StringSingleQuoted extends AbstractStringExpression {
 
   public function __toString() {
     $replacements = ["'" => "\'", '\\' => '\\\\'];
@@ -11,11 +11,11 @@ class PhpSingleQuotedString extends AbstractStringExpression {
   }
 
   /**
-   * @return \machbarmacher\localsettings\RenderPhp\PhpDoubleQuotedString
+   * @return \machbarmacher\localsettings\RenderPhp\StringDoubleQuoted
    */
   public function makeDoubleQuoted() {
     $string = $this->replacedString(['$' => '\$', '{' => '\{']);
-    return new PhpDoubleQuotedString($string);
+    return new StringDoubleQuoted($string);
   }
 
   public function isDoubleQuoted() {

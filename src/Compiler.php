@@ -10,11 +10,11 @@ use machbarmacher\localsettings\Commands\Commands;
 use machbarmacher\localsettings\Commands\EnsureDirectory;
 use machbarmacher\localsettings\Commands\Symlink;
 use machbarmacher\localsettings\Commands\WriteFile;
-use machbarmacher\localsettings\RenderPhp\PhpAssignment;
+use machbarmacher\localsettings\RenderPhp\Assignment;
 use machbarmacher\localsettings\RenderPhp\PhpFile;
-use machbarmacher\localsettings\RenderPhp\PhpIf;
+use machbarmacher\localsettings\RenderPhp\IfThen;
 use machbarmacher\localsettings\RenderPhp\PhpRawStatement;
-use machbarmacher\localsettings\RenderPhp\PhpStatements;
+use machbarmacher\localsettings\RenderPhp\Statements;
 use machbarmacher\localsettings\Tools\IncludeTool;
 use machbarmacher\localsettings\Tools\Replacements;
 

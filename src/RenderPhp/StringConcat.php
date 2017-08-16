@@ -2,7 +2,7 @@
 
 namespace machbarmacher\localsettings\RenderPhp;
 
-class PhpConcat implements IStringExpression {
+class StringConcat implements IStringExpression {
   /** @var IStringExpression[] */
   protected $parts = [];
 
@@ -27,7 +27,7 @@ class PhpConcat implements IStringExpression {
   }
 
   public function isDoubleQuoted() {
-    return $this->combine() instanceof PhpDoubleQuotedString;
+    return $this->combine() instanceof StringDoubleQuoted;
   }
 
   /**
@@ -39,7 +39,7 @@ class PhpConcat implements IStringExpression {
       if ($part instanceof IStringLiteral) {
         $flattenedParts[] = $part;
       }
-      elseif ($part instanceof PhpConcat) {
+      elseif ($part instanceof StringConcat) {
         $flattenedParts = array_merge($flattenedParts, $part->flattenedParts());
       }
       else {
@@ -50,27 +50,27 @@ class PhpConcat implements IStringExpression {
   }
 
   /**
-   * @return \machbarmacher\localsettings\RenderPhp\IStringLiteral|\machbarmacher\localsettings\RenderPhp\PhpDoubleQuotedString|\machbarmacher\localsettings\RenderPhp\PhpSingleQuotedString|mixed
+   * @return \machbarmacher\localsettings\RenderPhp\IStringLiteral|\machbarmacher\localsettings\RenderPhp\StringDoubleQuoted|\machbarmacher\localsettings\RenderPhp\StringSingleQuoted|mixed
    */
   protected function combine() {
     $parts = $this->flattenedParts();
     if (!$parts) {
-      $result = new PhpSingleQuotedString('');
+      $result = new StringSingleQuoted('');
     }
     else {
       $result = array_shift($parts);
       foreach ($parts as $part) {
-        if ($result instanceof PhpSingleQuotedString && $part instanceof PhpSingleQuotedString) {
-          $result = new PhpSingleQuotedString($result->getString() . $part->getString());
+        if ($result instanceof StringSingleQuoted && $part instanceof StringSingleQuoted) {
+          $result = new StringSingleQuoted($result->getString() . $part->getString());
         }
         else {
-          if ($result instanceof PhpSingleQuotedString) {
+          if ($result instanceof StringSingleQuoted) {
             $result = $result->makeDoubleQuoted();
           }
-          if ($part instanceof PhpSingleQuotedString) {
+          if ($part instanceof StringSingleQuoted) {
             $part = $part->makeDoubleQuoted();
           }
-          $result = new PhpDoubleQuotedString($result->getString() . $part->getString());
+          $result = new StringDoubleQuoted($result->getString() . $part->getString());
         }
       }
     }

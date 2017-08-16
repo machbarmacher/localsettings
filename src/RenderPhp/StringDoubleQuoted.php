@@ -2,7 +2,7 @@
 
 namespace machbarmacher\localsettings\RenderPhp;
 
-class PhpDoubleQuotedString extends AbstractStringExpression {
+class StringDoubleQuoted extends AbstractStringExpression {
 
   public function __toString() {
     $replacements = ['"' => '\"', '\\' => '\\\\'];

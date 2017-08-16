@@ -3,7 +3,7 @@
 namespace machbarmacher\localsettings;
 
 use machbarmacher\localsettings\RenderPhp\PhpArray;
-use machbarmacher\localsettings\RenderPhp\PhpDoubleQuotedString;
+use machbarmacher\localsettings\RenderPhp\StringDoubleQuoted;
 use machbarmacher\localsettings\RenderPhp\PhpFile;
 use machbarmacher\localsettings\Tools\Replacements;
 
@@ -31,7 +31,7 @@ class InstallationsGlobber extends AbstractDeclaration {
   }
 
   protected function makeInstallationExpressionForSettings() {
-    return new PhpDoubleQuotedString("$this->declaration_name-\$installation_suffix") ;
+    return new StringDoubleQuoted("$this->declaration_name-\$installation_suffix") ;
   }
 
   protected function makeInstallationSuffixExpressionForSettings() {
@@ -88,8 +88,8 @@ class InstallationsGlobber extends AbstractDeclaration {
     $replacements->register('{{installation-suffix}}', '{$installation_suffix}');
     $replacements->register('{{installation}}', '{$installation}');
 
-    $aliasBaseX = new PhpDoubleQuotedString("{$this->declaration_name}-\$installation");
-    $docrootX = new PhpDoubleQuotedString('$docroot');
+    $aliasBaseX = new StringDoubleQuoted("{$this->declaration_name}-\$installation");
+    $docrootX = new StringDoubleQuoted('$docroot');
 
     $this->compileAlias($php, $replacements, $aliasBaseX, $docrootX);
 
