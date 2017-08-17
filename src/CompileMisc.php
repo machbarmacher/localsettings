@@ -102,7 +102,7 @@ EOD
         [$declaration_name] = "settings.generated.declaration.$declaration_name.php";
       // Custom settings and htaccess go by environment.
       $environment_name = $declaration->getEnvironmentName();
-      $env_specific_files['docroot/.htaccess'][$environment_name] = ".htaccess.environment.$environment_name";
+      $env_specific_files['docroot/.htaccess'][$declaration_name] = ".htaccess.environment.$environment_name";
       $env_specific_files['localsettings/settings.custom.environment.THIS.php']
         [$declaration_name] = "settings.custom.environment.$environment_name.php";
     }
