@@ -154,7 +154,9 @@ class Compiler {
       $commands->add(new WriteFile('../localsettings/settings.custom.initial.php', $php));
     }
 
-    $commands->add(new WriteFile('../localsettings/settings.custom.additional.php', new PhpFile()));
+    if (!file_exists('../localsettings/settings.custom.additional.php')) {
+      $commands->add(new WriteFile('../localsettings/settings.custom.additional.php', new PhpFile()));
+    }
 
     // Write aliases.drushrc.php alias
     $aliases_file_location = $this->project->isD7() ?
@@ -168,7 +170,9 @@ class Compiler {
 
     // Write settings.custom.environment.*.php
     foreach ($this->project->getEnvironmentNames() as $environment_name) {
-      $commands->add(new WriteFile("../localsettings/settings.custom.environment.$environment_name.php", new PhpFile()));
+      if (!file_exists("../localsettings/settings.custom.environment.$environment_name.php")) {
+        $commands->add(new WriteFile("../localsettings/settings.custom.environment.$environment_name.php", new PhpFile()));
+      }
     }
 
     CompileMisc::writeSettings($commands, $drupal_major_version);
