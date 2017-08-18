@@ -159,7 +159,7 @@ use machbarmacher\localsettings\ServerType\UberspaceServer;
 
 // TODO: Adjust, then run "drush ls2/3/4".
 
-$project = new Project(8);
+$project = new Project(7\8);
 
 // Add all installations that match a docroot pattern.
 $project->globInstallations('dev', new UberspaceServer('HOST', 'USER'))
