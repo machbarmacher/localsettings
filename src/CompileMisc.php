@@ -117,7 +117,7 @@ EOD
 
   public static function writeGitignoreForComposer(Commands $commands) {
     $commands->add(new WriteFile('../.gitignore', <<<EOD
-.git
+.git/
 # Ignore paths that are symlinked per environment.
 /localsettings/settings.generated.declaration.THIS.php
 /localsettings/settings.custom.environment.THIS.php
