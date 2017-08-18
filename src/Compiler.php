@@ -142,7 +142,7 @@ class Compiler {
       $multisite = count($siteUris) > 1;
       foreach ($siteUris as $site => $_) {
         $settings_php = file_get_contents("sites/$site/settings.php");
-        $settings_php = preg_replace("/<?php\s*/\n", '', $settings_php);
+        $settings_php = preg_replace("/^<\?php\s*/\n", '', $settings_php);
         if ($multisite) {
           $php->addRawStatement("if (\$site === '$site') {");
         }
