@@ -115,6 +115,18 @@ class Compiler {
   public function scaffold(Commands $commands, $current_declaration_name) {
     // Step 3
     $drupal_major_version = $this->getProject()->getDrupalMajorVersion();
+
+    // Drupal composer project uses web directory like symfony,
+    // so we always ensure a docroot symlink.
+    if (!file_exists('../docroot')) {
+      if (is_dir('../web')) {
+        $commands->add(new Symlink('../docroot', 'web'));
+      }
+      else {
+        throw new \Exception('Found neither docroot nor web directory.');
+      }
+    }
+
     $current_declaration = $this->project->getDeclaration($current_declaration_name);
 
     foreach ($this->project->getEnvironmentNames() as $environment_name) {
@@ -123,10 +135,6 @@ class Compiler {
     $commands->add(new EnsureDirectory("../localsettings/crontab.d/common"));
     $commands->add(new WriteFile("../localsettings/crontab.d/common/50-cron",
       "0 * * * * drush -r \$DRUPAL_ROOT cron -y\n"));
-
-    if (!file_exists('../docroot') && is_dir('../web')) {
-      $commands->add(new Symlink('docroot', 'web'));
-    }
 
     if ($drupal_major_version != 7) {
       $commands->add(new WriteFile('../config-sync/.gitkeep', ''));
@@ -141,7 +149,9 @@ class Compiler {
       $siteUris = $current_declaration->getSiteUris();
       $multisite = count($siteUris) > 1;
       foreach ($siteUris as $site => $_) {
-        $settings_php = file_get_contents("sites/$site/settings.php");
+        $settings_php = file_exists("sites/$site/settings.php") ?
+          file_get_contents("sites/$site/settings.php") :
+          file_get_contents("sites/default/example.settings.php");
         $settings_php = preg_replace("/^<\?php\s*/\n", '', $settings_php);
         if ($multisite) {
           $php->addRawStatement("if (\$site === '$site') {");
