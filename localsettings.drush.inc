@@ -179,8 +179,7 @@ function drush_localsettings_post_clone() {
 }
 
 function drush_localsettings_activate_validate($site = 'default') {
-  return is_file("sites/$site/settings.php")
-    && _localsettings_autoload();
+  return _localsettings_autoload();
 }
 
 
