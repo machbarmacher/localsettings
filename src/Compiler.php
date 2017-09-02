@@ -102,7 +102,7 @@ class Compiler {
 
     // Generate settings.generated.additional.php
     $php = new PhpFile();
-    CompileSettings::addAdditionalSettings($php, $replacements, $this->project);
+    CompileSettings::addAdditionalSettings($php, $replacementsInitial, $this->project);
     $commands->add(new WriteFile("../localsettings/settings.generated.additional.php", $php));
   }
 
