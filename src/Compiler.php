@@ -121,7 +121,7 @@ class Compiler {
     if (!file_exists('../docroot')) {
       if (is_dir('../web')) {
         // We need the symlink later.
-        (new Symlink('../docroot', 'web'))->execute($results);
+        (new Symlink('../docroot', 'web'))->execute();
       }
       else {
         throw new \Exception('Found neither docroot nor web directory.');

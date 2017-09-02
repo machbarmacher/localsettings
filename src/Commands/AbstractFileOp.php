@@ -18,7 +18,7 @@ abstract class AbstractFileOp implements CommandInterface {
   }
 
 
-  public function execute(array &$results, $simulate = FALSE) {
+  public function execute(array &$results = [], $simulate = FALSE) {
     $results[$this->filename] = $this->getContent();
     if (!$simulate) {
       $dirname = dirname($this->filename);

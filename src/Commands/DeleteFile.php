@@ -18,7 +18,7 @@ class DeleteFile implements CommandInterface {
 
   use FileExistsTrait;
 
-  public function execute(array &$results, $simulate = FALSE) {
+  public function execute(array &$results = [], $simulate = FALSE) {
 
     if (!$simulate) {
       if ($this->checkSourceDoesExist($this->filename)) {

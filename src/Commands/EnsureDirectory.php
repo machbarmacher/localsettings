@@ -21,7 +21,7 @@ class EnsureDirectory implements CommandInterface {
   }
 
 
-  public function execute(array &$results, $simulate = FALSE) {
+  public function execute(array &$results = [], $simulate = FALSE) {
     $results[$this->dirname] = '<DIR>';
     if (!$simulate) {
       // Assure directory is there.

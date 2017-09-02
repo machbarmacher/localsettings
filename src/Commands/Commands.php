@@ -12,7 +12,7 @@ class Commands implements CommandInterface {
     $this->commands[] = $command;
   }
 
-  public function execute(array &$results, $simulate = FALSE) {
+  public function execute(array &$results = [], $simulate = FALSE) {
     foreach ($this->commands as $command) {
       $command->execute($results, $simulate);
     }

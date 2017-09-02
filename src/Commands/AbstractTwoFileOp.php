@@ -22,6 +22,6 @@ abstract class AbstractTwoFileOp implements CommandInterface {
     $this->target = $target;
   }
 
-  abstract public function execute(array &$results, $simulate = FALSE);
+  abstract public function execute(array &$results = [], $simulate = FALSE);
   
 }

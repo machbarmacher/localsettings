@@ -6,7 +6,7 @@ namespace machbarmacher\localsettings\Commands;
 
 class CopyFile extends AbstractTwoFileOp implements CommandInterface {
 
-  public function execute(array &$results, $simulate = FALSE) {
+  public function execute(array &$results = [], $simulate = FALSE) {
     if (!$simulate) {
       copy($this->source, $this->target);
     }

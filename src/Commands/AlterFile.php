@@ -13,7 +13,7 @@ class AlterFile extends AbstractTwoFileOp implements CommandInterface {
     $this->callback = $callback;
   }
 
-  public function execute(array &$results, $simulate = FALSE) {
+  public function execute(array &$results = [], $simulate = FALSE) {
     $source_contents = file_get_contents($this->source);
     $target_contents = call_user_func($this->callback, $source_contents);
     if (!$simulate) {
