@@ -120,7 +120,8 @@ class Compiler {
     // so we always ensure a docroot symlink.
     if (!file_exists('../docroot')) {
       if (is_dir('../web')) {
-        $commands->add(new Symlink('../docroot', 'web'));
+        // We need the symlink later.
+        (new Symlink('../docroot', 'web'))->execute($results);
       }
       else {
         throw new \Exception('Found neither docroot nor web directory.');
@@ -151,7 +152,7 @@ class Compiler {
       foreach ($siteUris as $site => $_) {
         $settings_php = file_exists("sites/$site/settings.php") ?
           file_get_contents("sites/$site/settings.php") :
-          file_get_contents("sites/default/example.settings.php");
+          file_get_contents("sites/default/default.settings.php");
         $settings_php = preg_replace("/^<\?php\s*/\n", '', $settings_php);
         if ($multisite) {
           $php->addRawStatement("if (\$site === '$site') {");
