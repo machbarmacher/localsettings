@@ -139,7 +139,7 @@ EOD
   }
 
   public function getLocalServerCheck($host_expression, $user_expression) {
-    return "file_exists('/srv/www/freistilbox') && preg_match('/.freistilbox.net\\\$/', $host_expression) && (getenv('USER') ?: getenv('LOGNAME')) == $user_expression";
+    return "file_exists('/srv/www/freistilbox') && preg_match('/\\.freistilbox\\.net$/', $host_expression) && (getenv('USER') ?: getenv('LOGNAME')) == $user_expression";
   }
 
 }
