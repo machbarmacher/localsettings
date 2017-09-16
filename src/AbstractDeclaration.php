@@ -134,18 +134,8 @@ abstract class AbstractDeclaration implements IDeclaration {
     $this->drush_environment_variables[$name] = $value;
   }
 
-  /**
-   * @return string
-   */
-  protected function getLocalServerCheck() {
-    $host = $this->server->getHost();
-    $user = $this->server->getUser();
-    $is_local = $this->server->getLocalServerCheck("'$host'", "'$user'");
-    return $is_local;
-  }
-
   public function isLocal() {
-    return eval('return ' . $this->getLocalServerCheck() . ';');
+    return eval('return ' . $this->server->getRuntimeIsLocalCheck() . ';');
   }
 
   public function alterHtaccess($content) {

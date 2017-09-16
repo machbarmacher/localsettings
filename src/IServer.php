@@ -24,5 +24,5 @@ interface IServer {
   public function addEnvironmentSpecificSettings(PhpFile $php, Replacements $replacements, IDeclaration $declaration);
   public function addServerSpecificSettings(PhpFile $php, Project $project);
   public function alterAlias(array &$alias);
-  public function getLocalServerCheck($host_expression, $user_expression);
+  public function getRuntimeIsLocalCheck();
 }

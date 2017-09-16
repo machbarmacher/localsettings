@@ -72,7 +72,7 @@ class InstallationsGlobber extends AbstractDeclaration {
     $php->addRawStatement('');
     $php->addRawStatement("// Declaration: $this->declaration_name");
 
-    $is_local = $this->getLocalServerCheck();
+    $is_local = $this->server->getRuntimeIsLocalCheck();
     // If nonlocal, add default installations.
     $default_installations = ArrayX::fromLiteral($this->default_installations);
     $default_installations->setMultiline(FALSE);

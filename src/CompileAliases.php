@@ -15,7 +15,7 @@ class CompileAliases {
   public static function addAliasAlterCode(PhpFile $php, $declarations) {
     $local_server_checks = [];
     foreach ($declarations as $declaration) {
-      $check = $declaration->getServer()->getLocalServerCheck("\$alias['remote-host']", "\$alias['remote-user']");
+      $check = $declaration->getServer()->getRuntimeIsLocalCheck("\$alias['remote-host']", "\$alias['remote-user']");
       $local_server_checks[$check] = $check;
     }
     $local_server_check_statements = new Statements();

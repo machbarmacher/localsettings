@@ -10,6 +10,7 @@ use machbarmacher\localsettings\Installation;
 use machbarmacher\localsettings\IDeclaration;
 use machbarmacher\localsettings\Project;
 use machbarmacher\localsettings\RenderPhp\PhpFile;
+use machbarmacher\localsettings\RenderPhp\StringSingleQuoted;
 use machbarmacher\localsettings\ServerBase;
 use machbarmacher\localsettings\IServer;
 
@@ -138,7 +139,9 @@ EOD
     $alias['cname'] = $this->cluster . '-1.freistilbox.net';
   }
 
-  public function getLocalServerCheck($host_expression, $user_expression) {
+  public function getRuntimeIsLocalCheck() {
+    $host_expression = new StringSingleQuoted($this->getHost());
+    $user_expression = new StringSingleQuoted($this->getUser());
     return "file_exists('/srv/www/freistilbox') && preg_match('/\\.freistilbox\\.net$/', $host_expression) && (getenv('USER') ?: getenv('LOGNAME')) == $user_expression";
   }
 

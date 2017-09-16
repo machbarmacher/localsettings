@@ -7,6 +7,7 @@ namespace machbarmacher\localsettings;
 
 
 use machbarmacher\localsettings\RenderPhp\PhpFile;
+use machbarmacher\localsettings\RenderPhp\StringSingleQuoted;
 use machbarmacher\localsettings\Tools\Replacements;
 
 abstract class ServerBase implements IServer {
@@ -61,7 +62,9 @@ EOD
   public function alterAlias(array &$alias) {
   }
 
-  public function getLocalServerCheck($host_expression, $user_expression) {
+  public function getRuntimeIsLocalCheck() {
+    $host_expression = new StringSingleQuoted($this->getHost());
+    $user_expression = new StringSingleQuoted($this->getUser());
     return "gethostname() == $host_expression && get_current_user() == $user_expression";
   }
 
