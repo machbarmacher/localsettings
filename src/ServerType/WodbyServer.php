@@ -2,6 +2,7 @@
 
 namespace machbarmacher\localsettings\ServerType;
 
+use machbarmacher\localsettings\IDeclaration;
 use machbarmacher\localsettings\Project;
 use machbarmacher\localsettings\RenderPhp\PhpFile;
 use machbarmacher\localsettings\ServerBase;
@@ -54,6 +55,11 @@ class WodbyServer extends ServerBase {
 
   public function getUniqueAccountName() {
     return $this->getHost();
+  }
+
+  public function getUniqueInstallationName(IDeclaration $declaration) {
+    // Docroot does not matter here.
+    return $this->getUniqueAccountName();
   }
 
   /**
