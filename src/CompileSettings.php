@@ -3,6 +3,9 @@
 namespace machbarmacher\localsettings;
 
 use machbarmacher\localsettings\RenderPhp\PhpFile;
+use machbarmacher\localsettings\RenderPhp\StringConcat;
+use machbarmacher\localsettings\RenderPhp\StringDoubleQuoted;
+use machbarmacher\localsettings\RenderPhp\StringSingleQuoted;
 use machbarmacher\localsettings\Tools\Replacements;
 
 class CompileSettings {
@@ -24,30 +27,35 @@ EOD
     $is_d7 = $project->isD7();
     $settings_variable = $project->getSettingsVariable();
 
-    $tmp_path_quoted = "\"../tmp/\$site\"";
-    $private_path_quoted = "\"../private/\$site\"";
+    $siteSuffixX = new StringDoubleQuoted('/\$site');
+    $tmpDirX = new StringSingleQuoted('../tmp');
+    $tmpPathX = new StringConcat($tmpDirX, $siteSuffixX);
+    $privDirX = new StringSingleQuoted('../private');
+    $privPathX = new StringConcat($privDirX, $siteSuffixX);
 
     $php->addRawStatement(<<<EOD
 {$settings_variable}['file_public_path'] = "sites/\$site/files";
 
-if (!file_exists({$private_path_quoted})) { mkdir({$private_path_quoted}); }    
-{$settings_variable}['file_private_path'] = {$private_path_quoted};
+if (!file_exists($privDirX)) { mkdir($privDirX); }
+if (!file_exists($privPathX)) { mkdir($privPathX); }
+{$settings_variable}['file_private_path'] = $privPathX;
 
-if (!file_exists({$tmp_path_quoted})) { mkdir({$tmp_path_quoted}); }   
+if (!file_exists($tmpDirX)) { mkdir($tmpDirX); }
+if (!file_exists($tmpPathX)) { mkdir($tmpPathX); }
 EOD
     );
 
     // @fixme Add unique name method and tokens.
     if ($is_d7) {
       $php->addRawStatement(<<<EOD
-\$conf['file_temporary_path'] = {$tmp_path_quoted};
+\$conf['file_temporary_path'] = $tmpPathX;
 EOD
       );
     }
     else {
       $php->addRawStatement(<<<EOD
 global \$config;
-\$config['system.file']['path']['temporary'] = {$tmp_path_quoted};
+\$config['system.file']['path']['temporary'] = $tmpPathX;
 
 global \$config_directories;
 \$config_directories[CONFIG_SYNC_DIRECTORY] = '../config-sync';
