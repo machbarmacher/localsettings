@@ -27,7 +27,7 @@ EOD
     $is_d7 = $project->isD7();
     $settings_variable = $project->getSettingsVariable();
 
-    $siteSuffixX = new StringDoubleQuoted('/\$site');
+    $siteSuffixX = new StringDoubleQuoted('/$site');
     $tmpDirX = new StringSingleQuoted('../tmp');
     $tmpPathX = new StringConcat($tmpDirX, $siteSuffixX);
     $privDirX = new StringSingleQuoted('../private');
