@@ -13,31 +13,12 @@ class CompileAliases {
    * @param \machbarmacher\localsettings\IDeclaration[] $declarations
    */
   public static function addAliasAlterCode(PhpFile $php, $declarations) {
-    $local_server_checks = [];
-    foreach ($declarations as $declaration) {
-      $check = $declaration->getServer()->getRuntimeIsLocalCheck("\$alias['remote-host']", "\$alias['remote-user']");
-      $local_server_checks[$check] = $check;
-    }
-    $local_server_check_statements = new Statements();
-    foreach ($local_server_checks as $local_server_check) {
-      $local_server_check_statements->addStatement(new PhpRawStatement(
-        "  \$is_local = \$is_local || ($local_server_check);"
-      ));
-    }
-
     $php->addRawStatement(<<<EOD
 
 // Alter local aliases and add @this-installation here as the drush alter hook is broken. 
 \$current_sites = \$local_sites = [];
 foreach (\$aliases as \$alias_name => &\$alias) {
-  if (!isset(\$alias['remote-host']) || !isset(\$alias['remote-user'])) {
-    continue;
-  }
-  \$is_local = FALSE;
-$local_server_check_statements
-  if (\$is_local) {
-    unset(\$alias['remote-host']);
-    unset(\$alias['remote-user']);
+  if (!isset(\$alias['remote-host'])) {
     \$local_sites["@\$alias_name"] = \$alias;
   }
 

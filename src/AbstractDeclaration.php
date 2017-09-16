@@ -243,6 +243,7 @@ EOD
     $php->addRawStatement('');
     $php->addRawStatement("// Declaration: $this->declaration_name");
     $multisite = count($this->site_uris) !== 1;
+    $isLocalCheck = $this->server->getRuntimeIsLocalCheck();
     // Add single site aliases.
     foreach ($this->site_uris as $site => $uris) {
       $alias = [];
@@ -261,10 +262,12 @@ EOD
       }
       $php->addRawStatement("  \$aliases[$aliasNameX]['root'] = $docrootX;");
       $php->addRawStatement("  \$aliases[$aliasNameX]['uri'] = $uriX;");
+      $php->addRawStatement("  if (!($isLocalCheck)) {");
       $hostX = new StringSingleQuoted($this->server->getHost());
-      $php->addRawStatement("  \$aliases[$aliasNameX]['remote-host'] = $hostX;");
+      $php->addRawStatement("    \$aliases[$aliasNameX]['remote-host'] = $hostX;");
       $userX = new StringSingleQuoted($this->server->getUser());
-      $php->addRawStatement("  \$aliases[$aliasNameX]['remote-user'] = $userX;");
+      $php->addRawStatement("    \$aliases[$aliasNameX]['remote-user'] = $userX;");
+      $php->addRawStatement("  }");
       $php->addRawStatement("  \$aliases[$aliasNameX]['#unique_site_name'] = $uniqueSiteNameX;");
       if ($multisite) {
         $atAliasNameX = new StringConcat(new StringSingleQuoted('@'), $aliasNameX);
