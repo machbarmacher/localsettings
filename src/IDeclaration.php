@@ -36,6 +36,11 @@ interface IDeclaration {
   public function getEnvironmentName();
 
   /**
+   * @param string $environment_name
+   */
+  public function setEnvironmentName($environment_name);
+
+  /**
    * @return \machbarmacher\localsettings\Project
    */
   public function getProject();
