@@ -104,6 +104,9 @@ class Compiler {
     $php = new PhpFile();
     CompileSettings::addAdditionalSettings($php, $replacementsInitial, $this->project);
     $commands->add(new WriteFile("../localsettings/settings.generated.additional.php", $php));
+
+    // Write boxfile.
+    CompileMisc::writeBoxfile($commands, $this->project);
   }
 
   public static function prepare(Commands $commands) {
@@ -187,9 +190,6 @@ class Compiler {
     }
 
     CompileMisc::writeSettings($commands, $drupal_major_version);
-
-    // @todo Delegate to server.
-    CompileMisc::writeBoxfile($commands, $this->project);
 
     CompileMisc::writeGitignoreForComposer($commands);
 

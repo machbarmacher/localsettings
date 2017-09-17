@@ -30,7 +30,7 @@ function localsettings_drush_command() {
     ) + $common;
 
   $items['localsettings-compile'] = array(
-      'description' => '2: Compile from project definition: sites, aliases, DBs, baseurls.',
+      'description' => '2: Compile from project definition: sites, aliases, DBs, baseurls, Boxfile.',
       'arguments' => array(
         'include' => 'File to include. See example.project.php. Defaults to ../localsettings/project.php',
       ),
@@ -40,7 +40,7 @@ function localsettings_drush_command() {
     ) + $common;
 
   $items['localsettings-scaffold'] = array(
-      'description' => '3: Scaffold settings dispatcher, dev settings, Boxfile and .gitignore.',
+      'description' => '3: Scaffold settings dispatcher, dev settings, and .gitignore.',
       'arguments' => array(
         'include' => 'File to include. See example.mmm-project.php. Defaults to ../mmm-project.php',
       ),
