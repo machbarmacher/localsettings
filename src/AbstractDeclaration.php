@@ -46,11 +46,9 @@ abstract class AbstractDeclaration implements IDeclaration {
     return $this->environment_name;
   }
 
-  /**
-   * @param string $environment_name
-   */
   public function setEnvironmentName($environment_name) {
     $this->environment_name = $environment_name;
+    return $this;
   }
 
   public function getProject() {

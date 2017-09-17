@@ -37,6 +37,7 @@ interface IDeclaration {
 
   /**
    * @param string $environment_name
+   * @return $this
    */
   public function setEnvironmentName($environment_name);
 
