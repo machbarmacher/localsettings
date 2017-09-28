@@ -78,6 +78,12 @@ interface IDeclaration {
   public function addSite($uri, $site = 'default');
 
   /**
+   * @param string[] $uris
+   * @return $this
+   */
+  public function addSites($uris);
+
+  /**
    * @param string $uri
    * @param string $site
    * @return $this

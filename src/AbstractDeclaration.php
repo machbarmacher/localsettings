@@ -99,6 +99,15 @@ abstract class AbstractDeclaration implements IDeclaration {
     return $this;
   }
 
+  public function addSites($uris) {
+    // @todo Validate uris.
+    if ($errors = array_intersect_key($uris, $this->site_uris)) {
+      throw new \UnexpectedValueException(sprintf('Sites %s double-defined in declaration %s.', implode(', ', array_keys($errors)), $this->getDeclarationName()));
+    }
+    $this->site_uris += $uris;
+    return $this;
+  }
+
   public function addUri($uri, $site = 'default') {
     // @todo Validate uri.
     if (empty($this->site_uris[$site])) {
