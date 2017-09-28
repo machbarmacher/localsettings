@@ -140,9 +140,9 @@ EOD
   }
 
   public function getRuntimeIsLocalCheck() {
-    $host_expression = new StringSingleQuoted($this->getHost());
     $user_expression = new StringSingleQuoted($this->getUser());
-    return "file_exists('/srv/www/freistilbox') && preg_match('/\\.freistilbox\\.net$/', $host_expression) && (getenv('USER') ?: getenv('LOGNAME')) == $user_expression";
+    // User is unique on all clusters.
+    return "file_exists('/srv/www/freistilbox') && (getenv('USER') ?: getenv('LOGNAME')) == $user_expression";
   }
 
 }
