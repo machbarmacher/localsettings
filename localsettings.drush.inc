@@ -77,12 +77,13 @@ function localsettings_drush_command() {
 }
 
 function drush_localsettings_compile_validate($include = NULL) {
+  $localsettings_autoload = _localsettings_autoload();
   global $localsettings_compiler_factory;
   /** @var CompilerFactory $localsettings_compiler_factory */
   $localsettings_compiler_factory = new CompilerFactory($include);
   return _localsettings_validate_root_or_simulate()
     && $localsettings_compiler_factory->validate()
-    && _localsettings_autoload();
+    && $localsettings_autoload;
 }
 
 
@@ -96,6 +97,7 @@ function drush_localsettings_compile($include = NULL) {
 }
 
 function drush_localsettings_scaffold_validate($include = NULL) {
+  $localsettings_autoload = _localsettings_autoload();
   if (!$include) {
     $include = '../localsettings/project.php';
   }
@@ -104,7 +106,7 @@ function drush_localsettings_scaffold_validate($include = NULL) {
   $localsettings_compiler_factory = new CompilerFactory($include);
   return _localsettings_validate_root_or_simulate()
     && $localsettings_compiler_factory->validate()
-    && _localsettings_autoload();
+    && $localsettings_autoload;
 }
 
 
@@ -141,12 +143,13 @@ function drush_localsettings_pre_update() {
 }
 
 function drush_localsettings_post_update_validate($include = NULL) {
+  $localsettings_autoload = _localsettings_autoload();
   global $localsettings_compiler_factory;
   /** @var CompilerFactory $localsettings_compiler_factory */
   $localsettings_compiler_factory = new CompilerFactory($include);
   return _localsettings_validate_root_or_simulate()
     && $localsettings_compiler_factory->validate()
-    && _localsettings_autoload();
+    && $localsettings_autoload;
 }
 
 
@@ -160,12 +163,13 @@ function drush_localsettings_post_update($include = NULL) {
 }
 
 function drush_localsettings_post_clone_validate($include = NULL) {
+  $localsettings_autoload = _localsettings_autoload();
   global $localsettings_compiler_factory;
   /** @var CompilerFactory $localsettings_compiler_factory */
   $localsettings_compiler_factory = new CompilerFactory($include);
   return _localsettings_validate_root_or_simulate()
     && $localsettings_compiler_factory->validate()
-    && _localsettings_autoload();
+    && $localsettings_autoload;
 }
 
 
