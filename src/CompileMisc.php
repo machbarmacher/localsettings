@@ -156,14 +156,13 @@ EOD
 namespace machbarmacher\localsettings;
 use machbarmacher\localsettings\ServerType\FreistilboxServer;
 use machbarmacher\localsettings\ServerType\UberspaceServer;
-
-// TODO: Adjust, then run "drush ls2/3/4".
+use machbarmacher\localsettings\ServerType\WodbyServer;
 
 $project = new Project(7\8);
 
 // Add all installations that match a docroot pattern.
 $project->globInstallations('dev', new UberspaceServer('HOST', 'USER'))
-  ->addSite('http://dev.USER.HOST.uberspace.de')
+  ->addSite('httlobp://dev.USER.HOST.uberspace.de')
   ->setDocroot('/var/www/virtual/USER/installations/{{installation}}/docroot')
   ->setDbCredentialPattern('USER_{{installation}}_{{site}}');
 
@@ -176,7 +175,6 @@ $project->addInstallation('test-1', new FreistilboxServer('c145', 'sXXXX'))
 $project->addInstallation('test-2', new FreistilboxServer('c145', 'sXXXX'))
   ->addSite('http://test2.example.com');
 
-// Do not forget!
 return $project;
 
 EOD
