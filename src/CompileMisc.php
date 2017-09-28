@@ -150,9 +150,7 @@ EOD
   public static function writeProject(Commands $commands) {
     $commands->add(new WriteFile('../localsettings/project.php', <<<'EOD'
 <?php
-/**
- * @file localsettings/project.php
- */
+
 namespace machbarmacher\localsettings;
 use machbarmacher\localsettings\ServerType\FreistilboxServer;
 use machbarmacher\localsettings\ServerType\UberspaceServer;
