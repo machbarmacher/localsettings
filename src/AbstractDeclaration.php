@@ -208,11 +208,17 @@ abstract class AbstractDeclaration implements IDeclaration {
 
   public function compileDbCredentials(PhpFile $php, Replacements $replacements) {
     foreach ($this->db_credentials as $site => $db_credential) {
+      if ($this->hasNonDefaultSite()) {
+        $php->addRawStatement("if (\$site === '$site') {");
+      }
       foreach ($db_credential as $key => $value) {
         if ($value) {
           $value = $replacements->apply($value);
           $php->addRawStatement("\$databases['default']['default']['$key'] = \"$value\";");
         }
+      }
+      if ($this->hasNonDefaultSite()) {
+        $php->addRawStatement('}');
       }
     }
   }
