@@ -137,8 +137,10 @@ class Compiler {
       $commands->add(new EnsureDirectory("../localsettings/crontab.d/$environment_name"));
     }
     $commands->add(new EnsureDirectory("../localsettings/crontab.d/common"));
-    $commands->add(new WriteFile("../localsettings/crontab.d/common/50-cron",
-      "0 * * * * drush -r \$DRUPAL_ROOT cron -y\n"));
+
+    // Not used currently.
+    //    $commands->add(new WriteFile("../localsettings/crontab.d/common/50-cron",
+    //      "0 * * * * drush -r \$DRUPAL_ROOT cron -y\n"));
 
     if ($drupal_major_version != 7) {
       $commands->add(new WriteFile('../config-sync/.gitkeep', ''));
