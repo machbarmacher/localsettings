@@ -22,7 +22,7 @@ interface IServer {
   public function getWebHome();
   public function alterHtaccess($content);
   public function addEnvironmentSpecificSettings(PhpFile $php, Replacements $replacements, IDeclaration $declaration);
-  public function addServerSpecificSettings(PhpFile $php, Project $project);
+  public function addServerSpecificSettings(PhpFile $php, Replacements $replacements, Project $project);
   public function alterAlias(array &$alias);
   public function getRuntimeIsLocalCheck();
 }

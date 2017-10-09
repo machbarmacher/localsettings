@@ -91,7 +91,7 @@ class Compiler {
       $server_name = $server->getTypeName();
       if (!isset($server_setting_files[$server_name])) {
         $server_php = new PhpFile();
-        $server->addServerSpecificSettings($server_php, $this->project);
+        $server->addServerSpecificSettings($server_php, clone $replacements, $this->project);
         $server_setting_file = "settings.generated.server.$server_name.php";
         $server_setting_files[$server_name] = $server_setting_file;
         $commands->add(new WriteFile("../localsettings/$server_setting_file", $server_php));

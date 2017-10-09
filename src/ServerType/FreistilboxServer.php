@@ -13,6 +13,7 @@ use machbarmacher\localsettings\RenderPhp\PhpFile;
 use machbarmacher\localsettings\RenderPhp\StringSingleQuoted;
 use machbarmacher\localsettings\ServerBase;
 use machbarmacher\localsettings\IServer;
+use machbarmacher\localsettings\Tools\Replacements;
 
 /**
  * Class Freistilbox
@@ -84,8 +85,8 @@ EOD
       . $content;
   }
 
-  public function addServerSpecificSettings(PhpFile $php, Project $project) {
-    parent::addServerSpecificSettings($php, $project);
+  public function addServerSpecificSettings(PhpFile $php, Replacements $replacements, Project $project) {
+    parent::addServerSpecificSettings($php, $replacements, $project);
     $is_d7 = $project->isD7();
     $settings_variable = $project->getSettingsVariable();
     $drupal_major_version = $project->getDrupalMajorVersion();

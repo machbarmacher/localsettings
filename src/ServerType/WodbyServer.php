@@ -68,7 +68,7 @@ class WodbyServer extends ServerBase {
    * We're getting into a mismatch between localsettings and wodby here.
    * Both want to rule. Workaround this by overriding localsettings vars.
    */
-  public function addServerSpecificSettings(PhpFile $php, Project $project) {
+  public function addServerSpecificSettings(PhpFile $php, Replacements $replacements, Project $project) {
     $php->addRawStatement('include \'/var/www/conf/wodby.settings.php\';');
     // @todo Overwrite settings if needed.
   }

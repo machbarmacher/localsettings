@@ -11,6 +11,7 @@ use machbarmacher\localsettings\Project;
 use machbarmacher\localsettings\RenderPhp\PhpFile;
 use machbarmacher\localsettings\ServerBase;
 use machbarmacher\localsettings\IServer;
+use machbarmacher\localsettings\Tools\Replacements;
 
 class UberspaceServer extends ServerBase implements IServer {
   /** @var string */
@@ -72,8 +73,8 @@ EOD
     . $content;
   }
 
-  public function addServerSpecificSettings(PhpFile $php, Project $project) {
-    parent::addServerSpecificSettings($php, $project);
+  public function addServerSpecificSettings(PhpFile $php, Replacements $replacements, Project $project) {
+    parent::addServerSpecificSettings($php, $replacements, $project);
     $is_d7 = $project->isD7();
     $user = $this->getUser();
     $host = $is_d7 ? 'localhost' : '127.0.0.1';
