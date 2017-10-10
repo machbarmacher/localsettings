@@ -146,6 +146,7 @@ abstract class AbstractDeclaration implements IDeclaration {
 
   public function setDrushEnvironmentVariable($name, $value) {
     $this->drush_environment_variables[$name] = $value;
+    return $this;
   }
 
   public function isLocal() {

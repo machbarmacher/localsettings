@@ -115,6 +115,7 @@ interface IDeclaration {
   /**
    * @param string $name
    * @param string $value
+   * @return $this
    */
   public function setDrushEnvironmentVariable($name, $value);
 
