@@ -297,7 +297,8 @@ EOD
     }
     if ($this->environment_name !== $aliasBaseX->getString()) {
       $atAliasX = new StringConcat(new StringSingleQuoted('@'), $aliasBaseX);
-      $php->addRawStatement("  \$aliases['$this->environment_name']['site-list'][] = {$atAliasX};");
+      $environmentNameX = new StringSingleQuoted($this->environment_name);
+      $php->addRawStatement("  \$aliases[{$environmentNameX}]['site-list'][] = {$atAliasX};");
     }
   }
 
