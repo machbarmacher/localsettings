@@ -292,7 +292,7 @@ EOD
       $php->addRawStatement("  \$aliases[$aliasNameX]['#unique_site_name'] = $uniqueSiteNameX;");
       if ($multisite) {
         $atAliasNameX = new StringConcat(new StringSingleQuoted('@'), $aliasNameX);
-        $php->addRawStatement("  \$aliases[\"$aliasBaseX\"]['site-list'][] = $atAliasNameX;");
+        $php->addRawStatement("  \$aliases[$aliasBaseX]['site-list'][] = $atAliasNameX;");
       }
     }
     if ($this->environment_name !== $aliasBaseX->getString()) {
