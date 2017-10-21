@@ -90,7 +90,7 @@ class WodbyServer extends ServerBase {
    * @return string
    */
   public function getRuntimeIsLocalCheck() {
-    return "preg_match('/\\.$this->app/u', (string)getenv('WODBY_APP_NAME'))";
+    return "preg_match('/\\.$this->app$/u', (string)getenv('WODBY_APP_NAME'))";
   }
 
 }

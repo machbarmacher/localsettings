@@ -17,7 +17,14 @@ class Installation extends AbstractDeclaration implements IDeclaration {
   }
 
   public function isCurrent() {
-    return $this->isLocal() && realpath($this->docroot) == realpath(DRUSH_DRUPAL_CORE);
+    $drupal_root = drush_get_context('DRUSH_DRUPAL_ROOT');
+    $isLocal = $this->isLocal();
+    // We compare dirnames here, as web/docroot subdir can change and we can
+    // safely assume only a single docroot per installation dir.
+    $docroot_parent = realpath(dirname($this->docroot));
+    $current_docroot_parent = realpath(dirname($drupal_root));
+    $locationMatch = $docroot_parent == $current_docroot_parent;
+    return $isLocal && $locationMatch;
   }
 
   protected function makeInstallationExpressionForSettings() {
