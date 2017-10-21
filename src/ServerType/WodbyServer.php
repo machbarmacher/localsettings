@@ -70,7 +70,20 @@ class WodbyServer extends ServerBase {
    * Both want to rule. Workaround this by overriding localsettings vars.
    */
   public function addServerSpecificSettings(PhpFile $php, Replacements $replacements, Project $project) {
-    $php->addRawStatement('include \'/var/www/conf/wodby.settings.php\';');
+    $settings_variable = $project->getSettingsVariable();
+    $settings_variable_name = substr($settings_variable, 1);
+
+    $php->addRawStatement(<<<EOD
+  \$importer = function(\$file) { include(\$file); return get_defined_vars();};
+  \$vars = \$importer(\'/var/www/conf/wodby.settings.php\');
+
+  \$databases = \$vars['databases'];
+  // We want to control the cache bins ourselves.
+  unset(\$vars['$settings_variable_name']['cache']);
+  $settings_variable = \$vars['$settings_variable_name'] + $settings_variable;
+  // Voluntarily ignore \$config_directories.
+EOD
+    );
     // @todo Overwrite settings if needed.
   }
 
