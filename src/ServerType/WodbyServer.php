@@ -75,7 +75,7 @@ class WodbyServer extends ServerBase {
 
     $php->addRawStatement(<<<EOD
   \$importer = function(\$file) { include(\$file); return get_defined_vars();};
-  \$vars = \$importer(\'/var/www/conf/wodby.settings.php\');
+  \$vars = \$importer('/var/www/conf/wodby.settings.php');
 
   \$databases = \$vars['databases'];
   // We want to control the cache bins ourselves.
