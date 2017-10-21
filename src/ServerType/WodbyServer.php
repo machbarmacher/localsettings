@@ -6,6 +6,7 @@ use machbarmacher\localsettings\IDeclaration;
 use machbarmacher\localsettings\Project;
 use machbarmacher\localsettings\RenderPhp\PhpFile;
 use machbarmacher\localsettings\ServerBase;
+use machbarmacher\localsettings\Tools\Replacements;
 
 class WodbyServer extends ServerBase {
   /** @var string */
