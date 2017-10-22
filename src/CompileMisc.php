@@ -56,6 +56,7 @@ class CompileMisc {
     $commands->add(new WriteFile("sites/$site/settings.php", <<<EOD
 <?php
 require DRUPAL_ROOT . '/../localsettings/settings.php';
+return; // Ignore suffix code e.g. by wodby.
 
 EOD
     ));
