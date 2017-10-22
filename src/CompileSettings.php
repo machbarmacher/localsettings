@@ -13,7 +13,7 @@ class CompileSettings {
   public static function addInitialSettings(PhpFile $php, Replacements $replacements, Project $project) {
     $is_d7 = $project->isD7();
     $settings_variable = $project->getSettingsVariable();
-    $conf_path = $is_d7 ? 'conf_path()' : '\Drupal::service(\'site.path\')->get()';
+    $conf_path = $is_d7 ? 'conf_path()' : '$site_path';
 
     $php->addRawStatement(<<<EOD
 \$site = {$settings_variable}['localsettings']['site'] = basename($conf_path);
