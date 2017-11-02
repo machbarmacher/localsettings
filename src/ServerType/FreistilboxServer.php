@@ -129,6 +129,10 @@ elseif (
 ) {
   require_once \$database_configs[0];
 }
+// Allow other local settings like solr.
+@include '../private/_settings/settings.local.php';
+@include "../private/_settings/settings.local.site-\$site.php";
+
 EOD
     );
 
