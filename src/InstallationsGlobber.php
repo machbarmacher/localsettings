@@ -97,13 +97,12 @@ class InstallationsGlobber extends AbstractDeclaration {
   }
 
   public function isCurrent() {
-    if (!$this->isLocal() || !defined('DRUPAL_CORE')) {
-      return FALSE;
-    }
-    $drupal_root_realpath = realpath(DRUPAL_CORE);
-    foreach (glob($this->docrootPatternForGlob()) as $path) {
-      if (realpath($path) == $drupal_root_realpath) {
-        return TRUE;
+    if (defined('DRUPAL_ROOT') && $this->isLocal()) {
+      $drupal_root_realpath = realpath(DRUPAL_ROOT);
+      foreach (glob($this->docrootPatternForGlob()) as $path) {
+        if (realpath($path) == $drupal_root_realpath) {
+          return TRUE;
+        }
       }
     }
     return FALSE;
