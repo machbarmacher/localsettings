@@ -40,11 +40,11 @@ class WodbyServer extends ServerBase {
   }
 
   public function getDefaultDocroot() {
-    return '/var/www/html/web';
+    return '/var/www/html/docroot';
   }
 
   public function getWebHome() {
-    return '/var/www/html/web';
+    return '/var/www/html/docroot';
   }
 
   public function alterHtaccess($content) {
