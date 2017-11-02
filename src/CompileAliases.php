@@ -22,7 +22,7 @@ foreach (\$aliases as \$alias_name => &\$alias) {
     \$local_sites["@\$alias_name"] = \$alias;
   }
 
-  \$is_current = \$is_local && realpath(\$alias['root']) == realpath(DRUSH_DRUPAL_CORE);
+  \$is_current = \$is_local && defined('DRUPAL_CORE') && realpath(\$alias['root']) === realpath(DRUPAL_CORE);
   if (\$is_current) {
     \$current_sites["@\$alias_name"] = \$alias;
   }
