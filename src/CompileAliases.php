@@ -16,28 +16,26 @@ class CompileAliases {
     $php->addRawStatement(<<<EOD
 
 // Alter local aliases and add @this-installation here as the drush alter hook is broken. 
-\$current_sites = \$local_sites = [];
+\$this_installation = \$this_server = [];
 foreach (\$aliases as \$alias_name => &\$alias) {
   if (!isset(\$alias['remote-host'])) {
-    \$local_sites["@\$alias_name"] = \$alias;
-  }
-
-  \$is_current = \$is_local && defined('DRUPAL_ROOT') && realpath(\$alias['root']) === realpath(DRUPAL_ROOT);
-  if (\$is_current) {
-    \$current_sites["@\$alias_name"] = \$alias;
+    \$this_server["@\$alias_name"] = \$alias;
+    if (defined('DRUPAL_ROOT') && realpath(\$alias['root']) === realpath(DRUPAL_ROOT)) {
+      \$this_installation["@\$alias_name"] = \$alias;
+    }
   }
 }
-if (count(\$current_sites) == 1) {
-  \$aliases['this-installation'] = reset(\$current_sites);
+if (count(\$this_installation) == 1) {
+  \$aliases['this-installation'] = reset(\$this_installation);
 }
 else {
-  \$aliases['this-installation'] = ['site-list' => array_keys(\$current_sites)];
+  \$aliases['this-installation'] = ['site-list' => array_keys(\$this_installation)];
 }
-if (count(\$local_sites) == 1) {
-  \$aliases['this-server'] = reset(\$local_sites);
+if (count(\$this_server) == 1) {
+  \$aliases['this-server'] = reset(\$this_server);
 }
 else {
-  \$aliases['this-server'] = ['site-list' => array_keys(\$local_sites)];
+  \$aliases['this-server'] = ['site-list' => array_keys(\$this_server)];
 }
 
 EOD
