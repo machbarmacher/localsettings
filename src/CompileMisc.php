@@ -77,12 +77,12 @@ EOD
   public static function writeSettings(Commands $commands, $drupal_major_version) {
     $commands->add(new WriteFile('../localsettings/settings.php', <<<EOD
 <?php
-require '../localsettings/settings.generated.initial.php';
-require '../localsettings/settings.generated.declaration.THIS.php';
-require '../localsettings/settings.generated.additional.php';
-require '../localsettings/settings.custom.initial.php';
-require '../localsettings/settings.custom.environment.THIS.php';
-require '../localsettings/settings.custom.additional.php';
+include '../localsettings/settings.generated.initial.php';
+include '../localsettings/settings.generated.declaration.THIS.php';
+include '../localsettings/settings.generated.additional.php';
+include '../localsettings/settings.custom.initial.php';
+include '../localsettings/settings.custom.environment.THIS.php';
+include '../localsettings/settings.custom.additional.php';
 
 EOD
     ));
