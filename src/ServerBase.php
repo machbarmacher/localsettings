@@ -35,6 +35,10 @@ abstract class ServerBase implements IServer {
     return $this->getHost();
   }
 
+  public function getPort() {
+    return NULL;
+  }
+
   public function getUniqueAccountName() {
     return $this->getUser() . '@' . $this->getShortHostName();
   }

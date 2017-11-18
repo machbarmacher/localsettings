@@ -288,6 +288,10 @@ EOD
       $php->addRawStatement("    \$aliases[$aliasNameX]['remote-host'] = $hostX;");
       $userX = new StringSingleQuoted($this->server->getUser());
       $php->addRawStatement("    \$aliases[$aliasNameX]['remote-user'] = $userX;");
+      if ($port = $this->server->getPort()) {
+        $sshOptions = new StringSingleQuoted("-p $port");
+        $php->addRawStatement("    \$aliases[$aliasNameX]['ssh-options'] = $sshOptions;");
+      }
       $php->addRawStatement("  }");
       $php->addRawStatement("  \$aliases[$aliasNameX]['#unique_site_name'] = $uniqueSiteNameX;");
       if ($multisite) {

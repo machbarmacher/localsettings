@@ -14,16 +14,20 @@ class WodbyServer extends ServerBase {
   protected $app;
   /** @var string */
   protected $company;
+  /** @var int|null */
+  private $port;
 
   /**
    * WodbyServer constructor.
    *
    * @param string $app
    * @param string $company
+   * @param int|null $port
    */
-  public function __construct($app, $company) {
+  public function __construct($app, $company, $port = NULL) {
     $this->app = $app;
     $this->company = $company;
+    $this->port = $port;
   }
 
 
@@ -33,6 +37,10 @@ class WodbyServer extends ServerBase {
 
   public function getHost() {
     return "dev.$this->app.$this->company.wod.by";
+  }
+
+  public function getPort() {
+    return $this->port;
   }
 
   public function getTypeName() {

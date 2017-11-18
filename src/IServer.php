@@ -11,6 +11,7 @@ use machbarmacher\localsettings\Tools\Replacements;
 interface IServer {
   public function getUser();
   public function getHost();
+  public function getPort();
   public function getTypeName();
   public function getShortHostName();
   public function getUniqueAccountName();
