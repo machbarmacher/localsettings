@@ -104,6 +104,7 @@ EOD
   public function alterAlias(array &$alias) {
     parent::alterAlias($alias);
     // TODO: Add cname and git-deployment-uri
+    $alias['#env-vars']['PATH'] = '/home/www-data/.composer/vendor/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin';
   }
 
   /**
