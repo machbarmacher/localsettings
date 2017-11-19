@@ -11,6 +11,8 @@ use machbarmacher\localsettings\Tools\Replacements;
 // @todo Include /var/www/conf/wodby.sites.php
 class WodbyServer extends ServerBase {
   /** @var string */
+  protected $instance;
+  /** @var string */
   protected $app;
   /** @var string */
   protected $company;
@@ -20,13 +22,16 @@ class WodbyServer extends ServerBase {
   /**
    * WodbyServer constructor.
    *
-   * @param string $app
-   * @param string $company
+   * @param string $id
+   *   Like dev.foo.mbm
    * @param int|null $port
    */
-  public function __construct($app, $company, $port = NULL) {
-    $this->app = $app;
-    $this->company = $company;
+  public function __construct($id, $port = NULL) {
+    $parts = explode('.', $id);
+    assert(count($parts) === 3, 'Wodby ID must look like "dev.foo.bar".');
+    $this->instance = $parts[0];
+    $this->app = $parts[1];
+    $this->company = $parts[2];
     $this->port = $port;
   }
 
@@ -36,7 +41,7 @@ class WodbyServer extends ServerBase {
   }
 
   public function getHost() {
-    return "dev.$this->app.$this->company.wod.by";
+    return "$this->instance.$this->app.$this->company.wod.by";
   }
 
   public function getPort() {
@@ -112,7 +117,8 @@ EOD
    * @return string
    */
   public function getRuntimeIsLocalCheck() {
-    return "preg_match('/\\.$this->app$/u', (string)getenv('WODBY_APP_NAME'))";
+    getenv();
+    return "(getenv('WODBY_APP_NAME') == '$this->instance.$this->app')";
   }
 
 }
