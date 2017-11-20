@@ -118,7 +118,6 @@ EOD
    * @return string
    */
   public function getRuntimeIsLocalCheck() {
-    getenv();
     return "(getenv('WODBY_APP_NAME') == '$this->instance.$this->app')";
   }
 
