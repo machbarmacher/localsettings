@@ -299,11 +299,10 @@ EOD
         $php->addRawStatement("  \$aliases[$aliasBaseX]['site-list'][] = $atAliasNameX;");
       }
     }
-    if ($this->environment_name !== $aliasBaseX->getString()) {
-      $atAliasX = new StringConcat(new StringSingleQuoted('@'), $aliasBaseX);
-      $environmentNameX = new StringSingleQuoted('environment-' . $this->environment_name);
-      $php->addRawStatement("  \$aliases[{$environmentNameX}]['site-list'][] = {$atAliasX};");
-    }
+    // Add environment alias.
+    $atAliasX = new StringConcat(new StringSingleQuoted('@'), $aliasBaseX);
+    $environmentNameX = new StringSingleQuoted('environment-' . $this->environment_name);
+    $php->addRawStatement("  \$aliases[{$environmentNameX}]['site-list'][] = {$atAliasX};");
   }
 
 }
