@@ -277,26 +277,27 @@ EOD
         $alias['#env-vars'] = $this->drush_environment_variables;
       }
       $this->server->alterAlias($alias);
+      // Only write if alterAlias did not veto.
       if ($alias) {
         $aliasExpression = new LiteralValue($alias);
         $php->addRawStatement("  \$aliases[$aliasNameX] = $aliasExpression;");
-      }
-      $php->addRawStatement("  \$aliases[$aliasNameX]['root'] = $docrootX;");
-      $php->addRawStatement("  \$aliases[$aliasNameX]['uri'] = $uriX;");
-      $php->addRawStatement("  if (!($isLocalCheck)) {");
-      $hostX = new StringSingleQuoted($this->server->getHost());
-      $php->addRawStatement("    \$aliases[$aliasNameX]['remote-host'] = $hostX;");
-      $userX = new StringSingleQuoted($this->server->getUser());
-      $php->addRawStatement("    \$aliases[$aliasNameX]['remote-user'] = $userX;");
-      if ($port = $this->server->getPort()) {
-        $sshOptions = new StringSingleQuoted("-p $port");
-        $php->addRawStatement("    \$aliases[$aliasNameX]['ssh-options'] = $sshOptions;");
-      }
-      $php->addRawStatement("  }");
-      $php->addRawStatement("  \$aliases[$aliasNameX]['#unique_site_name'] = $uniqueSiteNameX;");
-      if ($multisite) {
-        $atAliasNameX = new StringConcat(new StringSingleQuoted('@'), $aliasNameX);
-        $php->addRawStatement("  \$aliases[$aliasBaseX]['site-list'][] = $atAliasNameX;");
+        $php->addRawStatement("  \$aliases[$aliasNameX]['root'] = $docrootX;");
+        $php->addRawStatement("  \$aliases[$aliasNameX]['uri'] = $uriX;");
+        $php->addRawStatement("  if (!($isLocalCheck)) {");
+        $hostX = new StringSingleQuoted($this->server->getHost());
+        $php->addRawStatement("    \$aliases[$aliasNameX]['remote-host'] = $hostX;");
+        $userX = new StringSingleQuoted($this->server->getUser());
+        $php->addRawStatement("    \$aliases[$aliasNameX]['remote-user'] = $userX;");
+        if ($port = $this->server->getPort()) {
+          $sshOptions = new StringSingleQuoted("-p $port");
+          $php->addRawStatement("    \$aliases[$aliasNameX]['ssh-options'] = $sshOptions;");
+        }
+        $php->addRawStatement("  }");
+        $php->addRawStatement("  \$aliases[$aliasNameX]['#unique_site_name'] = $uniqueSiteNameX;");
+        if ($multisite) {
+          $atAliasNameX = new StringConcat(new StringSingleQuoted('@'), $aliasNameX);
+          $php->addRawStatement("  \$aliases[$aliasBaseX]['site-list'][] = $atAliasNameX;");
+        }
       }
     }
     // Add environment alias.
