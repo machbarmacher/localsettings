@@ -102,9 +102,14 @@ EOD
   }
 
   public function alterAlias(array &$alias) {
-    parent::alterAlias($alias);
-    // TODO: Add cname and git-deployment-uri
-    $alias['#env-vars']['PATH'] = '/home/www-data/.composer/vendor/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin';
+    if ($this->instance == '*') {
+      $alias = NULL;
+    }
+    else {
+      parent::alterAlias($alias);
+      // TODO: Add cname and git-deployment-uri
+      $alias['#env-vars']['PATH'] = '/home/www-data/.composer/vendor/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin';
+    }
   }
 
   /**
@@ -118,7 +123,12 @@ EOD
    * @return string
    */
   public function getRuntimeIsLocalCheck() {
-    return "(getenv('WODBY_APP_NAME') == '$this->instance.$this->app')";
+    if ($this->instance == '*') {
+      return "(explode('.', getenv('WODBY_APP_NAME'))[1] == '$this->app')";
+    }
+    else {
+      return "(getenv('WODBY_APP_NAME') == '$this->instance.$this->app')";
+    }
   }
 
 }
