@@ -199,7 +199,7 @@ abstract class AbstractDeclaration implements IDeclaration {
           // D8 does not need base url anymore.
           $host = parse_url($uri, PHP_URL_HOST);
           $hostQuoted = preg_quote($host, '}');
-          $hostQuotedWithWildcard = preg_replace('\*', '.*', $hostQuoted);
+          $hostQuotedWithWildcard = preg_replace('/\*/u', '.*', $hostQuoted);
           $hostPregX = new StringDoubleQuoted($hostQuotedWithWildcard . '$');
           $php->addRawStatement("\$settings['trusted_host_patterns'][] = $hostPregX;");
         }
