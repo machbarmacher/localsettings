@@ -262,7 +262,8 @@ EOD
     $php->addRawStatement("// Declaration: $this->declaration_name");
     $multisite = count($this->site_uris) !== 1;
     $isLocalCheck = $this->server->getRuntimeIsLocalCheck();
-    // Add single site aliases.
+
+    $hasAlias = FALSE;
     foreach ($this->site_uris as $site => $uris) {
       $alias = [];
       $aliasNameX = $multisite ? new StringConcat($aliasBaseX, new StringSingleQuoted(".$site")) : $aliasBaseX;
@@ -276,6 +277,7 @@ EOD
       $this->server->alterAlias($alias);
       // Only write if alterAlias did not veto.
       if ($alias) {
+        $hasAlias = TRUE;
         $aliasExpression = new LiteralValue($alias);
         $php->addRawStatement("  \$aliases[$aliasNameX] = $aliasExpression;");
         $php->addRawStatement("  \$aliases[$aliasNameX]['root'] = $docrootX;");
@@ -297,10 +299,12 @@ EOD
         }
       }
     }
-    // Add environment alias.
-    $atAliasX = new StringConcat(new StringSingleQuoted('@'), $aliasBaseX);
-    $environmentNameX = new StringSingleQuoted('environment-' . $this->environment_name);
-    $php->addRawStatement("  \$aliases[{$environmentNameX}]['site-list'][] = {$atAliasX};");
+    if ($hasAlias) {
+      // Add environment alias.
+      $atAliasX = new StringConcat(new StringSingleQuoted('@'), $aliasBaseX);
+      $environmentNameX = new StringSingleQuoted('environment-' . $this->environment_name);
+      $php->addRawStatement("  \$aliases[{$environmentNameX}]['site-list'][] = {$atAliasX};");
+    }
   }
 
 }
