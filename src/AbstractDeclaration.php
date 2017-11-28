@@ -227,19 +227,16 @@ abstract class AbstractDeclaration implements IDeclaration {
   public function compileEnvironmentInfo(PhpFile $php, Replacements $replacements) {
     $settings_variable = $this->project->getSettingsVariable();
 
-    $replacements->register('{{installation-suffix}}', '{$installation_suffix}');
     $replacements->register('{{installation}}', '{$installation}');
     $replacements->register('{{environment}}', '{$environment}');
     $replacements->register('{{unique-site-name}}', '{$unique_site_name}');
 
     $environmentNameX = new StringSingleQuoted($this->getEnvironmentName());
     $uniqueSiteNameX = new StringDoubleQuoted($replacements->apply($this->getUniqueSiteNameWithReplacements()));
-    $installationSuffixX = $this->makeInstallationSuffixExpressionForSettings();
     $installationExpression = $this->makeInstallationExpressionForSettings();
     // Note: InstallationGlobber uses suffix in installation expression,
     // so order matters here.
     $php->addRawStatement(<<<EOD
-\$installation_suffix = {$settings_variable}['localsettings']['installation_suffix'] = $installationSuffixX;
 \$installation = {$settings_variable}['localsettings']['installation'] = $installationExpression;
 \$environment = {$settings_variable}['localsettings']['environment'] = $environmentNameX;
 \$unique_site_name = {$settings_variable}['localsettings']['unique_site_name'] = $uniqueSiteNameX;

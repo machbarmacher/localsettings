@@ -63,6 +63,19 @@ class InstallationsGlobber extends AbstractDeclaration {
     return "{$delimiter}$glob_pattern{$delimiter}u";
   }
 
+  public function compileEnvironmentInfo(PhpFile $php, Replacements $replacements) {
+    parent::compileEnvironmentInfo($php, $replacements);
+
+    $replacements->register('{{installation-suffix}}', '{$installation_suffix}');
+
+    $settings_variable = $this->project->getSettingsVariable();
+    $installationSuffixX = $this->makeInstallationSuffixExpressionForSettings();
+    $php->addRawStatement(<<<EOD
+\$installation_suffix = {$settings_variable}['localsettings']['installation_suffix'] = $installationSuffixX;
+EOD
+    );
+  }
+
   /**
    * @param \machbarmacher\localsettings\RenderPhp\PhpFile $php
    */
