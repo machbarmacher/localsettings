@@ -17,15 +17,6 @@ interface IDeclaration {
   public function isCurrent();
 
   /**
-   * Declaration constructor.
-   *
-   * @param string $declaration_name
-   * @param IServer $server
-   * @param Project $project
-   */
-  public function __construct($declaration_name, IServer $server, Project $project);
-
-  /**
    * @return string
    */
   public function getDeclarationName();

@@ -95,7 +95,8 @@ class Project {
         return $declaration;
       }
     }
-    throw new \Exception('Can not recognize current declaration.');
+    drush_log(dt('Can not recognize current installation.'), 'error');
+    return new NullDeclaration($this);
   }
 
 
