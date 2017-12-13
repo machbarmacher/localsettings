@@ -123,12 +123,12 @@ EOD
    * @return string
    */
   public function getRuntimeIsLocalCheck() {
-    if ($this->instance == '*') {
-      return "(explode('.', getenv('WODBY_APP_NAME'))[1] == '$this->app')";
+    $check = "getenv('WODBY_APP_NAME') === '$this->app'";
+    if ($this->instance !== '*') {
+      $check .= " && getenv('WODBY_APP_INSTANCE') === '$this->instance'";
     }
-    else {
-      return "(getenv('WODBY_APP_NAME') == '$this->instance.$this->app')";
-    }
+    $check = "($check)";
+    return $check;
   }
 
 }
