@@ -125,7 +125,7 @@ EOD
   public function getRuntimeIsLocalCheck() {
     $check = "getenv('WODBY_APP_NAME') === '$this->app'";
     if ($this->instance !== '*') {
-      $check .= " && getenv('WODBY_APP_INSTANCE') === '$this->instance'";
+      $check .= " && getenv('WODBY_INSTANCE_NAME') === '$this->instance'";
     }
     $check = "($check)";
     return $check;
