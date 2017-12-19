@@ -92,7 +92,7 @@ EOD
     $docroot_glob_pattern = $this->docrootPatternForGlob();
     $php->addRawStatement("\$docroots = ($is_local) ?");
     $php->addRawStatement("  glob('$docroot_glob_pattern') :");
-    $php->addRawStatement("  array_map(function(\$v) {return preg_replace('/\*/', \$v, 'foo/*/bar');}, $defaultInstallationsX);");
+    $php->addRawStatement("  array_map(function(\$v) {return preg_replace('/\*/', \$v, '$docroot_glob_pattern');}, $defaultInstallationsX);");
     $php->addRawStatement('foreach ($docroots as $docroot) {');
     // First quote the docroot for later, then replace the quoted wildcard.
     $docroot_preg_pattern = $this->docrootPatternForPreg();
