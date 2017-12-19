@@ -87,11 +87,12 @@ EOD
 
     $is_local = $this->server->getRuntimeIsLocalCheck();
     // If nonlocal, add default installations.
-    $default_installations = ArrayX::fromLiteral($this->default_installations);
-    $default_installations->setMultiline(FALSE);
+    $defaultInstallationsX = ArrayX::fromLiteral($this->default_installations);
+    $defaultInstallationsX->setMultiline(FALSE);
     $docroot_glob_pattern = $this->docrootPatternForGlob();
     $php->addRawStatement("\$docroots = ($is_local) ?");
-    $php->addRawStatement("  glob('$docroot_glob_pattern') : $default_installations;");
+    $php->addRawStatement("  glob('$docroot_glob_pattern') :");
+    $php->addRawStatement("  array_map(function(\$v) {return preg_replace('/\*/', \$v, 'foo/*/bar');}, $defaultInstallationsX);");
     $php->addRawStatement('foreach ($docroots as $docroot) {');
     // First quote the docroot for later, then replace the quoted wildcard.
     $docroot_preg_pattern = $this->docrootPatternForPreg();
