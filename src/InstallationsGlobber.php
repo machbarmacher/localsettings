@@ -64,8 +64,7 @@ class InstallationsGlobber extends AbstractDeclaration {
   }
 
   public function compileEnvironmentInfo(PhpFile $php, Replacements $replacements) {
-    parent::compileEnvironmentInfo($php, $replacements);
-
+    // This might be needed in $unique_site_name, so declare it first.
     $replacements->register('{{installation-suffix}}', '{$installation_suffix}');
 
     $settings_variable = $this->project->getSettingsVariable();
@@ -74,6 +73,7 @@ class InstallationsGlobber extends AbstractDeclaration {
 \$installation_suffix = {$settings_variable}['localsettings']['installation_suffix'] = $installationSuffixX;
 EOD
     );
+    parent::compileEnvironmentInfo($php, $replacements);
   }
 
   /**
